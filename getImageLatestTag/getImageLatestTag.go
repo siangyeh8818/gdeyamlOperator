@@ -59,6 +59,7 @@ func main() {
 	}
 	//test := SelectLatestTime("2019-05-16T02:07:18.508640172Z", "2019-04-22T07:47:39.89748501Z")
 	fmt.Println(tag_latest)
+	tag_latest = strings.Trim(tag_latest, "\"")
 	WriteWithIoutil("getImageLatestTag_result.txt", tag_latest)
 	//fmt.Println(time_latest)
 }
@@ -105,3 +106,14 @@ func QueryLatestTag(tag string, imgname string, hub string) string {
 	//curltagresult, _ := exec_shell("curl -X GET https://" + hub + "/v2/" + imgname + "/manifests/" + tag + " | jq -r '.history[].v1Compatibility' | jq '.created' | sort | sed 's/\"//g'|tail -n1 ")
 	return curltagresult
 }
+
+/*
+func trimQuotes(s string) string {
+    if len(s) >= 2 {
+	        if c := s[len(s)-1]; s[0] == c && (c == '"' || c == '\'') {
+			            return s[1 : len(s)-1]
+					        }
+							    }
+								    return s
+								}
+*/
