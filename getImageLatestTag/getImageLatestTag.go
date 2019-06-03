@@ -15,7 +15,7 @@ func main() {
 
 	Init()
 	flag.Parse()
-
+	fmt.Println(hubSource)
 	raw_image_hub, raw_image_name := ImagenameSplit(hubSource)
 	/*
 		fmt.Println("------------------")
@@ -65,7 +65,7 @@ func main() {
 }
 
 func Init() {
-	flag.StringVar(&hubSource, "imagename", "dockerhub.pentium.network/grafana", "docker image , such as dockerhub.pentium.network/grafan")
+	flag.StringVar(&hubSource, "imagename", "dockerhub.pentium.network/grafana", "docker image , such as dockerhub.pentium.network/grafana")
 }
 
 func SelectLatestTime(t1 string, t2 string) string {
