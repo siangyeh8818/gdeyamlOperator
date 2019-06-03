@@ -49,12 +49,16 @@ func main() {
 	imagemap := make(map[string]string, len(tagssplit))
 	for i := range tagssplit {
 		time := QueryLatestTag(tagssplit[i], raw_image_name, raw_image_hub)
-		//		fmt.Println(tagssplit[i] + " :  " + time)
+		//fmt.Println(tagssplit[i] + ":" + time)
 		time = strings.Replace(time, "\n", "", -1)
-		imagemap[tagssplit[i]] = time
-		time_latest = SelectLatestTime(time, time_latest)
-		if time_latest == imagemap[tagssplit[i]] {
-			tag_latest = tagssplit[i]
+		//fmt.Println(strings.Compare(strings.Trim(tagssplit[i], "\""), "latest"))
+		//fmt.Println(strings.EqualFold(strings.Trim(tagssplit[i], "\""), "latest"))
+		if strings.Compare(strings.Trim(tagssplit[i], "\""), "latest") == -1 {
+			imagemap[tagssplit[i]] = time
+			time_latest = SelectLatestTime(time, time_latest)
+			if time_latest == imagemap[tagssplit[i]] {
+				tag_latest = tagssplit[i]
+			}
 		}
 	}
 	//test := SelectLatestTime("2019-05-16T02:07:18.508640172Z", "2019-04-22T07:47:39.89748501Z")
