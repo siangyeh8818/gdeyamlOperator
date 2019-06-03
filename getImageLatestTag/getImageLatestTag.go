@@ -33,8 +33,8 @@ func main() {
 	//fmt.Println(querylistcmd)
 	//	fmt.Println("------------------")
 	//tag_result, _ = exec_shell("curl -X GET https://dockerhub.pentium.network/v2/grafana/tags/list| jq -r .tags")
-	tag_result, _ = exec_shell(querylistcmd)
-
+	//	tag_result, _ = exec_shell(querylistcmd)
+	tag_result = RunCommand(querylistcmd)
 	tag_result = strings.Replace(tag_result, "[", "", 1)
 	tag_result = strings.Replace(tag_result, "]", "", 1)
 	//fmt.Println(tag_result)
