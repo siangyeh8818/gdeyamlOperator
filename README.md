@@ -13,5 +13,4 @@ Centos:<br>
 | flag      | 說明    | 預設值     |
 | ---------- | :-----------:  | :-----------: |
 |  imagename    | docker image , such as dockerhub.pentium.network/grafana     | dockerhub.pentium.network/grafana    |
-| ---------- | :-----------:  | :-----------: |
 |  list    |  After sort tag list , we only deal with these top'number tags    | 5    |
