@@ -4,18 +4,21 @@ import (
 	"flag"
 	"fmt"
 	"regexp"
+
 	//	"strconv"
 	"strings"
 	"time"
 )
 
 var hubSource string
+var list int
 
 func main() {
 
 	Init()
 	flag.Parse()
 	fmt.Println(hubSource)
+	fmt.Println(list)
 	raw_image_hub, raw_image_name := ImagenameSplit(hubSource)
 	/*
 		fmt.Println("------------------")
@@ -28,6 +31,7 @@ func main() {
 	var time_latest = "2000-01-01T00:00:00.508640172Z"
 	var tag_latest string
 	var querylistcmd string
+	var loop_break_count int
 
 	querylistcmd = "curl -X GET https://" + raw_image_hub + "/v2/" + raw_image_name + "/tags/list -s| jq -r .tags"
 	//fmt.Println(querylistcmd)
@@ -37,28 +41,32 @@ func main() {
 	tag_result = RunCommand(querylistcmd)
 	tag_result = strings.Replace(tag_result, "[", "", 1)
 	tag_result = strings.Replace(tag_result, "]", "", 1)
-	//fmt.Println(tag_result)
-
 	tag_result = DeleteExtraSpace(tag_result)
-	//fmt.Println(tag_result)
 	tag_result = strings.Replace(tag_result, "\n", "", -1)
-	//fmt.Println(tag_result)
 	tagssplit := strings.Split(tag_result, ",")
 
+	//fmt.Printf("Ints %v\n", tagssplit)
+	reverse_tagssplit := reverseInts(tagssplit)
+	//fmt.Printf("Reversed: %v\n", reverse_tagssplit)
 	//	fmt.Println("Amount of image tag : " + strconv.Itoa(len(tagssplit)))
-	imagemap := make(map[string]string, len(tagssplit))
-	for i := range tagssplit {
-		time := QueryLatestTag(tagssplit[i], raw_image_name, raw_image_hub)
-		//fmt.Println(tagssplit[i] + ":" + time)
+	imagemap := make(map[string]string, len(reverse_tagssplit))
+	for i := range reverse_tagssplit {
+		time := QueryLatestTag(reverse_tagssplit[i], raw_image_name, raw_image_hub)
+		fmt.Println(reverse_tagssplit[i] + ":" + time)
 		time = strings.Replace(time, "\n", "", -1)
 		//fmt.Println(strings.Compare(strings.Trim(tagssplit[i], "\""), "latest"))
 		//fmt.Println(strings.EqualFold(strings.Trim(tagssplit[i], "\""), "latest"))
-		if strings.Compare(strings.Trim(tagssplit[i], "\""), "latest") == -1 {
-			imagemap[tagssplit[i]] = time
+
+		if strings.Compare(strings.Trim(reverse_tagssplit[i], "\""), "latest") == -1 {
+			imagemap[reverse_tagssplit[i]] = time
 			time_latest = SelectLatestTime(time, time_latest)
-			if time_latest == imagemap[tagssplit[i]] {
-				tag_latest = tagssplit[i]
+			if time_latest == imagemap[reverse_tagssplit[i]] {
+				tag_latest = reverse_tagssplit[i]
 			}
+		}
+		loop_break_count++
+		if loop_break_count >= list {
+			break
 		}
 	}
 	//test := SelectLatestTime("2019-05-16T02:07:18.508640172Z", "2019-04-22T07:47:39.89748501Z")
@@ -70,6 +78,7 @@ func main() {
 
 func Init() {
 	flag.StringVar(&hubSource, "imagename", "dockerhub.pentium.network/grafana", "docker image , such as dockerhub.pentium.network/grafana")
+	flag.IntVar(&list, "list", 5, "After sort tag list , we only deal with these top'number tags ")
 }
 
 func SelectLatestTime(t1 string, t2 string) string {
@@ -109,6 +118,13 @@ func QueryLatestTag(tag string, imgname string, hub string) string {
 	curltagresult := RunCommand("curl -X GET https://" + hub + "/v2/" + imgname + "/manifests/" + tag + " | jq -r '.history[].v1Compatibility' | jq '.created' | sort | sed 's/\"//g'|tail -n1 ")
 	//curltagresult, _ := exec_shell("curl -X GET https://" + hub + "/v2/" + imgname + "/manifests/" + tag + " | jq -r '.history[].v1Compatibility' | jq '.created' | sort | sed 's/\"//g'|tail -n1 ")
 	return curltagresult
+}
+
+func reverseInts(input []string) []string {
+	if len(input) == 0 {
+		return input
+	}
+	return append(reverseInts(input[1:]), input[0])
 }
 
 /*
