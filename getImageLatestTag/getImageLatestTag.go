@@ -3,30 +3,98 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"regexp"
-
-	//	"strconv"
 	"strings"
 	"time"
+
+	"gopkg.in/yaml.v2"
 )
 
 var hubSource string
+var completeimagename string
 var list int
+var inputfile string
+var ouputfile string
+var inputformat string
 
 func main() {
 
 	Init()
 	flag.Parse()
-	fmt.Println(hubSource)
+	fmt.Println(completeimagename)
 	fmt.Println(list)
-	raw_image_hub, raw_image_name := ImagenameSplit(hubSource)
-	/*
-		fmt.Println("------------------")
-		fmt.Println(raw_image_hub)
-		fmt.Println("------------------")
-		fmt.Println(raw_image_name)
-		fmt.Println("------------------")
-	*/
+	fmt.Println(inputfile)
+	fmt.Println(inputformat)
+
+	//判斷
+	if inputfile != "" && Exists(inputfile) {
+		inyaml := K8sYaml{}
+		inyaml.getConf(inputfile)
+		//fmt.Printf("input_YAML:\n%v\n\n", inyaml)
+
+		//fmt.Println(ComposeImageName(inyaml.Deployment.K8S[0].Stage, inyaml.Deployment.K8S[0].Image, inyaml.Deployment.K8S[0].Tag))
+
+		for i := 0; i < len(inyaml.Deployment.K8S); i++ {
+			if inyaml.Deployment.K8S[i].Image != "" {
+				fmt.Printf("old_tag:\n%v\n\n", inyaml.Deployment.K8S[i].Tag)
+				tmp_cpmplete_imagename := ComposeImageName(inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+				new_tag_latest := GetTag(tmp_cpmplete_imagename)
+				(&inyaml.Deployment.K8S[i]).UpdateK8sTag(new_tag_latest)
+				fmt.Printf("new_tag:\n%v\n\n", inyaml.Deployment.K8S[i].Tag)
+			} else {
+				continue
+			}
+
+		}
+		for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
+			if inyaml.Deployment.Openfaas[i].Image != "" {
+				fmt.Printf("old_tag:\n%v\n\n", inyaml.Deployment.Openfaas[i].Tag)
+				tmp_cpmplete_imagename := ComposeImageName(inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+				new_tag_latest := GetTag(tmp_cpmplete_imagename)
+				(&inyaml.Deployment.Openfaas[i]).UpdateOpenfaasTag(new_tag_latest)
+				fmt.Printf("new_tag:\n%v\n\n", inyaml.Deployment.Openfaas[i].Tag)
+			} else {
+				continue
+			}
+		}
+		d, err := yaml.Marshal(&inyaml)
+		if err != nil {
+			log.Fatalf("error: %v", err)
+		}
+		//	fmt.Printf("--- t dump:\n%s\n\n", string(d))
+
+		WriteWithIoutil(ouputfile, string(d))
+
+	} else {
+		new_tag_latest := GetTag(completeimagename)
+		fmt.Println(new_tag_latest)
+		new_tag_latest = strings.Trim(new_tag_latest, "\"")
+		WriteWithIoutil("getImageLatestTag_result.txt", new_tag_latest)
+	}
+
+}
+
+func Init() {
+	flag.StringVar(&completeimagename, "imagename", "dockerhub.pentium.network/grafana", "docker image , such as dockerhub.pentium.network/grafana")
+	flag.IntVar(&list, "list", 5, "After sort tag list , we only deal with these top'number tags ")
+	flag.StringVar(&inputfile, "inputfile", "", "input file name , such as deploy.yml")
+	flag.StringVar(&ouputfile, "ouputfile", "tmp_out.yml", "output file name , such as deploy-out.yml")
+	flag.StringVar(&hubSource, "hub", "dockerhub.pentium.network", "dockerhub url")
+}
+
+func ComposeImageName(stage string, module string, tag string) string {
+
+	var complete_image string
+
+	complete_image = hubSource + "/" + stage + "/" + module + ":" + tag
+
+	return complete_image
+}
+
+func GetTag(name string) string {
+	raw_image_hub, raw_image_name := ImagenameSplit(name)
+
 	var tag_result string
 	var time_latest = "2000-01-01T00:00:00.508640172Z"
 	var tag_latest string
@@ -37,7 +105,7 @@ func main() {
 	//fmt.Println(querylistcmd)
 	//	fmt.Println("------------------")
 	//tag_result, _ = exec_shell("curl -X GET https://dockerhub.pentium.network/v2/grafana/tags/list| jq -r .tags")
-	//	tag_result, _ = exec_shell(querylistcmd)
+
 	tag_result = RunCommand(querylistcmd)
 	tag_result = strings.Replace(tag_result, "[", "", 1)
 	tag_result = strings.Replace(tag_result, "]", "", 1)
@@ -54,8 +122,6 @@ func main() {
 		time := QueryLatestTag(reverse_tagssplit[i], raw_image_name, raw_image_hub)
 		fmt.Println(reverse_tagssplit[i] + ":" + time)
 		time = strings.Replace(time, "\n", "", -1)
-		//fmt.Println(strings.Compare(strings.Trim(tagssplit[i], "\""), "latest"))
-		//fmt.Println(strings.EqualFold(strings.Trim(tagssplit[i], "\""), "latest"))
 
 		if strings.Compare(strings.Trim(reverse_tagssplit[i], "\""), "latest") == -1 {
 			imagemap[reverse_tagssplit[i]] = time
@@ -69,16 +135,7 @@ func main() {
 			break
 		}
 	}
-	//test := SelectLatestTime("2019-05-16T02:07:18.508640172Z", "2019-04-22T07:47:39.89748501Z")
-	fmt.Println(tag_latest)
-	tag_latest = strings.Trim(tag_latest, "\"")
-	WriteWithIoutil("getImageLatestTag_result.txt", tag_latest)
-	//fmt.Println(time_latest)
-}
-
-func Init() {
-	flag.StringVar(&hubSource, "imagename", "dockerhub.pentium.network/grafana", "docker image , such as dockerhub.pentium.network/grafana")
-	flag.IntVar(&list, "list", 5, "After sort tag list , we only deal with these top'number tags ")
+	return tag_latest
 }
 
 func SelectLatestTime(t1 string, t2 string) string {
@@ -116,7 +173,7 @@ func DeleteExtraSpace(s string) string {
 func QueryLatestTag(tag string, imgname string, hub string) string {
 
 	curltagresult := RunCommand("curl -X GET https://" + hub + "/v2/" + imgname + "/manifests/" + tag + " | jq -r '.history[].v1Compatibility' | jq '.created' | sort | sed 's/\"//g'|tail -n1 ")
-	//curltagresult, _ := exec_shell("curl -X GET https://" + hub + "/v2/" + imgname + "/manifests/" + tag + " | jq -r '.history[].v1Compatibility' | jq '.created' | sort | sed 's/\"//g'|tail -n1 ")
+
 	return curltagresult
 }
 
@@ -126,14 +183,3 @@ func reverseInts(input []string) []string {
 	}
 	return append(reverseInts(input[1:]), input[0])
 }
-
-/*
-func trimQuotes(s string) string {
-    if len(s) >= 2 {
-	        if c := s[len(s)-1]; s[0] == c && (c == '"' || c == '\'') {
-			            return s[1 : len(s)-1]
-					        }
-							    }
-								    return s
-								}
-*/
