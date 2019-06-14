@@ -16,7 +16,8 @@ var completeimagename string
 var list int
 var inputfile string
 var ouputfile string
-var inputformat string
+var pushimage bool
+var inputstage string
 
 func main() {
 
@@ -25,7 +26,9 @@ func main() {
 	fmt.Println(completeimagename)
 	fmt.Println(list)
 	fmt.Println(inputfile)
-	fmt.Println(inputformat)
+	fmt.Println(ouputfile)
+	fmt.Println(pushimage)
+	fmt.Println(inputstage)
 
 	//判斷
 	if inputfile != "" && Exists(inputfile) {
@@ -39,9 +42,25 @@ func main() {
 			if inyaml.Deployment.K8S[i].Image != "" {
 				fmt.Printf("old_tag:\n%v\n\n", inyaml.Deployment.K8S[i].Tag)
 				tmp_cpmplete_imagename := ComposeImageName(inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+				if pushimage == true {
+					cmd_1 := "docker pull " + tmp_cpmplete_imagename
+					fmt.Println(cmd_1)
+					RunCommand(cmd_1)
+					if inputstage != "dev" {
+						push_cpmplete_imagename := ComposeImageName(inputstage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+						cmd_2 := "docker tag " + tmp_cpmplete_imagename + " " + push_cpmplete_imagename
+						fmt.Println(cmd_2)
+						RunCommand(cmd_2)
+						cmd_3 := "docker push " + push_cpmplete_imagename
+						fmt.Println(cmd_3)
+						RunCommand(cmd_3)
+					}
+				}
 				new_tag_latest := GetTag(tmp_cpmplete_imagename)
+				new_tag_latest = strings.Trim(new_tag_latest, "\"")
 				(&inyaml.Deployment.K8S[i]).UpdateK8sTag(new_tag_latest)
 				fmt.Printf("new_tag:\n%v\n\n", inyaml.Deployment.K8S[i].Tag)
+
 			} else {
 				continue
 			}
@@ -51,9 +70,25 @@ func main() {
 			if inyaml.Deployment.Openfaas[i].Image != "" {
 				fmt.Printf("old_tag:\n%v\n\n", inyaml.Deployment.Openfaas[i].Tag)
 				tmp_cpmplete_imagename := ComposeImageName(inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+				if pushimage == true {
+					cmd_1 := "docker pull " + tmp_cpmplete_imagename
+					fmt.Println(cmd_1)
+					RunCommand(cmd_1)
+					if inputstage != "dev" {
+						push_cpmplete_imagename := ComposeImageName(inputstage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+						cmd_2 := "docker tag " + tmp_cpmplete_imagename + " " + push_cpmplete_imagename
+						fmt.Println(cmd_2)
+						RunCommand(cmd_2)
+						cmd_3 := "docker push " + push_cpmplete_imagename
+						fmt.Println(cmd_3)
+						RunCommand(cmd_3)
+					}
+				}
 				new_tag_latest := GetTag(tmp_cpmplete_imagename)
+				new_tag_latest = strings.Trim(new_tag_latest, "\"")
 				(&inyaml.Deployment.Openfaas[i]).UpdateOpenfaasTag(new_tag_latest)
 				fmt.Printf("new_tag:\n%v\n\n", inyaml.Deployment.Openfaas[i].Tag)
+
 			} else {
 				continue
 			}
@@ -81,6 +116,9 @@ func Init() {
 	flag.StringVar(&inputfile, "inputfile", "", "input file name , such as deploy.yml")
 	flag.StringVar(&ouputfile, "ouputfile", "tmp_out.yml", "output file name , such as deploy-out.yml")
 	flag.StringVar(&hubSource, "hub", "dockerhub.pentium.network", "dockerhub url")
+	flag.StringVar(&inputstage, "stage", "dev", "replace stage , new stage content")
+	flag.BoolVar(&pushimage, "push", false, "push this image , default is false")
+
 }
 
 func ComposeImageName(stage string, module string, tag string) string {
