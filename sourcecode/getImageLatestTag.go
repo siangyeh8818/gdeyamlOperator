@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"regexp"
 	"strings"
 	"time"
@@ -18,45 +19,82 @@ var inputfile string
 var ouputfile string
 var pushimage bool
 var inputstage string
+var mode string
+var fqdn string
+var new_hub string
+var loginuser string
+var loginpassword string
+var version bool
+var latest_mode string
 
 func main() {
 
 	Init()
 	flag.Parse()
-	fmt.Println(completeimagename)
-	fmt.Println(list)
-	fmt.Println(inputfile)
-	fmt.Println(ouputfile)
-	fmt.Println(pushimage)
-	fmt.Println(inputstage)
+
+	if version {
+		fmt.Println("version : 1.2.0")
+		os.Exit(0)
+	}
+	/*
+		fmt.Println(completeimagename)
+		fmt.Println(list)
+		fmt.Println(inputfile)
+		fmt.Println(ouputfile)
+		fmt.Println(pushimage)
+		fmt.Println(inputstage)
+	*/
+	fmt.Printf("flag  imagename: %s\n", completeimagename)
+	fmt.Printf("flag  user: %s\n", loginuser)
+	fmt.Printf("flag  password: %s\n", loginpassword)
+	fmt.Printf("flag  list: %d\n", list)
+	fmt.Printf("flag  inputfile: %s\n", inputfile)
+	fmt.Printf("flag  ouputfile: %s\n", ouputfile)
+	fmt.Printf("flag  hubSource: %s\n", hubSource)
+	fmt.Printf("flag  fqdn: %s\n", fqdn)
+	fmt.Printf("flag  mode: %s\n", mode)
+	fmt.Printf("flag  stage: %s\n", inputstage)
+	fmt.Printf("flag  push: %t\n", pushimage)
+	fmt.Printf("flag  version: %t\n", version)
+	fmt.Printf("flag latest-mode: %s\n", latest_mode)
+
+	if mode == "fqdn" {
+		new_hub = hubSource + fqdn
+	} else if mode == "nexus" {
+		new_hub = hubSource + inputstage + fqdn
+	}
+	fmt.Printf("complete hub source : %s\n", new_hub)
+
+	if loginuser != "" && loginpassword != "" {
+		LoginDockerHub(inputstage, loginuser, loginpassword)
+	}
 
 	//判斷
 	if inputfile != "" && Exists(inputfile) {
 		inyaml := K8sYaml{}
 		inyaml.getConf(inputfile)
 		//fmt.Printf("input_YAML:\n%v\n\n", inyaml)
-
 		//fmt.Println(ComposeImageName(inyaml.Deployment.K8S[0].Stage, inyaml.Deployment.K8S[0].Image, inyaml.Deployment.K8S[0].Tag))
-
 		for i := 0; i < len(inyaml.Deployment.K8S); i++ {
 			if inyaml.Deployment.K8S[i].Image != "" {
 				fmt.Printf("old_tag:\n%v\n\n", inyaml.Deployment.K8S[i].Tag)
-				tmp_cpmplete_imagename := ComposeImageName(inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+				tmp_cpmplete_imagename := ComposeImageName(mode, new_hub, inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+				fmt.Printf("complete image name : %s\n", tmp_cpmplete_imagename)
 				if pushimage == true {
 					cmd_1 := "docker pull " + tmp_cpmplete_imagename
 					fmt.Println(cmd_1)
 					RunCommand(cmd_1)
-					if inputstage != "dev" {
-						push_cpmplete_imagename := ComposeImageName(inputstage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
-						cmd_2 := "docker tag " + tmp_cpmplete_imagename + " " + push_cpmplete_imagename
-						fmt.Println(cmd_2)
-						RunCommand(cmd_2)
-						cmd_3 := "docker push " + push_cpmplete_imagename
-						fmt.Println(cmd_3)
-						RunCommand(cmd_3)
-					}
+					tmp_string := "cr-" + inputstage + fqdn
+					push_cpmplete_imagename := ComposeImageName("nexus", tmp_string, inputstage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+					cmd_2 := "docker tag " + tmp_cpmplete_imagename + " " + push_cpmplete_imagename
+					fmt.Println(cmd_2)
+					RunCommand(cmd_2)
+					cmd_3 := "docker push " + push_cpmplete_imagename
+					fmt.Println(cmd_3)
+					RunCommand(cmd_3)
+
 				}
-				new_tag_latest := GetTag(tmp_cpmplete_imagename)
+				new_tag_latest := GetTag(tmp_cpmplete_imagename, latest_mode)
 				new_tag_latest = strings.Trim(new_tag_latest, "\"")
 				(&inyaml.Deployment.K8S[i]).UpdateK8sTag(new_tag_latest)
 				fmt.Printf("new_tag:\n%v\n\n", inyaml.Deployment.K8S[i].Tag)
@@ -69,22 +107,23 @@ func main() {
 		for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
 			if inyaml.Deployment.Openfaas[i].Image != "" {
 				fmt.Printf("old_tag:\n%v\n\n", inyaml.Deployment.Openfaas[i].Tag)
-				tmp_cpmplete_imagename := ComposeImageName(inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+				tmp_cpmplete_imagename := ComposeImageName(mode, new_hub, inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+				fmt.Printf("complete image name : %s\n", tmp_cpmplete_imagename)
 				if pushimage == true {
 					cmd_1 := "docker pull " + tmp_cpmplete_imagename
 					fmt.Println(cmd_1)
 					RunCommand(cmd_1)
-					if inputstage != "dev" {
-						push_cpmplete_imagename := ComposeImageName(inputstage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
-						cmd_2 := "docker tag " + tmp_cpmplete_imagename + " " + push_cpmplete_imagename
-						fmt.Println(cmd_2)
-						RunCommand(cmd_2)
-						cmd_3 := "docker push " + push_cpmplete_imagename
-						fmt.Println(cmd_3)
-						RunCommand(cmd_3)
-					}
+					tmp_string := "cr-" + inputstage + fqdn
+					push_cpmplete_imagename := ComposeImageName("nexus", tmp_string, inputstage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+					cmd_2 := "docker tag " + tmp_cpmplete_imagename + " " + push_cpmplete_imagename
+					fmt.Println(cmd_2)
+					RunCommand(cmd_2)
+					cmd_3 := "docker push " + push_cpmplete_imagename
+					fmt.Println(cmd_3)
+					RunCommand(cmd_3)
+
 				}
-				new_tag_latest := GetTag(tmp_cpmplete_imagename)
+				new_tag_latest := GetTag(tmp_cpmplete_imagename, latest_mode)
 				new_tag_latest = strings.Trim(new_tag_latest, "\"")
 				(&inyaml.Deployment.Openfaas[i]).UpdateOpenfaasTag(new_tag_latest)
 				fmt.Printf("new_tag:\n%v\n\n", inyaml.Deployment.Openfaas[i].Tag)
@@ -102,7 +141,7 @@ func main() {
 		WriteWithIoutil(ouputfile, string(d))
 
 	} else {
-		new_tag_latest := GetTag(completeimagename)
+		new_tag_latest := GetTag(completeimagename, latest_mode)
 		fmt.Println(new_tag_latest)
 		new_tag_latest = strings.Trim(new_tag_latest, "\"")
 		WriteWithIoutil("getImageLatestTag_result.txt", new_tag_latest)
@@ -112,15 +151,22 @@ func main() {
 
 func Init() {
 	flag.StringVar(&completeimagename, "imagename", "dockerhub.pentium.network/grafana", "docker image , such as dockerhub.pentium.network/grafana")
+	flag.StringVar(&loginuser, "user", "", "user for docker login")
+	flag.StringVar(&loginpassword, "password", "", "password for docker login")
 	flag.IntVar(&list, "list", 5, "After sort tag list , we only deal with these top'number tags ")
 	flag.StringVar(&inputfile, "inputfile", "", "input file name , such as deploy.yml")
 	flag.StringVar(&ouputfile, "ouputfile", "tmp_out.yml", "output file name , such as deploy-out.yml")
-	flag.StringVar(&hubSource, "hub", "dockerhub.pentium.network", "dockerhub url")
+	flag.StringVar(&hubSource, "hub", "dockerhub", "dockerhub url")
+	flag.StringVar(&fqdn, "fqdn", ".pentium.network", "setting FQDN")
+	flag.StringVar(&mode, "mode", "fqdn", "how to conpose hubname , you can choose 'fqdn' or 'nexus'")
 	flag.StringVar(&inputstage, "stage", "dev", "replace stage , new stage content")
+	flag.StringVar(&latest_mode, "latest-mode", "push", "push or build , choose one mode to identify latest tag to you")
 	flag.BoolVar(&pushimage, "push", false, "push this image , default is false")
+	flag.BoolVar(&version, "v", false, "prints current binary version")
 
 }
 
+/*
 func ComposeImageName(stage string, module string, tag string) string {
 
 	var complete_image string
@@ -129,8 +175,9 @@ func ComposeImageName(stage string, module string, tag string) string {
 
 	return complete_image
 }
+*/
 
-func GetTag(name string) string {
+func GetTag(name string, latestmode string) string {
 	raw_image_hub, raw_image_name := ImagenameSplit(name)
 
 	var tag_result string
@@ -156,23 +203,29 @@ func GetTag(name string) string {
 	//fmt.Printf("Reversed: %v\n", reverse_tagssplit)
 	//	fmt.Println("Amount of image tag : " + strconv.Itoa(len(tagssplit)))
 	imagemap := make(map[string]string, len(reverse_tagssplit))
-	for i := range reverse_tagssplit {
-		time := QueryLatestTag(reverse_tagssplit[i], raw_image_name, raw_image_hub)
-		fmt.Println(reverse_tagssplit[i] + ":" + time)
-		time = strings.Replace(time, "\n", "", -1)
+	if latestmode == "build" {
+		for i := range reverse_tagssplit {
 
-		if strings.Compare(strings.Trim(reverse_tagssplit[i], "\""), "latest") == -1 {
-			imagemap[reverse_tagssplit[i]] = time
-			time_latest = SelectLatestTime(time, time_latest)
-			if time_latest == imagemap[reverse_tagssplit[i]] {
-				tag_latest = reverse_tagssplit[i]
+			time := QueryLatestTag(reverse_tagssplit[i], raw_image_name, raw_image_hub)
+			fmt.Println(reverse_tagssplit[i] + ":" + time)
+			time = strings.Replace(time, "\n", "", -1)
+
+			if strings.Compare(strings.Trim(reverse_tagssplit[i], "\""), "latest") == -1 {
+				imagemap[reverse_tagssplit[i]] = time
+				time_latest = SelectLatestTime(time, time_latest)
+				if time_latest == imagemap[reverse_tagssplit[i]] {
+					tag_latest = reverse_tagssplit[i]
+				}
+			}
+			loop_break_count++
+			if loop_break_count >= list {
+				break
 			}
 		}
-		loop_break_count++
-		if loop_break_count >= list {
-			break
-		}
+	} else if latestmode == "push" {
+		tag_latest = reverse_tagssplit[0]
 	}
+
 	return tag_latest
 }
 

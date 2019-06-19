@@ -1,0 +1,396 @@
+deployment:
+  k8s:  
+      - module: platform.web.api.gateway
+        image: router
+        tag: 1.2.0
+        stage: stable
+      - module: kafka
+        image: kafka
+        tag: 1.15.20190409171453
+        stage: stable
+      - module: zookeeper
+      - module: platform.neo4j
+      - module: platform.service.fluentd
+        image: pentium-fluentd
+        tag: 1.1.3-gde.2
+        stage: stable
+      - module: platform.redis
+      - module: platform.elasticsearch
+      - module: core.python.ansible.api    
+        image: scripts-runner
+        tag: bdd36db
+        stage: stable
+      - module: ansible.api
+        image: reposervice
+        tag: c4f093d
+        stage: stable
+      - module: core.cloudkit.v2
+        image: cloudkit
+        tag: 912877c
+        stage: stable
+      - module: core.tool.cronjob
+        image: cronjob
+        tag: 03a5128
+        stage: stable
+      - module: platform.service.eventbroker
+        image: eventbroker
+        tag: 85241fa
+        stage: stable
+      - module: pentium.gateone
+        image: gateone
+        tag: f037215
+        stage: stable
+      - module: core.tool.python.ofsm-runner
+        image: ofsm-runner
+        tag: 2749538
+        stage: stable
+      - module: platform.web.v2
+        image: portal-v2
+        tag: a8e62277
+        stage: stable
+      - module: core.tool.python.scripts
+        image: scripts-service
+        tag: 0c19628
+        stage: stable
+      - module: core.tool.python.fileupload
+        image: sftp
+        tag: 2d54421
+        stage: stable
+      - module: platform.service.upload
+        image: upload
+        tag: 9cae58f
+        stage: stable
+      - module: platform.service.eventhandler
+        image: workflows-eventhandler
+        tag: a84aa61
+        stage: stable
+      - module: gderbaccronjobber
+  openfaas:
+      - module: balances
+        image: balances
+        tag: 628fdab
+        stage: stable
+      - module: bindresolverkey
+        image: bindresolverkey
+        tag: e0974cf
+        stage: stable
+      - module: buildresolverrelation
+        image: buildresolverrelation
+        tag: 0.1.7
+        stage: stable
+      - module: buildsubdomainsmapping
+        image: buildsubdomainsmapping
+        tag: 795033d
+        stage: stable
+      - module: bulkgetsubdomains
+        image: bulkgetsubdomains
+        tag: c4bb9d2
+        stage: stable
+      - module: bulkmigration
+        image: bulkmigration
+        tag: 9074b1a
+        stage: stable
+      - module: bulkorigins
+        image: bulkorigins
+        tag: dfbef50
+        stage: stable
+      - module: bulkreqheaders
+        image: bulkreqheaders
+        tag: 8db6353
+        stage: stable
+      - module: bulkresolver
+        image: bulkresolver
+        tag: 2eabb10
+        stage: stable
+      - module: bulksyncdomain
+        image: bulksyncdomain
+        tag: b399a5a
+        stage: stable
+      - module: bulksyncfqdn
+        image: bulksyncfqdn
+        tag: bbd1195
+        stage: stable
+      - module: bulkpurge
+        image: bulkpurge
+        tag: 1e7a78e
+        stage: stable
+      - module: checkexpiredhosts
+        image: checkexpiredhosts
+        tag: 7592d46
+        stage: stable
+      - module: checkexpiredtime
+        image: checkexpiredtime
+        tag: 5cdff23
+        stage: stable
+      - module: commandaccounts
+        image: commandaccounts
+        tag: e1e04926
+        stage: stable
+      - module: commandattachments
+        image: commandattachments
+        tag: e1e04926
+        stage: stable
+      - module: commandautocompletes
+        image: commandautocompletes
+        tag: e1e04926
+        stage: stable
+      - module: commandcallbackfailure
+        image: commandcallbackfailure
+        tag: e1e04926
+        stage: stable
+      - module: commandcdncontents
+        image: commandcdncontents
+        tag: e1e04926
+        stage: stable
+      - module: commandcdns
+        image: commandcdns
+        tag: e1e04926
+        stage: stable
+      - module: commandcloudaccount
+        image: commandcloudaccount
+        tag: e1e04926
+        stage: stable
+      - module: commandcloudproviders
+        image: commandcloudproviders
+        tag: e1e04926
+        stage: stable
+      - module: commandcloudtools
+        image: commandcloudtools
+        tag: e1e04926
+        stage: stable
+      - module: commanddatabases
+        image: commanddatabases
+        tag: e1e04926
+        stage: stable
+      - module: commanddomainresolvers
+        image: commanddomainresolvers
+        tag: e1e04926
+        stage: stable
+      - module: commanddomains
+        image: commanddomains
+        tag: e1e04926
+        stage: stable
+      - module: commandhosts
+        image: commandhosts
+        tag: e1e04926
+        stage: stable
+      - module: commandkeypairs
+        image: commandkeypairs
+        tag: e1e04926
+        stage: stable
+      - module: commandkms
+        image: commandkms
+        tag: e1e04926
+        stage: stable
+      - module: commandplaybooks
+        image: commandplaybooks
+        tag: e1e04926
+        stage: stable
+      - module: commandpolicies
+        image: commandpolicies
+        tag: e1e04926
+        stage: stable
+      - module: commandprojects
+        image: commandprojects
+        tag: e1e04926
+        stage: stable
+      - module: commandrbacroles
+        image: commandrbacroles
+        tag: e1e04926
+        stage: stable
+      - module: commandregions
+        image: commandregions
+        tag: e1e04926
+        stage: stable
+      - module: commandsubdomains
+        image: commandsubdomains
+        tag: e1e04926
+        stage: stable
+      - module: commandtunnels
+        image: commandtunnels
+        tag: e1e04926
+        stage: stable
+      - module: commandusers
+        image: commandusers
+        tag: e1e04926
+        stage: stable
+      - module: commandworkflowcontroller
+        image: commandworkflowcontroller
+        tag: e1e04926
+        stage: stable
+      - module: commandworkflowgc
+        image: commandworkflowgc
+        tag: e1e04926
+        stage: stable
+      - module: commandworkflows
+        image: commandworkflows
+        tag: 0.100.20190612192510
+        stage: stable
+      - module: commandworkflowtemplates
+        image: commandworkflowtemplates
+        tag: e1e04926
+        stage: stable
+      - module: domainmanagement
+        image: domainmanagement
+        tag: d81145a
+        stage: stable
+      - module: getdomains
+        image: getdomains
+        tag: 92d3a82
+        stage: stable
+      - module: gfwcheck
+        image: gfwcheck
+        tag: 07d6b2a
+        stage: stable
+      - module: icpcheck
+        image: icpcheck
+        tag: 25a5aba
+        stage: stable
+      - module: queryaccounts
+        image: queryaccounts
+        tag: e1e04926
+        stage: stable
+      - module: queryautocompletes
+        image: queryautocompletes
+        tag: e1e04926
+        stage: stable
+      - module: querycdncontents
+        image: querycdncontents
+        tag: e1e04926
+        stage: stable
+      - module: querycdns
+        image: querycdns
+        tag: e1e04926
+        stage: stable
+      - module: querycloudaccount
+        image: querycloudaccount
+        tag: e1e04926
+        stage: stable
+      - module: querycloudproviders
+        image: querycloudproviders
+        tag: e1e04926
+        stage: stable
+      - module: querydatabases
+        image: querydatabases
+        tag: e1e04926
+        stage: stable
+      - module: querydatabaseversions
+        image: querydatabaseversions
+        tag: e1e04926
+        stage: stable
+      - module: querydomainresolvers
+        image: querydomainresolvers
+        tag: e1e04926
+        stage: stable
+      - module: querydomains
+        image: querydomains
+        tag: e1e04926
+        stage: stable
+      - module: queryevents
+        image: queryevents
+        tag: e1e04926
+        stage: stable
+      - module: queryhosts
+        image: queryhosts
+        tag: e1e04926
+        stage: stable
+      - module: querykeypairs
+        image: querykeypairs
+        tag: e1e04926
+        stage: stable
+      - module: querykms
+        image: querykms
+        tag: e1e04926
+        stage: stable
+      - module: queryplaybooklogs
+        image: queryplaybooklogs
+        tag: e1e04926
+        stage: stable
+      - module: queryplaybooks
+        image: queryplaybooks
+        tag: e1e04926
+        stage: stable
+      - module: querypolicies
+        image: querypolicies
+        tag: e1e04926
+        stage: stable
+      - module: queryprojects
+        image: queryprojects
+        tag: e1e04926
+        stage: stable
+      - module: queryrbacroles
+        image: queryrbacroles
+        tag: e1e04926
+        stage: stable
+      - module: queryregions
+        image: queryregions
+        tag: e1e04926
+        stage: stable
+      - module: queryservices
+        image: queryservices
+        tag: e1e04926
+        stage: stable
+      - module: querysubdomains
+        image: querysubdomains
+        tag: e1e04926
+        stage: stable
+      - module: querysyslogs
+        image: querysyslogs
+        tag: e1e04926
+        stage: stable
+      - module: querytags
+        image: querytags
+        tag: e1e04926
+        stage: stable
+      - module: querytunnels
+        image: querytunnels
+        tag: e1e04926
+        stage: stable
+      - module: queryusers
+        image: queryusers
+        tag: e1e04926
+        stage: stable
+      - module: querywebsshlogs
+        image: querywebsshlogs
+        tag: e1e04926
+        stage: stable
+      - module: queryworkflowlogs
+        image: queryworkflowlogs
+        tag: 0.100.20190612192510
+        stage: stable
+      - module: queryworkflows
+        image: queryworkflows
+        tag: 0.100.20190612192510
+        stage: stable
+      - module: queryworkflowtemplates
+        image: queryworkflowtemplates
+        tag: e1e04926
+        stage: stable
+      - module: sendmessage
+        image: sendmessage
+        tag: a637976
+        stage: stable
+      - module: syncallfqdns
+        image: syncallfqdns
+        tag: c17bd05
+        stage: stable
+      - module: syncinstances
+        image: syncinstances
+        tag: 8632d96
+        stage: stable
+      - module: updateyearning
+        image: updateyearning
+        tag: 51dc000
+        stage: stable
+      - module: wfexception
+        image: wfexception
+        tag: 75af2f5
+        stage: stable
+      - module: fileupload
+        image: fileupload
+        tag: 7a49a4f
+        stage: stable
+      - module: workflowgc-cronjob
+  
+  
+
