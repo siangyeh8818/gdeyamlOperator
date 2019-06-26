@@ -1,4 +1,4 @@
-# getImageLatestTag
+# gdeyamlOperator
 
 返回該image 最新的tag並儲存到"getImageLatestTag_result.txt"這個檔案
 
