@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"strings"
 )
 
 func exec_shell(s_command string) (string, string) {
@@ -43,4 +44,36 @@ func RunCommand(commandStr string) string {
 	out, _ := exec.Command("sh", "-c", cmdstr).Output()
 	strout := string(out)
 	return strout
+}
+
+func KubectlGetDeployment(namespace string) []string {
+	cmd := "kubectl get deploy -n " + namespace + "| awk '{print $1}'"
+	result, _ := exec_shell(cmd)
+	//fmt.Println(result)
+	totaldeploy := strings.Split(result, "\n")
+	return totaldeploy
+}
+
+func KubectlGetStefulset(namespace string) []string {
+	cmd := "kubectl get statefulset -n " + namespace + "| awk '{print $1}'"
+	result, _ := exec_shell(cmd)
+	//fmt.Println(result)
+	totalststefulset := strings.Split(result, "\n")
+	return totalststefulset
+}
+
+func KubectlGetDaemonset(namespace string) []string {
+	cmd := "kubectl get daemonset -n " + namespace + "| awk '{print $1}'"
+	result, _ := exec_shell(cmd)
+	//fmt.Println(result)
+	totaldaemonset := strings.Split(result, "\n")
+	return totaldaemonset
+}
+
+func KubectlGetCronJob(namespace string) []string {
+	cmd := "kubectl get cronJob -n " + namespace + "| awk '{print $1}'"
+	result, _ := exec_shell(cmd)
+	//fmt.Println(result)
+	totaldaemonset := strings.Split(result, "\n")
+	return totaldaemonset
 }
