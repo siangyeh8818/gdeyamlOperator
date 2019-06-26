@@ -59,12 +59,3 @@ func (s *Openfaas) UpdateOpenfaasTag(newtag string) {
 
 	s.Tag = newtag
 }
-
-/*
-	append(s.K8S, K8S{})
-	length := len(s.K8S)
-	s.K8S[length-1].Module = module
-	s.K8S[length-1].Image = image
-	s.K8S[length-1].Tag = tag
-	s.K8S[length-1].Stage = stage
-*/
