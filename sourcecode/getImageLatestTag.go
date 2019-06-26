@@ -19,13 +19,15 @@ var inputfile string
 var ouputfile string
 var pushimage bool
 var inputstage string
-var mode string
+var query_mode string
 var fqdn string
 var new_hub string
 var loginuser string
 var loginpassword string
 var version bool
 var latest_mode string
+var push_pattern string
+var pull_pattern string
 
 func main() {
 
@@ -33,37 +35,35 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.2.0")
+		fmt.Println("version : 1.3.2")
 		os.Exit(0)
 	}
-	/*
-		fmt.Println(completeimagename)
-		fmt.Println(list)
-		fmt.Println(inputfile)
-		fmt.Println(ouputfile)
-		fmt.Println(pushimage)
-		fmt.Println(inputstage)
-	*/
+
 	fmt.Printf("flag  imagename: %s\n", completeimagename)
 	fmt.Printf("flag  user: %s\n", loginuser)
 	fmt.Printf("flag  password: %s\n", loginpassword)
 	fmt.Printf("flag  list: %d\n", list)
 	fmt.Printf("flag  inputfile: %s\n", inputfile)
 	fmt.Printf("flag  ouputfile: %s\n", ouputfile)
-	fmt.Printf("flag  hubSource: %s\n", hubSource)
-	fmt.Printf("flag  fqdn: %s\n", fqdn)
-	fmt.Printf("flag  mode: %s\n", mode)
+	//fmt.Printf("flag  hubSource: %s\n", hubSource)
+	//fmt.Printf("flag  fqdn: %s\n", fqdn)
+	//fmt.Printf("flag  query-mode: %s\n", query_mode)
 	fmt.Printf("flag  stage: %s\n", inputstage)
 	fmt.Printf("flag  push: %t\n", pushimage)
 	fmt.Printf("flag  version: %t\n", version)
 	fmt.Printf("flag latest-mode: %s\n", latest_mode)
+	fmt.Printf("flag push-pattern: %s\n", push_pattern)
+	fmt.Printf("flag pull-pattern: %s\n", pull_pattern)
 
-	if mode == "fqdn" {
-		new_hub = hubSource + fqdn
-	} else if mode == "nexus" {
-		new_hub = hubSource + inputstage + fqdn
-	}
-	fmt.Printf("complete hub source : %s\n", new_hub)
+	/*
+		if query_mode == "fqdn" {
+			new_hub = hubSource + fqdn
+		} else if query_mode == "nexus" {
+			new_hub = hubSource + inputstage + fqdn
+		}
+		fmt.Printf("complete pull/query hub-source url: %s\n", new_hub)
+
+	*/
 
 	if loginuser != "" && loginpassword != "" {
 		LoginDockerHub(inputstage, loginuser, loginpassword)
@@ -78,20 +78,33 @@ func main() {
 		for i := 0; i < len(inyaml.Deployment.K8S); i++ {
 			if inyaml.Deployment.K8S[i].Image != "" {
 				fmt.Printf("old_tag:\n%v\n\n", inyaml.Deployment.K8S[i].Tag)
-				tmp_cpmplete_imagename := ComposeImageName(mode, new_hub, inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+				var tmp_cpmplete_imagename string
+				if inputstage != "" {
+					tmp_cpmplete_imagename = PatternParse(pull_pattern, inputstage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+				} else if inputstage == "" {
+					tmp_cpmplete_imagename = PatternParse(pull_pattern, inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+				}
+
+				//tmp_cpmplete_imagename := ComposeImageName(query_mode, new_hub, inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
 				fmt.Printf("complete image name : %s\n", tmp_cpmplete_imagename)
 				if pushimage == true {
 					cmd_1 := "docker pull " + tmp_cpmplete_imagename
 					fmt.Println(cmd_1)
 					RunCommand(cmd_1)
-					tmp_string := "cr-" + inputstage + fqdn
-					push_cpmplete_imagename := ComposeImageName("nexus", tmp_string, inputstage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+					push_cpmplete_imagename := PatternParse(push_pattern, inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+					//push_cpmplete_imagename := ComposeImageName(push_mode, new_push_hub, inputstage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
 					cmd_2 := "docker tag " + tmp_cpmplete_imagename + " " + push_cpmplete_imagename
 					fmt.Println(cmd_2)
 					RunCommand(cmd_2)
 					cmd_3 := "docker push " + push_cpmplete_imagename
 					fmt.Println(cmd_3)
 					RunCommand(cmd_3)
+					cmd_4 := "docker rmi " + tmp_cpmplete_imagename
+					fmt.Println(cmd_4)
+					RunCommand(cmd_4)
+					cmd_5 := "docker rmi " + push_cpmplete_imagename
+					fmt.Println(cmd_5)
+					RunCommand(cmd_5)
 
 				}
 				new_tag_latest := GetTag(tmp_cpmplete_imagename, latest_mode)
@@ -107,20 +120,32 @@ func main() {
 		for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
 			if inyaml.Deployment.Openfaas[i].Image != "" {
 				fmt.Printf("old_tag:\n%v\n\n", inyaml.Deployment.Openfaas[i].Tag)
-				tmp_cpmplete_imagename := ComposeImageName(mode, new_hub, inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+				var tmp_cpmplete_imagename string
+
+				if inputstage != "" {
+					tmp_cpmplete_imagename = PatternParse(pull_pattern, inputstage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+				} else if inputstage == "" {
+					tmp_cpmplete_imagename = PatternParse(pull_pattern, inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+				}
+				//tmp_cpmplete_imagename := ComposeImageName(query_mode, new_hub, inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
 				fmt.Printf("complete image name : %s\n", tmp_cpmplete_imagename)
 				if pushimage == true {
 					cmd_1 := "docker pull " + tmp_cpmplete_imagename
 					fmt.Println(cmd_1)
 					RunCommand(cmd_1)
-					tmp_string := "cr-" + inputstage + fqdn
-					push_cpmplete_imagename := ComposeImageName("nexus", tmp_string, inputstage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+					push_cpmplete_imagename := PatternParse(push_pattern, inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
 					cmd_2 := "docker tag " + tmp_cpmplete_imagename + " " + push_cpmplete_imagename
 					fmt.Println(cmd_2)
 					RunCommand(cmd_2)
 					cmd_3 := "docker push " + push_cpmplete_imagename
 					fmt.Println(cmd_3)
 					RunCommand(cmd_3)
+					cmd_4 := "docker rmi " + tmp_cpmplete_imagename
+					fmt.Println(cmd_4)
+					RunCommand(cmd_4)
+					cmd_5 := "docker rmi " + push_cpmplete_imagename
+					fmt.Println(cmd_5)
+					RunCommand(cmd_5)
 
 				}
 				new_tag_latest := GetTag(tmp_cpmplete_imagename, latest_mode)
@@ -156,11 +181,13 @@ func Init() {
 	flag.IntVar(&list, "list", 5, "After sort tag list , we only deal with these top'number tags ")
 	flag.StringVar(&inputfile, "inputfile", "", "input file name , such as deploy.yml")
 	flag.StringVar(&ouputfile, "ouputfile", "tmp_out.yml", "output file name , such as deploy-out.yml")
-	flag.StringVar(&hubSource, "hub", "dockerhub", "dockerhub url")
-	flag.StringVar(&fqdn, "fqdn", ".pentium.network", "setting FQDN")
-	flag.StringVar(&mode, "mode", "fqdn", "how to conpose hubname , you can choose 'fqdn' or 'nexus'")
-	flag.StringVar(&inputstage, "stage", "dev", "replace stage , new stage content")
+	//flag.StringVar(&hubSource, "hub", "dockerhub", "dockerhub url")
+	//flag.StringVar(&fqdn, "fqdn", ".pentium.network", "setting FQDN")
+	//flag.StringVar(&query_mode, "query-mode", "fqdn", "how to conpose hubname , you can choose 'fqdn' or 'nexus'")
+	flag.StringVar(&inputstage, "stage", "", "replace stage , new stage content")
 	flag.StringVar(&latest_mode, "latest-mode", "push", "push or build , choose one mode to identify latest tag to you")
+	flag.StringVar(&push_pattern, "push-pattern", "", "(push)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
+	flag.StringVar(&pull_pattern, "pull-pattern", "", "(pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
 	flag.BoolVar(&pushimage, "push", false, "push this image , default is false")
 	flag.BoolVar(&version, "v", false, "prints current binary version")
 
@@ -273,4 +300,12 @@ func reverseInts(input []string) []string {
 		return input
 	}
 	return append(reverseInts(input[1:]), input[0])
+}
+
+func PatternParse(patterns string, structstage string, structimage string, structtag string) string {
+
+	patterns = strings.Replace(patterns, "{{stage}}", structstage, 1)
+	patterns = strings.Replace(patterns, "{{image}}", structimage, 1)
+	patterns = strings.Replace(patterns, "{{tag}}", structtag, 1)
+	return patterns
 }
