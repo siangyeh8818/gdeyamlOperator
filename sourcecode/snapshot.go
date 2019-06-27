@@ -54,11 +54,11 @@ func snapshot(namespace string, outputfilename string) {
 				fmt.Println("deployment name : " + deploy_array[i])
 				imagename := GetDeploymentImage(clientSet, namespace_array[n], deploy_array[i])
 				fmt.Println("Get deployment image name : " + imagename)
-				gitbranch, modulename, moduletag := ImagenameSplitReturnTag(imagename)
+				modulestage, modulename, moduletag := ImagenameSplitReturnTag(imagename)
 				if IdentifyOpenfaas(namespace_array[n], deploy_array[i]) {
-					(&test.Deployment).AddOpenfaasStruct(deploy_array[i], modulename, moduletag, gitbranch)
+					(&test.Deployment).AddOpenfaasStruct(deploy_array[i], modulename, moduletag, modulestage)
 				} else {
-					(&test.Deployment).AddK8sStruct(deploy_array[i], modulename, moduletag, gitbranch)
+					(&test.Deployment).AddK8sStruct(deploy_array[i], modulename, moduletag, modulestage)
 				}
 
 			}
@@ -71,11 +71,11 @@ func snapshot(namespace string, outputfilename string) {
 				fmt.Println("statefulset name : " + statefulset_array[i])
 				imagename := GetStatefulSetsImage(clientSet, namespace_array[n], statefulset_array[i])
 				fmt.Println("Get deployment image name : " + imagename)
-				gitbranch, modulename, moduletag := ImagenameSplitReturnTag(imagename)
+				modulestage, modulename, moduletag := ImagenameSplitReturnTag(imagename)
 				if IdentifyOpenfaas(namespace_array[n], statefulset_array[i]) {
-					(&test.Deployment).AddOpenfaasStruct(statefulset_array[i], modulename, moduletag, gitbranch)
+					(&test.Deployment).AddOpenfaasStruct(statefulset_array[i], modulename, moduletag, modulestage)
 				} else {
-					(&test.Deployment).AddK8sStruct(statefulset_array[i], modulename, moduletag, gitbranch)
+					(&test.Deployment).AddK8sStruct(statefulset_array[i], modulename, moduletag, modulestage)
 				}
 
 			}
@@ -88,11 +88,11 @@ func snapshot(namespace string, outputfilename string) {
 				fmt.Println("daemonset name : " + daemonset_array[i])
 				imagename := GetDaemonsetImage(clientSet, namespace_array[n], daemonset_array[i])
 				fmt.Println("Get daemonset image name : " + imagename)
-				gitbranch, modulename, moduletag := ImagenameSplitReturnTag(imagename)
+				modulestage, modulename, moduletag := ImagenameSplitReturnTag(imagename)
 				if IdentifyOpenfaas(namespace_array[n], daemonset_array[i]) {
-					(&test.Deployment).AddOpenfaasStruct(daemonset_array[i], modulename, moduletag, gitbranch)
+					(&test.Deployment).AddOpenfaasStruct(daemonset_array[i], modulename, moduletag, modulestage)
 				} else {
-					(&test.Deployment).AddK8sStruct(daemonset_array[i], modulename, moduletag, gitbranch)
+					(&test.Deployment).AddK8sStruct(daemonset_array[i], modulename, moduletag, modulestage)
 				}
 
 			}
@@ -108,11 +108,11 @@ func snapshot(namespace string, outputfilename string) {
 				fmt.Println("cronjob name : " + cronjob_array[i])
 				imagename := GetCronjobImage(clientSet, namespace_array[n], cronjob_array[i])
 				fmt.Println("Get cronjob image name : " + imagename)
-				gitbranch, modulename, moduletag := ImagenameSplitReturnTag(imagename)
+				modulestage, modulename, moduletag := ImagenameSplitReturnTag(imagename)
 				if IdentifyOpenfaas(namespace_array[n], cronjob_array[i]) {
-					(&test.Deployment).AddOpenfaasStruct(cronjob_array[i], modulename, moduletag, gitbranch)
+					(&test.Deployment).AddOpenfaasStruct(cronjob_array[i], modulename, moduletag, modulestage)
 				} else {
-					(&test.Deployment).AddK8sStruct(cronjob_array[i], modulename, moduletag, gitbranch)
+					(&test.Deployment).AddK8sStruct(cronjob_array[i], modulename, moduletag, modulestage)
 				}
 
 			}
