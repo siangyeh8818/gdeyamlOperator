@@ -26,6 +26,7 @@ var push_pattern string
 var pull_pattern string
 var action string
 var namespace string
+var promote_url string
 
 func main() {
 
@@ -33,7 +34,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.4.1")
+		fmt.Println("version : 1.5.0")
 		os.Exit(0)
 	}
 
@@ -51,6 +52,7 @@ func main() {
 	fmt.Printf("flag push-pattern: %s\n", push_pattern)
 	fmt.Printf("flag pull-pattern: %s\n", pull_pattern)
 	fmt.Printf("flag action: %s\n", action)
+	fmt.Printf("flag promote-url: %s\n", promote_url)
 
 	if loginuser != "" && loginpassword != "" {
 		LoginDockerHub(inputstage, loginuser, loginpassword)
@@ -162,6 +164,24 @@ func main() {
 
 	case "snapshot":
 		snapshot(namespace, ouputfile)
+	case "promote":
+		if inputfile != "" && Exists(inputfile) {
+			inyaml := K8sYaml{}
+			inyaml.getConf(inputfile)
+			for i := 0; i < len(inyaml.Deployment.K8S); i++ {
+				if inyaml.Deployment.K8S[i].Image != "" && inyaml.Deployment.K8S[i].Tag != "" {
+					promoteimage(promote_url, loginuser, loginpassword, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+				}
+			}
+			for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
+				if inyaml.Deployment.Openfaas[i].Image != "" && inyaml.Deployment.Openfaas[i].Tag != "" {
+					promoteimage(promote_url, loginuser, loginpassword, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+				}
+			}
+		} else {
+			fmt.Println("Yoy have to setting -inputfile <filename>")
+		}
+
 	}
 
 	//判斷
@@ -180,7 +200,8 @@ func Init() {
 	flag.StringVar(&latest_mode, "latest-mode", "push", "push or build , choose one mode to identify latest tag to you")
 	flag.StringVar(&push_pattern, "push-pattern", "", "(push)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
 	flag.StringVar(&pull_pattern, "pull-pattern", "", "(pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
-	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot'")
+	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote'")
+	flag.StringVar(&promote_url, "promote-url", "", "destination for you promoting image url (nexus)'")
 	flag.BoolVar(&pushimage, "push", false, "push this image , default is false")
 	flag.BoolVar(&version, "v", false, "prints current binary version")
 }
