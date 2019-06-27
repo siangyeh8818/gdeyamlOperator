@@ -11,6 +11,8 @@ import (
 	yaml "gopkg.in/yaml.v3"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	//appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 )
@@ -45,7 +47,7 @@ func snapshot(namespace string, outputfilename string) {
 		fmt.Printf("%d namespace: %s\n", n, namespace_array[n])
 
 		//對deployment做處理
-		deploy_array := KubectlGetDeployment(namespace_array[n])
+		deploy_array := ListDeployment(clientSet, namespace_array[n])
 		fmt.Println(len(deploy_array))
 		for i := range deploy_array {
 			if deploy_array[i] != "" && deploy_array[i] != "NAME" {
@@ -62,7 +64,7 @@ func snapshot(namespace string, outputfilename string) {
 			}
 		}
 		//對statefulset做處理
-		statefulset_array := KubectlGetStefulset(namespace_array[n])
+		statefulset_array := ListStatefulSet(clientSet, namespace_array[n])
 		fmt.Println(len(statefulset_array))
 		for i := range statefulset_array {
 			if statefulset_array[i] != "" && statefulset_array[i] != "NAME" {
@@ -79,7 +81,7 @@ func snapshot(namespace string, outputfilename string) {
 			}
 		}
 		//對daemonset做處理
-		daemonset_array := KubectlGetDaemonset(namespace_array[n])
+		daemonset_array := ListDaemonset(clientSet, namespace_array[n])
 		fmt.Println(len(daemonset_array))
 		for i := range daemonset_array {
 			if daemonset_array[i] != "" && daemonset_array[i] != "NAME" {
@@ -96,14 +98,16 @@ func snapshot(namespace string, outputfilename string) {
 			}
 		}
 
+		//clientSet.BatchV1beta1().CronJobs(namespace).Get(cronjobName, metav1.GetOptions{})
+		//clientSet.BatchV1beta1().CronJobs()
 		//對cronjob做處理
-		cronjob_array := KubectlGetCronJob(namespace_array[n])
+		cronjob_array := ListCronjob(clientSet, namespace_array[n])
 		fmt.Println(len(cronjob_array))
 		for i := range cronjob_array {
 			if cronjob_array[i] != "" && cronjob_array[i] != "NAME" {
-				fmt.Println("daemonset name : " + cronjob_array[i])
+				fmt.Println("cronjob name : " + cronjob_array[i])
 				imagename := GetCronjobImage(clientSet, namespace_array[n], cronjob_array[i])
-				fmt.Println("Get daemonset image name : " + imagename)
+				fmt.Println("Get cronjob image name : " + imagename)
 				gitbranch, modulename, moduletag := ImagenameSplitReturnTag(imagename)
 				if IdentifyOpenfaas(namespace_array[n], cronjob_array[i]) {
 					(&test.Deployment).AddOpenfaasStruct(cronjob_array[i], modulename, moduletag, gitbranch)
@@ -142,6 +146,24 @@ func homeDir() string {
 		return h
 	}
 	return os.Getenv("USERPROFILE") // windows
+}
+
+func ListDeployment(clientSet *kubernetes.Clientset, namespace string) []string {
+
+	var result []string
+	deploymentsclient := clientSet.ExtensionsV1beta1().Deployments(namespace)
+	deployments, err := deploymentsclient.List(metav1.ListOptions{})
+	if err != nil {
+		log.Println(err)
+	} else {
+		for i, e := range deployments.Items {
+			log.Printf("Deployment #%d\n", i)
+			log.Printf("%s", e.Name)
+			result = append(result, e.Name)
+			//log.Printf("%s", e.ObjectMeta.SelfLink)
+		}
+	}
+	return result
 }
 
 func GetDeploymentImage(clientSet *kubernetes.Clientset, namespace string, deploymentName string) string {
@@ -187,6 +209,24 @@ func GetDeploymentImage(clientSet *kubernetes.Clientset, namespace string, deplo
 	return getimage
 }
 
+func ListStatefulSet(clientSet *kubernetes.Clientset, namespace string) []string {
+
+	var result []string
+	statefulsetclient := clientSet.AppsV1().StatefulSets(namespace)
+	statefulset, err := statefulsetclient.List(metav1.ListOptions{})
+	if err != nil {
+		log.Println(err)
+	} else {
+		for i, e := range statefulset.Items {
+			log.Printf("WStatefulset #%d\n", i)
+			log.Printf("%s", e.Name)
+			result = append(result, e.Name)
+			//log.Printf("%s", e.ObjectMeta.SelfLink)
+		}
+	}
+	return result
+}
+
 func GetStatefulSetsImage(clientSet *kubernetes.Clientset, namespace string, statefulsetName string) string {
 	statefulset, err := clientSet.AppsV1().StatefulSets(namespace).Get(statefulsetName, metav1.GetOptions{})
 	var getimage string
@@ -213,6 +253,24 @@ func GetStatefulSetsImage(clientSet *kubernetes.Clientset, namespace string, sta
 	return getimage
 }
 
+func ListDaemonset(clientSet *kubernetes.Clientset, namespace string) []string {
+
+	var result []string
+	daemonsetclient := clientSet.ExtensionsV1beta1().DaemonSets(namespace)
+	daemonsets, err := daemonsetclient.List(metav1.ListOptions{})
+	if err != nil {
+		log.Println(err)
+	} else {
+		for i, e := range daemonsets.Items {
+			log.Printf("Daemonset #%d\n", i)
+			log.Printf("%s", e.Name)
+			result = append(result, e.Name)
+			//log.Printf("%s", e.ObjectMeta.SelfLink)
+		}
+	}
+	return result
+}
+
 func GetDaemonsetImage(clientSet *kubernetes.Clientset, namespace string, daemonsetName string) string {
 	daemonset, err := clientSet.ExtensionsV1beta1().DaemonSets(namespace).Get(daemonsetName, metav1.GetOptions{})
 	var getimage string
@@ -237,6 +295,24 @@ func GetDaemonsetImage(clientSet *kubernetes.Clientset, namespace string, daemon
 		}
 	}
 	return getimage
+}
+
+func ListCronjob(clientSet *kubernetes.Clientset, namespace string) []string {
+
+	var result []string
+	cronjobclient := clientSet.BatchV1beta1().CronJobs(namespace)
+	cronjobs, err := cronjobclient.List(metav1.ListOptions{})
+	if err != nil {
+		log.Println(err)
+	} else {
+		for i, e := range cronjobs.Items {
+			log.Printf("Cronjob #%d\n", i)
+			log.Printf("%s", e.Name)
+			result = append(result, e.Name)
+			//log.Printf("%s", e.ObjectMeta.SelfLink)
+		}
+	}
+	return result
 }
 
 func GetCronjobImage(clientSet *kubernetes.Clientset, namespace string, cronjobName string) string {
