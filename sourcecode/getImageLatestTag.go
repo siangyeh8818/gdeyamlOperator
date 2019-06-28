@@ -27,6 +27,7 @@ var pull_pattern string
 var action string
 var namespace string
 var promote_url string
+var kustom_base string
 
 func main() {
 
@@ -34,7 +35,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.5.0")
+		fmt.Println("version : 1.5.2")
 		os.Exit(0)
 	}
 
@@ -51,6 +52,7 @@ func main() {
 	fmt.Printf("flag latest-mode: %s\n", latest_mode)
 	fmt.Printf("flag push-pattern: %s\n", push_pattern)
 	fmt.Printf("flag pull-pattern: %s\n", pull_pattern)
+	fmt.Printf("flag kustom-base-path: %s\n", kustom_base)
 	fmt.Printf("flag action: %s\n", action)
 	fmt.Printf("flag promote-url: %s\n", promote_url)
 
@@ -163,7 +165,7 @@ func main() {
 		}
 
 	case "snapshot":
-		snapshot(namespace, ouputfile)
+		snapshot(namespace, ouputfile, kustom_base)
 	case "promote":
 		if inputfile != "" && Exists(inputfile) {
 			inyaml := K8sYaml{}
@@ -202,6 +204,7 @@ func Init() {
 	flag.StringVar(&pull_pattern, "pull-pattern", "", "(pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
 	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote'")
 	flag.StringVar(&promote_url, "promote-url", "", "destination for you promoting image url (nexus)'")
+	flag.StringVar(&kustom_base, "kustom-base-path", "", "folder path for your base yaml of kustomization'")
 	flag.BoolVar(&pushimage, "push", false, "push this image , default is false")
 	flag.BoolVar(&version, "v", false, "prints current binary version")
 }

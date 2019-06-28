@@ -16,18 +16,22 @@ func exec_shell(s_command string) (string, string) {
 	stdoutIn, _ := cmd.StdoutPipe()
 	stderrIn, _ := cmd.StderrPipe()
 	var errStdout, errStderr error
-	stdout := io.MultiWriter(os.Stdout, &stdoutBuf)
-	stderr := io.MultiWriter(os.Stderr, &stderrBuf)
 	err := cmd.Start()
 	if err != nil {
 		log.Fatalf("cmd.Start() failed with '%s'\n", err)
 	}
-	go func() {
-		_, errStdout = io.Copy(stdout, stdoutIn)
-	}()
-	go func() {
-		_, errStderr = io.Copy(stderr, stderrIn)
-	}()
+	stdout := io.MultiWriter(os.Stdout, &stdoutBuf)
+	stderr := io.MultiWriter(os.Stderr, &stderrBuf)
+	/*
+		go func() {
+			_, errStdout = io.Copy(stdout, stdoutIn)
+		}()
+		go func() {
+			_, errStderr = io.Copy(stderr, stderrIn)
+		}()
+	*/
+	_, errStdout = io.Copy(stdout, stdoutIn)
+	_, errStderr = io.Copy(stderr, stderrIn)
 	err = cmd.Wait()
 	if err != nil {
 		log.Fatalf("cmd.Run() failed with %s\n", err)
@@ -77,4 +81,23 @@ func KubectlGetCronJob(namespace string) []string {
 	//fmt.Println(result)
 	totaldaemonset := strings.Split(result, "\n")
 	return totaldaemonset
+}
+
+func grepFolderName(module string, base_path string) string {
+	var token int
+	cmd := "grep -Rn " + module + " " + base_path + " | grep image | awk '{print $1}'"
+	result, err := exec_shell(cmd)
+
+	if err != "" {
+		log.Println("move image failed")
+	}
+	result_slice := strings.Split(result, "/")
+
+	for x := 0; x < len(result_slice); x++ {
+		if strings.Contains(result_slice[x], ".yml") || strings.Contains(result_slice[x], ".yaml") {
+			token = x - 1
+		}
+	}
+
+	return result_slice[token]
 }
