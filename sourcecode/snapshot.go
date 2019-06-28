@@ -19,7 +19,7 @@ import (
 
 type K8sClient kubernetes.Clientset
 
-func snapshot(namespace string, outputfilename string) {
+func snapshot(namespace string, outputfilename string, kustomyamlfolder string) {
 
 	test := K8sYaml{}
 	var kubeconfig *string
@@ -56,11 +56,30 @@ func snapshot(namespace string, outputfilename string) {
 				fmt.Println("Get deployment image name : " + imagename)
 				modulestage, modulename, moduletag := ImagenameSplitReturnTag(imagename)
 				if IdentifyOpenfaas(namespace_array[n], deploy_array[i]) {
-					(&test.Deployment).AddOpenfaasStruct(deploy_array[i], modulename, moduletag, modulestage)
+					if len(kustomyamlfolder) > 0 {
+						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						if len(base_folder) > 0 {
+							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
+						} else {
+							fmt.Println("folder name can't be space")
+							(&test.Deployment).AddOpenfaasStruct(deploy_array[i], modulename, moduletag, modulestage)
+						}
+					} else {
+						(&test.Deployment).AddOpenfaasStruct(deploy_array[i], modulename, moduletag, modulestage)
+					}
 				} else {
-					(&test.Deployment).AddK8sStruct(deploy_array[i], modulename, moduletag, modulestage)
+					if len(kustomyamlfolder) > 0 {
+						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						if len(base_folder) > 0 {
+							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
+						} else {
+							fmt.Println("folder name can't be space")
+							(&test.Deployment).AddK8sStruct(deploy_array[i], modulename, moduletag, modulestage)
+						}
+					} else {
+						(&test.Deployment).AddK8sStruct(deploy_array[i], modulename, moduletag, modulestage)
+					}
 				}
-
 			}
 		}
 		//對statefulset做處理
@@ -73,9 +92,29 @@ func snapshot(namespace string, outputfilename string) {
 				fmt.Println("Get deployment image name : " + imagename)
 				modulestage, modulename, moduletag := ImagenameSplitReturnTag(imagename)
 				if IdentifyOpenfaas(namespace_array[n], statefulset_array[i]) {
-					(&test.Deployment).AddOpenfaasStruct(statefulset_array[i], modulename, moduletag, modulestage)
+					if len(kustomyamlfolder) > 0 {
+						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						if len(base_folder) > 0 {
+							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
+						} else {
+							fmt.Println("folder name can't be space")
+							(&test.Deployment).AddOpenfaasStruct(statefulset_array[i], modulename, moduletag, modulestage)
+						}
+					} else {
+						(&test.Deployment).AddOpenfaasStruct(statefulset_array[i], modulename, moduletag, modulestage)
+					}
 				} else {
-					(&test.Deployment).AddK8sStruct(statefulset_array[i], modulename, moduletag, modulestage)
+					if len(kustomyamlfolder) > 0 {
+						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						if len(base_folder) > 0 {
+							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
+						} else {
+							fmt.Println("folder name can't be space")
+							(&test.Deployment).AddK8sStruct(statefulset_array[i], modulename, moduletag, modulestage)
+						}
+					} else {
+						(&test.Deployment).AddK8sStruct(deploy_array[i], modulename, moduletag, modulestage)
+					}
 				}
 
 			}
@@ -90,9 +129,29 @@ func snapshot(namespace string, outputfilename string) {
 				fmt.Println("Get daemonset image name : " + imagename)
 				modulestage, modulename, moduletag := ImagenameSplitReturnTag(imagename)
 				if IdentifyOpenfaas(namespace_array[n], daemonset_array[i]) {
-					(&test.Deployment).AddOpenfaasStruct(daemonset_array[i], modulename, moduletag, modulestage)
+					if len(kustomyamlfolder) > 0 {
+						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						if len(base_folder) > 0 {
+							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
+						} else {
+							fmt.Println("folder name can't be space")
+							(&test.Deployment).AddOpenfaasStruct(daemonset_array[i], modulename, moduletag, modulestage)
+						}
+					} else {
+						(&test.Deployment).AddOpenfaasStruct(daemonset_array[i], modulename, moduletag, modulestage)
+					}
 				} else {
-					(&test.Deployment).AddK8sStruct(daemonset_array[i], modulename, moduletag, modulestage)
+					if len(kustomyamlfolder) > 0 {
+						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						if len(base_folder) > 0 {
+							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
+						} else {
+							fmt.Println("folder name can't be space")
+							(&test.Deployment).AddK8sStruct(daemonset_array[i], modulename, moduletag, modulestage)
+						}
+					} else {
+						(&test.Deployment).AddK8sStruct(daemonset_array[i], modulename, moduletag, modulestage)
+					}
 				}
 
 			}
@@ -110,9 +169,29 @@ func snapshot(namespace string, outputfilename string) {
 				fmt.Println("Get cronjob image name : " + imagename)
 				modulestage, modulename, moduletag := ImagenameSplitReturnTag(imagename)
 				if IdentifyOpenfaas(namespace_array[n], cronjob_array[i]) {
-					(&test.Deployment).AddOpenfaasStruct(cronjob_array[i], modulename, moduletag, modulestage)
+					if len(kustomyamlfolder) > 0 {
+						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						if len(base_folder) > 0 {
+							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
+						} else {
+							fmt.Println("folder name can't be space")
+							(&test.Deployment).AddOpenfaasStruct(cronjob_array[i], modulename, moduletag, modulestage)
+						}
+					} else {
+						(&test.Deployment).AddOpenfaasStruct(cronjob_array[i], modulename, moduletag, modulestage)
+					}
 				} else {
-					(&test.Deployment).AddK8sStruct(cronjob_array[i], modulename, moduletag, modulestage)
+					if len(kustomyamlfolder) > 0 {
+						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						if len(base_folder) > 0 {
+							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
+						} else {
+							fmt.Println("folder name can't be space")
+							(&test.Deployment).AddK8sStruct(cronjob_array[i], modulename, moduletag, modulestage)
+						}
+					} else {
+						(&test.Deployment).AddK8sStruct(cronjob_array[i], modulename, moduletag, modulestage)
+					}
 				}
 
 			}
