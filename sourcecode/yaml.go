@@ -1,9 +1,15 @@
 package main
 
 type Deployment struct {
+	BASE     []BASE     `yaml:"base"`
 	K8S      []K8S      `yaml:"k8s"`
 	Openfaas []Openfaas `yaml:"openfaas"`
 }
+type BASE struct {
+	Git    string `yaml:"git"`
+	Branch string `yaml:"branch"`
+}
+
 type K8S struct {
 	Module string `yaml:"module"`
 	Image  string `yaml:"image"`
@@ -22,6 +28,31 @@ type K8sYaml struct {
 	Deployment Deployment `yaml:"deployment"`
 }
 
+type Environmentyaml struct {
+	Namespaces []struct {
+		K8S      string `yaml:"k8s"`
+		Openfaas string `yaml:"openfaas"`
+		Monitor  string `yaml:"monitor"`
+		Redis    string `yaml:"redis"`
+	} `yaml:"namespaces"`
+	Configuration []struct {
+		Git    string `yaml:"git"`
+		Branch string `yaml:"branch"`
+	} `yaml:"configuration"`
+	Deploymentfile []struct {
+		Git    string `yaml:"git"`
+		Branch string `yaml:"branch"`
+	} `yaml:"deploymentfile"`
+}
+
+/*
+type Environmentyaml struct {
+	NameSpace      NameSpace      `yaml:"namespaces"`
+	Configuration  Configuration  `yaml:"configuration"`
+	Deploymentfile Deploymentfile `yaml:"deploymentfile"`
+}
+
+*/
 func (s *Deployment) AddK8sStruct(module string, image string, tag string, stage string) {
 	var a K8S = K8S{
 		Module: module,
