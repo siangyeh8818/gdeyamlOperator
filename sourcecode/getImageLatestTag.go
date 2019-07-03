@@ -28,6 +28,12 @@ var action string
 var namespace string
 var promote_url string
 var kustom_base string
+var environment_file string
+var git_url string
+var clone_path string
+var git_user string
+var git_token string
+var git_branch string
 
 func main() {
 
@@ -35,7 +41,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.5.2")
+		fmt.Println("version : 1.6.0")
 		os.Exit(0)
 	}
 
@@ -55,6 +61,12 @@ func main() {
 	fmt.Printf("flag kustom-base-path: %s\n", kustom_base)
 	fmt.Printf("flag action: %s\n", action)
 	fmt.Printf("flag promote-url: %s\n", promote_url)
+	fmt.Printf("flag git-url: %s\n", git_url)
+	fmt.Printf("flag clone-path: %s\n", clone_path)
+	fmt.Printf("flag git-user: %s\n", git_user)
+	fmt.Printf("flag git-token: %s\n", git_token)
+	fmt.Printf("flag environment-file: %s\n", environment_file)
+	fmt.Printf("flag git-branch: %s\n", git_branch)
 
 	if loginuser != "" && loginpassword != "" {
 		LoginDockerHub(inputstage, loginuser, loginpassword)
@@ -183,6 +195,34 @@ func main() {
 		} else {
 			fmt.Println("Yoy have to setting -inputfile <filename>")
 		}
+	case "gitclone":
+		if git_url != "" && environment_file == "" {
+			CloneYaml(git_url, git_branch, clone_path, git_user, git_token)
+		} else if git_url == "" && environment_file != "" {
+			envir_yaml := Environmentyaml{}
+			envir_yaml.getConf(environment_file)
+			if len(envir_yaml.Configuration) > 0 {
+				CloneYaml(envir_yaml.Configuration[0].Git, envir_yaml.Configuration[0].Branch, "configuration", git_user, git_token)
+			}
+			if len(envir_yaml.Deploymentfile) > 0 {
+				CloneYaml(envir_yaml.Deploymentfile[0].Git, envir_yaml.Deploymentfile[0].Branch, "deploymentfile", git_user, git_token)
+			}
+
+		} else if git_url == "" && environment_file == "" && inputfile != "" {
+			if inputfile != "" && Exists(inputfile) {
+				inyaml := K8sYaml{}
+				inyaml.getConf(inputfile)
+				if len(inyaml.Deployment.BASE) > 0 {
+					CloneYaml(inyaml.Deployment.BASE[0].Git, inyaml.Deployment.BASE[0].Branch, "base", git_user, git_token)
+				}
+
+			} else {
+				fmt.Printf("%s is not exists !!!!", inputfile)
+			}
+		} else if git_url != "" && environment_file != "" {
+			fmt.Println("only one flag you can setting , 'git-url' or 'environment-file'")
+			os.Exit(0)
+		}
 
 	}
 
@@ -202,7 +242,13 @@ func Init() {
 	flag.StringVar(&latest_mode, "latest-mode", "push", "push or build , choose one mode to identify latest tag to you")
 	flag.StringVar(&push_pattern, "push-pattern", "", "(push)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
 	flag.StringVar(&pull_pattern, "pull-pattern", "", "(pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
-	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote'")
+	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone'")
+	flag.StringVar(&git_url, "git-url", "", "url for git repo")
+	flag.StringVar(&git_branch, "git-branch", "master", "branch for git repo")
+	flag.StringVar(&git_user, "git-user", "", "user for git clone")
+	flag.StringVar(&git_token, "git-token", "", "token for git clone")
+	flag.StringVar(&clone_path, "clone-path", "", "folder path for git clone")
+	flag.StringVar(&environment_file, "environment-file", "", "file path of environment.yml")
 	flag.StringVar(&promote_url, "promote-url", "", "destination for you promoting image url (nexus)'")
 	flag.StringVar(&kustom_base, "kustom-base-path", "", "folder path for your base yaml of kustomization'")
 	flag.BoolVar(&pushimage, "push", false, "push this image , default is false")

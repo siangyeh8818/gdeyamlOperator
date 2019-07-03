@@ -31,6 +31,21 @@ func (c *K8sYaml) getConf(f string) *K8sYaml {
 	return c
 }
 
+func (c *Environmentyaml) getConf(f string) *Environmentyaml {
+
+	yamlFile, err := ioutil.ReadFile(f)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+
+	err = yaml.Unmarshal(yamlFile, c)
+
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	return c
+}
+
 func Exists(name string) bool {
 	if _, err := os.Stat(name); err != nil {
 		if os.IsNotExist(err) {
