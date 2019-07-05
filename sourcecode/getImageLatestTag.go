@@ -27,6 +27,7 @@ var pull_pattern string
 var action string
 var namespace string
 var promote_url string
+var promote_source string
 var kustom_base string
 var environment_file string
 var git_url string
@@ -41,7 +42,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.6.0")
+		fmt.Println("version : 1.6.1")
 		os.Exit(0)
 	}
 
@@ -61,6 +62,7 @@ func main() {
 	fmt.Printf("flag kustom-base-path: %s\n", kustom_base)
 	fmt.Printf("flag action: %s\n", action)
 	fmt.Printf("flag promote-url: %s\n", promote_url)
+	fmt.Printf("flag promote-source: %s\n", promote_source)
 	fmt.Printf("flag git-url: %s\n", git_url)
 	fmt.Printf("flag clone-path: %s\n", clone_path)
 	fmt.Printf("flag git-user: %s\n", git_user)
@@ -184,12 +186,12 @@ func main() {
 			inyaml.getConf(inputfile)
 			for i := 0; i < len(inyaml.Deployment.K8S); i++ {
 				if inyaml.Deployment.K8S[i].Image != "" && inyaml.Deployment.K8S[i].Tag != "" {
-					promoteimage(promote_url, loginuser, loginpassword, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+					promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
 				}
 			}
 			for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
 				if inyaml.Deployment.Openfaas[i].Image != "" && inyaml.Deployment.Openfaas[i].Tag != "" {
-					promoteimage(promote_url, loginuser, loginpassword, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+					promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
 				}
 			}
 		} else {
@@ -250,6 +252,7 @@ func Init() {
 	flag.StringVar(&clone_path, "clone-path", "", "folder path for git clone")
 	flag.StringVar(&environment_file, "environment-file", "", "file path of environment.yml")
 	flag.StringVar(&promote_url, "promote-url", "", "destination for you promoting image url (nexus)'")
+	flag.StringVar(&promote_source, "promote-source", "", "sourece(Repository name) for you promoting image url (nexus)'")
 	flag.StringVar(&kustom_base, "kustom-base-path", "", "folder path for your base yaml of kustomization'")
 	flag.BoolVar(&pushimage, "push", false, "push this image , default is false")
 	flag.BoolVar(&version, "v", false, "prints current binary version")
