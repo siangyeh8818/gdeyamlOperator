@@ -42,7 +42,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.6.1")
+		fmt.Println("version : 1.7.0")
 		os.Exit(0)
 	}
 
@@ -225,11 +225,25 @@ func main() {
 			fmt.Println("only one flag you can setting , 'git-url' or 'environment-file'")
 			os.Exit(0)
 		}
-
+	case "replace":
+		if environment_file != "" && Exists(environment_file) {
+			if inputfile != "" && Exists(inputfile) {
+				if ouputfile != "" {
+					fmt.Println("success to enter func Replacedeploymentfile")
+					Replacedeploymentfile(environment_file, inputfile, ouputfile)
+				} else if ouputfile == "" {
+					fmt.Println("you have to  setting  flag (ouputfile)")
+					os.Exit(0)
+				}
+			} else if inputfile == "" {
+				fmt.Println("you have to  setting  flag (inputfile)")
+				os.Exit(0)
+			}
+		} else if environment_file == "" {
+			fmt.Println("you have to  setting  flag (environment_file)")
+			os.Exit(0)
+		}
 	}
-
-	//判斷
-
 }
 
 func Init() {
@@ -244,7 +258,7 @@ func Init() {
 	flag.StringVar(&latest_mode, "latest-mode", "push", "push or build , choose one mode to identify latest tag to you")
 	flag.StringVar(&push_pattern, "push-pattern", "", "(push)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
 	flag.StringVar(&pull_pattern, "pull-pattern", "", "(pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
-	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone'")
+	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace'")
 	flag.StringVar(&git_url, "git-url", "", "url for git repo")
 	flag.StringVar(&git_branch, "git-branch", "master", "branch for git repo")
 	flag.StringVar(&git_user, "git-user", "", "user for git clone")
