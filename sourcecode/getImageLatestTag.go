@@ -35,6 +35,7 @@ var clone_path string
 var git_user string
 var git_token string
 var git_branch string
+var git_tag string
 
 func main() {
 
@@ -42,7 +43,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.7.0")
+		fmt.Println("version : 1.7.1")
 		os.Exit(0)
 	}
 
@@ -69,6 +70,7 @@ func main() {
 	fmt.Printf("flag git-token: %s\n", git_token)
 	fmt.Printf("flag environment-file: %s\n", environment_file)
 	fmt.Printf("flag git-branch: %s\n", git_branch)
+	fmt.Printf("flag git-tag: %s\n", git_tag)
 
 	if loginuser != "" && loginpassword != "" {
 		LoginDockerHub(inputstage, loginuser, loginpassword)
@@ -199,7 +201,16 @@ func main() {
 		}
 	case "gitclone":
 		if git_url != "" && environment_file == "" {
-			CloneYaml(git_url, git_branch, clone_path, git_user, git_token)
+			if git_branch != "" && git_tag == "" {
+				CloneYaml(git_url, git_branch, clone_path, git_user, git_token)
+			} else if git_branch == "" && git_tag != "" {
+				CloneYamlByTag(git_url, git_tag, clone_path, git_user, git_token)
+			} else if git_branch != "" && git_tag != "" {
+				fmt.Println("Only one flag that you have to setting (git-branch or git-tag)")
+				fmt.Println("While you setting git-branch , you can't set git-tag")
+				os.Exit(0)
+			}
+
 		} else if git_url == "" && environment_file != "" {
 			envir_yaml := Environmentyaml{}
 			envir_yaml.getConf(environment_file)
@@ -260,7 +271,8 @@ func Init() {
 	flag.StringVar(&pull_pattern, "pull-pattern", "", "(pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
 	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace'")
 	flag.StringVar(&git_url, "git-url", "", "url for git repo")
-	flag.StringVar(&git_branch, "git-branch", "master", "branch for git repo")
+	flag.StringVar(&git_branch, "git-branch", "", "branch for git repo")
+	flag.StringVar(&git_tag, "git-tag", "", "Tag for git repo")
 	flag.StringVar(&git_user, "git-user", "", "user for git clone")
 	flag.StringVar(&git_token, "git-token", "", "token for git clone")
 	flag.StringVar(&clone_path, "clone-path", "", "folder path for git clone")
