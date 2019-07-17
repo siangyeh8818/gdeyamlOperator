@@ -41,3 +41,35 @@ func CloneYaml(url string, branch string, directory string, name string, token s
 
 	fmt.Println(commit)
 }
+
+func CloneYamlByTag(url string, tag string, directory string, name string, token string) {
+	CheckArgs("<url>", "<directory>", "<github_access_token>")
+	//	url, directory, token := os.Args[1], os.Args[2], os.Args[3]
+
+	// Clone the given repository to the given directory
+	Info("git clone -b %s --single-branch %s %s", tag, url, directory)
+
+	r, err := git.PlainClone(directory, false, &git.CloneOptions{
+		// The intended use of a GitHub personal access token is in replace of your password
+		// because access tokens can easily be revoked.
+		// https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
+		Auth: &http.BasicAuth{
+			Username: name, // yes, this can be anything except an empty string
+			Password: token,
+		},
+		ReferenceName: plumbing.ReferenceName(fmt.Sprintf("refs/tags/%s", tag)),
+		URL:           url,
+		Progress:      os.Stdout,
+		SingleBranch:  true,
+	})
+
+	CheckIfError(err)
+	// ... retrieving the branch being pointed by HEAD
+	ref, err := r.Head()
+	CheckIfError(err)
+	// ... retrieving the commit object
+	commit, err := r.CommitObject(ref.Hash())
+	CheckIfError(err)
+
+	fmt.Println(commit)
+}
