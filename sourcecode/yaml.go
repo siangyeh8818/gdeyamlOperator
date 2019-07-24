@@ -74,6 +74,7 @@ type Environmentyaml struct {
 }
 
 */
+
 func (s *Deployment) AddK8sStruct(module string, image string, tag string, stage string) {
 	var a K8S = K8S{
 		Module: module,
@@ -102,6 +103,27 @@ func (s *Deployment) AddOpenfaasStruct(module string, image string, tag string, 
 	s.Openfaas = append(s.Openfaas, a)
 
 }
+
+func (s *Deployment) AddMonitorStruct(module string, image string, tag string, stage string) {
+	var a Monitor = Monitor{
+		Module: module,
+		Image:  image,
+		Tag:    tag,
+		Stage:  stage,
+	}
+	s.Monitor = append(s.Monitor, a)
+}
+
+func (s *Deployment) AddRedisStruct(module string, image string, tag string, stage string) {
+	var a Redis = Redis{
+		Module: module,
+		Image:  image,
+		Tag:    tag,
+		Stage:  stage,
+	}
+	s.Redis = append(s.Redis, a)
+}
+
 func (s *K8S) UpdateK8sTag(newtag string) {
 
 	s.Tag = newtag
