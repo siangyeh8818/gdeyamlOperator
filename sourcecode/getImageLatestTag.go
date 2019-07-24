@@ -36,6 +36,7 @@ var git_user string
 var git_token string
 var git_branch string
 var git_tag string
+var snapshot_pattern string
 
 func main() {
 
@@ -43,7 +44,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.7.1")
+		fmt.Println("version : 1.7.2")
 		os.Exit(0)
 	}
 
@@ -71,6 +72,7 @@ func main() {
 	fmt.Printf("flag environment-file: %s\n", environment_file)
 	fmt.Printf("flag git-branch: %s\n", git_branch)
 	fmt.Printf("flag git-tag: %s\n", git_tag)
+	fmt.Printf("flag snapshot-pattern: %s\n", snapshot_pattern)
 
 	if loginuser != "" && loginpassword != "" {
 		LoginDockerHub(inputstage, loginuser, loginpassword)
@@ -181,7 +183,7 @@ func main() {
 		}
 
 	case "snapshot":
-		snapshot(namespace, ouputfile, kustom_base)
+		snapshot(snapshot_pattern, ouputfile, kustom_base)
 	case "promote":
 		if inputfile != "" && Exists(inputfile) {
 			inyaml := K8sYaml{}
@@ -282,6 +284,7 @@ func Init() {
 	flag.StringVar(&kustom_base, "kustom-base-path", "", "folder path for your base yaml of kustomization'")
 	flag.BoolVar(&pushimage, "push", false, "push this image , default is false")
 	flag.BoolVar(&version, "v", false, "prints current binary version")
+	flag.StringVar(&snapshot_pattern, "snapshot-pattern", "", "pattern fot output , such as : k8s:default,openfaas:openfaas-fn,monitor:monitor,redis:redis")
 }
 
 func GetTag(name string, latestmode string) string {
