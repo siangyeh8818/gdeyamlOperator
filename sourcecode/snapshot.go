@@ -40,12 +40,6 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 		panic(err.Error())
 	}
 	namespace_array, pattern_array := SnapshotPatternParser(pattern)
-	fmt.Println("------------------------------------")
-	fmt.Println(namespace_array)
-	fmt.Println("------------------------------------")
-	fmt.Println(pattern_array)
-	fmt.Println("------------------------------------")
-	//namespace_array := strings.Split(namespace, ",")
 
 	for n = 0; n < len(namespace_array); n++ {
 
@@ -69,7 +63,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddK8sStruct(deploy_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddK8sStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddK8sStruct(deploy_array[i], modulename, moduletag, modulestage)
@@ -81,7 +75,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddOpenfaasStruct(deploy_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddOpenfaasStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddOpenfaasStruct(deploy_array[i], modulename, moduletag, modulestage)
@@ -93,7 +87,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddMonitorStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddMonitorStruct(deploy_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddMonitorStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddMonitorStruct(deploy_array[i], modulename, moduletag, modulestage)
@@ -105,7 +99,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddRedisStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddRedisStruct(deploy_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddRedisStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddRedisStruct(deploy_array[i], modulename, moduletag, modulestage)
@@ -131,7 +125,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddK8sStruct(statefulset_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddK8sStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddK8sStruct(statefulset_array[i], modulename, moduletag, modulestage)
@@ -143,7 +137,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddOpenfaasStruct(statefulset_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddOpenfaasStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddOpenfaasStruct(statefulset_array[i], modulename, moduletag, modulestage)
@@ -155,7 +149,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddMonitorStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddMonitorStruct(statefulset_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddMonitorStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddMonitorStruct(statefulset_array[i], modulename, moduletag, modulestage)
@@ -168,7 +162,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddRedisStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddRedisStruct(statefulset_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddRedisStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddRedisStruct(statefulset_array[i], modulename, moduletag, modulestage)
@@ -194,7 +188,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddK8sStruct(daemonset_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddK8sStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddK8sStruct(daemonset_array[i], modulename, moduletag, modulestage)
@@ -206,7 +200,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddOpenfaasStruct(daemonset_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddOpenfaasStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddOpenfaasStruct(daemonset_array[i], modulename, moduletag, modulestage)
@@ -218,7 +212,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddMonitorStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddMonitorStruct(daemonset_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddMonitorStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddMonitorStruct(daemonset_array[i], modulename, moduletag, modulestage)
@@ -230,7 +224,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddRedisStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddRedisStruct(daemonset_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddRedisStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddRedisStruct(daemonset_array[i], modulename, moduletag, modulestage)
@@ -259,7 +253,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddK8sStruct(cronjob_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddK8sStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddK8sStruct(cronjob_array[i], modulename, moduletag, modulestage)
@@ -271,7 +265,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddOpenfaasStruct(cronjob_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddOpenfaasStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddOpenfaasStruct(cronjob_array[i], modulename, moduletag, modulestage)
@@ -283,7 +277,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddMonitorStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddMonitorStruct(cronjob_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddMonitorStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddMonitorStruct(cronjob_array[i], modulename, moduletag, modulestage)
@@ -295,7 +289,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 							(&test.Deployment).AddRedisStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
-							(&test.Deployment).AddRedisStruct(cronjob_array[i], modulename, moduletag, modulestage)
+							(&test.Deployment).AddRedisStruct("You_have_to_fix_base_repo", modulename, moduletag, modulestage)
 						}
 					} else {
 						(&test.Deployment).AddRedisStruct(cronjob_array[i], modulename, moduletag, modulestage)
@@ -347,8 +341,8 @@ func SnapshotPatternParser(pattern string) ([]string, []string) {
 		//ns_array[i] = content_temp_array[1]
 		//yamlstruct_array[i] = content_temp_array[0]
 	}
-	fmt.Println(ns_array)
-	fmt.Println(yamlstruct_array)
+	//	fmt.Println(ns_array)
+	//	fmt.Println(yamlstruct_array)
 	return ns_array, yamlstruct_array
 }
 
