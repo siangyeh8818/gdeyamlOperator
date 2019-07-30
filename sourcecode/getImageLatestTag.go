@@ -13,7 +13,7 @@ import (
 )
 
 var completeimagename string
-var list int
+var list2 int
 var inputfile string
 var ouputfile string
 var pushimage bool
@@ -37,6 +37,7 @@ var git_token string
 var git_branch string
 var git_tag string
 var snapshot_pattern string
+var docker_login string
 
 func main() {
 
@@ -44,7 +45,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.8.0")
+		fmt.Println("version : 1.8.2")
 		os.Exit(0)
 	}
 
@@ -52,7 +53,7 @@ func main() {
 	fmt.Printf("flag -imagename: %s\n", completeimagename)
 	fmt.Printf("flag -user: %s\n", loginuser)
 	fmt.Printf("flag -password: %s\n", loginpassword)
-	fmt.Printf("flag -list: %d\n", list)
+	fmt.Printf("flag -list: %d\n", list2)
 	fmt.Printf("flag -inputfile: %s\n", inputfile)
 	fmt.Printf("flag -ouputfile: %s\n", ouputfile)
 	fmt.Printf("flag -stage: %s\n", inputstage)
@@ -73,6 +74,7 @@ func main() {
 	fmt.Printf("flag -git-branch: %s\n", git_branch)
 	fmt.Printf("flag -git-tag: %s\n", git_tag)
 	fmt.Printf("flag -snapshot-pattern: %s\n", snapshot_pattern)
+	fmt.Printf("flag -docker-login: %s\n", docker_login)
 
 	if loginuser != "" && loginpassword != "" {
 		LoginDockerHub(inputstage, loginuser, loginpassword)
@@ -257,6 +259,7 @@ func main() {
 			os.Exit(0)
 		}
 	case "imagedump":
+		LoginDockerHubNew(docker_login, loginuser, loginpassword)
 		DumpImage(push_pattern, snapshot_pattern, pushimage)
 	}
 }
@@ -266,7 +269,7 @@ func Init() {
 	flag.StringVar(&namespace, "namespace", "default", "k8s namesapce , such as default")
 	flag.StringVar(&loginuser, "user", "", "user for docker login")
 	flag.StringVar(&loginpassword, "password", "", "password for docker login")
-	flag.IntVar(&list, "list", 5, "After sort tag list , we only deal with these top'number tags ")
+	flag.IntVar(&list2, "list", 5, "After sort tag list , we only deal with these top'number tags ")
 	flag.StringVar(&inputfile, "inputfile", "", "input file name , such as deploy.yml")
 	flag.StringVar(&ouputfile, "ouputfile", "tmp_out.yml", "output file name , such as deploy-out.yml")
 	flag.StringVar(&inputstage, "stage", "", "replace stage , new stage content")
@@ -287,6 +290,7 @@ func Init() {
 	flag.BoolVar(&pushimage, "push", false, "push this image , default is false")
 	flag.BoolVar(&version, "v", false, "prints current binary version")
 	flag.StringVar(&snapshot_pattern, "snapshot-pattern", "", "pattern fot output , such as : k8s:default,openfaas:openfaas-fn,monitor:monitor,redis:redis")
+	flag.StringVar(&docker_login, "docker-login", "", "DockerHub url/IP for docekr login")
 }
 
 func GetTag(name string, latestmode string) string {
@@ -330,7 +334,7 @@ func GetTag(name string, latestmode string) string {
 				}
 			}
 			loop_break_count++
-			if loop_break_count >= list {
+			if loop_break_count >= list2 {
 				break
 			}
 		}

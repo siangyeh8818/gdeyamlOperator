@@ -118,6 +118,29 @@ func ImagenameSplitReturnTag(rawimage string) (string, string, string) {
 		return_image = tag[0]
 		return_image_tag = tagstr
 		return_image_stage = GetStage(parsername[1])
+	} else if len(parsername) == 4 {
+		for i := range parsername {
+			//fmt.Println(parsername[i])
+			if i == 3 {
+				if GetSubstringColonIndex(parsername[i]) != -1 {
+					tagstr = GetSubstring(parsername[i], GetSubstringColonIndex(parsername[i]), len(parsername[i]))
+				} else if GetSubstringColonIndex(parsername[i]) == -1 {
+					fmt.Println("%s has't witten tag  ", rawimage)
+					tagstr = "latest"
+				}
+
+				tag = strings.Split(parsername[i], ":")
+				/*
+					if len(tag) == 1 {
+						fmt.Println("%s has't witten tag  ", rawimage)
+						tag = append(tag, "latest")
+					}
+				*/
+			}
+		}
+		return_image = tag[0]
+		return_image_tag = tagstr
+		return_image_stage = GetStage(parsername[1])
 	}
 
 	return return_image_stage, return_image, return_image_tag

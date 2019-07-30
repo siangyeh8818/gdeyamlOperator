@@ -34,6 +34,7 @@ func DumpImage(push_pattern string, snapshot_pattern string, pushimage bool) {
 	}
 
 	namespace_array, _ := SnapshotPatternParser(snapshot_pattern)
+
 	for n = 0; n < len(namespace_array); n++ {
 
 		fmt.Printf("%d namespace: %s\n", n, namespace_array[n])
@@ -78,23 +79,4 @@ func DumpImage(push_pattern string, snapshot_pattern string, pushimage bool) {
 			}
 		}
 	}
-}
-
-func PushTagimage(imagename string, push_pattern string, modulename string, moduletag string) {
-	cmd_1 := "docker pull " + imagename
-	fmt.Println(cmd_1)
-	RunCommand(cmd_1)
-	push_cpmplete_imagename := PatternParse(push_pattern, "preview", modulename, moduletag)
-	cmd_2 := "docker tag " + imagename + " " + push_cpmplete_imagename
-	fmt.Println(cmd_2)
-	RunCommand(cmd_2)
-	cmd_3 := "docker push " + push_cpmplete_imagename
-	fmt.Println(cmd_3)
-	RunCommand(cmd_3)
-	cmd_4 := "docker rmi " + imagename
-	fmt.Println(cmd_4)
-	RunCommand(cmd_4)
-	cmd_5 := "docker rmi " + push_cpmplete_imagename
-	fmt.Println(cmd_5)
-	RunCommand(cmd_5)
 }

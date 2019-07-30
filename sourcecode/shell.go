@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	//	"k8s.io/apimachinery/pkg/api/errors"
 )
 
 func exec_shell(s_command string) (string, string) {
@@ -47,6 +48,7 @@ func RunCommand(commandStr string) string {
 	cmdstr := commandStr
 	out, _ := exec.Command("sh", "-c", cmdstr).Output()
 	strout := string(out)
+
 	return strout
 }
 
@@ -83,21 +85,51 @@ func KubectlGetCronJob(namespace string) []string {
 	return totaldaemonset
 }
 
-func grepFolderName(module string, base_path string) string {
+func grepFolderName(module string, base_path string, ModuleMap map[string]int) string {
 	var token int
-	cmd := "grep -Rn " + module + " " + base_path + " | grep image | awk '{print $1}'"
+	var current_module_pattern string
+	current_module_pattern = "/" + module + ":"
+	cmd := "grep -Rn " + current_module_pattern + " " + base_path + " | grep image | awk '{print $1}'"
 	result, err := exec_shell(cmd)
-
+	log.Println(result)
 	if err != "" {
-		log.Println("move image failed")
+		log.Println("Find image base-folder failed")
 	}
 	result_slice := strings.Split(result, "/")
 
 	for x := 0; x < len(result_slice); x++ {
+		//log.Println(result_slice[x])
 		if strings.Contains(result_slice[x], ".yml") || strings.Contains(result_slice[x], ".yaml") {
-			token = x - 1
+			//existtoken := Contain(result_slice[x-1], ModuleMap)
+			existtoken := ModuleMap[result_slice[x-1]]
+			if existtoken == 1 {
+				log.Println("pn-base module can't repeat")
+			} else if existtoken == 0 {
+				token = x - 1
+			}
+
 		}
 	}
 
 	return result_slice[token]
 }
+
+/*
+func Contain(obj interface{}, target interface{}) (bool, error) {
+	targetValue := reflect.ValueOf(target)
+	switch reflect.TypeOf(target).Kind() {
+	case reflect.Slice, reflect.Array:
+		for i := 0; i < targetValue.Len(); i++ {
+			if targetValue.Index(i).Interface() == obj {
+				return true, nil
+			}
+		}
+	case reflect.Map:
+		if targetValue.MapIndex(reflect.ValueOf(obj)).IsValid() {
+			return true, nil
+		}
+	}
+
+	return false, errors.New("not in array")
+}
+*/
