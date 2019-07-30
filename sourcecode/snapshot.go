@@ -39,6 +39,11 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 	if err != nil {
 		panic(err.Error())
 	}
+
+	//var ss []string
+
+	var ss = make(map[string]int)
+
 	namespace_array, pattern_array := SnapshotPatternParser(pattern)
 
 	for n = 0; n < len(namespace_array); n++ {
@@ -58,8 +63,11 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 				switch pattern_array[n] {
 				case "k8s":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						//yamlmodule_list.PushBack(base_folder)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
+
 							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -70,8 +78,10 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 					}
 				case "openfaas":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						//yamlmodule_list.PushFront(base_folder)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -82,8 +92,10 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 					}
 				case "monitor":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddMonitorStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -94,8 +106,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 					}
 				case "redis":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddRedisStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -120,8 +133,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 				switch pattern_array[n] {
 				case "k8s":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -132,8 +146,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 					}
 				case "openfaas":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -144,8 +159,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 					}
 				case "monitor":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddMonitorStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -157,8 +173,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 
 				case "redis":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddRedisStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -183,8 +200,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 				switch pattern_array[n] {
 				case "k8s":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -195,8 +213,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 					}
 				case "openfaas":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -207,8 +226,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 					}
 				case "monitor":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddMonitorStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -219,8 +239,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 					}
 				case "redis":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddRedisStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -248,8 +269,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 				switch pattern_array[n] {
 				case "k8s":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -260,8 +282,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 					}
 				case "openfaas":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -272,8 +295,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 					}
 				case "monitor":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddMonitorStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
@@ -284,8 +308,9 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 					}
 				case "redis":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder)
+						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
+							ss[base_folder] = 1
 							(&test.Deployment).AddRedisStruct(base_folder, modulename, moduletag, modulestage)
 						} else {
 							fmt.Println("folder name can't be space")
