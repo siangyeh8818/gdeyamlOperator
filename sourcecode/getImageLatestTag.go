@@ -45,7 +45,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.8.2")
+		fmt.Println("version : 1.9.0")
 		os.Exit(0)
 	}
 
@@ -185,7 +185,9 @@ func main() {
 		}
 
 	case "snapshot":
-		snapshot(snapshot_pattern, ouputfile, kustom_base)
+		snapshot(snapshot_pattern, ouputfile, kustom_base, git_branch)
+	case "nesus_api":
+		GetNesuxCpmponet(promote_url, loginuser, loginpassword)
 	case "promote":
 		if inputfile != "" && Exists(inputfile) {
 			inyaml := K8sYaml{}
@@ -206,9 +208,11 @@ func main() {
 	case "gitclone":
 		if git_url != "" && environment_file == "" {
 			if git_branch != "" && git_tag == "" {
-				CloneYaml(git_url, git_branch, clone_path, git_user, git_token)
+				GitClone(git_url, git_branch, clone_path, git_user, git_token)
+				//CloneYaml(git_url, git_branch, clone_path, git_user, git_token)
 			} else if git_branch == "" && git_tag != "" {
-				CloneYamlByTag(git_url, git_tag, clone_path, git_user, git_token)
+				GitClone(git_url, git_tag, clone_path, git_user, git_token)
+				//CloneYamlByTag(git_url, git_tag, clone_path, git_user, git_token)
 			} else if git_branch != "" && git_tag != "" {
 				fmt.Println("Only one flag that you have to setting (git-branch or git-tag)")
 				fmt.Println("While you setting git-branch , you can't set git-tag")
@@ -219,10 +223,12 @@ func main() {
 			envir_yaml := Environmentyaml{}
 			envir_yaml.getConf(environment_file)
 			if len(envir_yaml.Configuration) > 0 {
-				CloneYaml(envir_yaml.Configuration[0].Git, envir_yaml.Configuration[0].Branch, "configuration", git_user, git_token)
+				GitClone(envir_yaml.Configuration[0].Git, envir_yaml.Configuration[0].Branch, "configuration", git_user, git_token)
+				//CloneYaml(envir_yaml.Configuration[0].Git, envir_yaml.Configuration[0].Branch, "configuration", git_user, git_token)
 			}
 			if len(envir_yaml.Deploymentfile) > 0 {
-				CloneYaml(envir_yaml.Deploymentfile[0].Git, envir_yaml.Deploymentfile[0].Branch, "deploymentfile", git_user, git_token)
+				GitClone(envir_yaml.Deploymentfile[0].Git, envir_yaml.Deploymentfile[0].Branch, "deploymentfile", git_user, git_token)
+				//CloneYaml(envir_yaml.Deploymentfile[0].Git, envir_yaml.Deploymentfile[0].Branch, "deploymentfile", git_user, git_token)
 			}
 
 		} else if git_url == "" && environment_file == "" && inputfile != "" {
@@ -230,7 +236,8 @@ func main() {
 				inyaml := K8sYaml{}
 				inyaml.getConf(inputfile)
 				if len(inyaml.Deployment.BASE) > 0 {
-					CloneYaml(inyaml.Deployment.BASE[0].Git, inyaml.Deployment.BASE[0].Branch, "base", git_user, git_token)
+					GitClone(inyaml.Deployment.BASE[0].Git, inyaml.Deployment.BASE[0].Branch, "base", git_user, git_token)
+					//CloneYaml(inyaml.Deployment.BASE[0].Git, inyaml.Deployment.BASE[0].Branch, "base", git_user, git_token)
 				}
 
 			} else {
@@ -276,7 +283,7 @@ func Init() {
 	flag.StringVar(&latest_mode, "latest-mode", "push", "push or build , choose one mode to identify latest tag to you")
 	flag.StringVar(&push_pattern, "push-pattern", "", "(push)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
 	flag.StringVar(&pull_pattern, "pull-pattern", "", "(pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
-	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace' or 'imagedump'")
+	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace' or 'imagedump' or 'nesus_api'")
 	flag.StringVar(&git_url, "git-url", "", "url for git repo")
 	flag.StringVar(&git_branch, "git-branch", "", "branch for git repo")
 	flag.StringVar(&git_tag, "git-tag", "", "Tag for git repo")
