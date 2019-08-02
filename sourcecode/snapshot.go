@@ -19,7 +19,7 @@ import (
 
 type K8sClient kubernetes.Clientset
 
-func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
+func snapshot(pattern string, outputfilename string, kustomyamlfolder string, branch string) {
 
 	test := K8sYaml{}
 	var kubeconfig *string
@@ -39,7 +39,7 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string) {
 	if err != nil {
 		panic(err.Error())
 	}
-
+	(&test.Deployment).AddBaseStruct("https://github.com/pnetwork/pnbase.git", branch)
 	//var ss []string
 
 	var ss = make(map[string]int)

@@ -10,14 +10,22 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
 
-func CloneYaml(url string, branch string, directory string, name string, token string) {
+func GitClone(url string, branch string, directory string, name string, token string) {
+	giterr := CloneYaml(url, branch, directory, name, token)
+	if giterr != nil {
+		tags := branch
+		CloneYamlByTag(url, tags, directory, name, token)
+	}
+}
+
+func CloneYaml(url string, branch string, directory string, name string, token string) error {
 	CheckArgs("<url>", "<directory>", "<github_access_token>")
 	//	url, directory, token := os.Args[1], os.Args[2], os.Args[3]
 
 	// Clone the given repository to the given directory
 	Info("git clone -b %s --single-branch %s %s", branch, url, directory)
 
-	r, err := git.PlainClone(directory, false, &git.CloneOptions{
+	_, err := git.PlainClone(directory, false, &git.CloneOptions{
 		// The intended use of a GitHub personal access token is in replace of your password
 		// because access tokens can easily be revoked.
 		// https://help.github.com/articles/creating-a-personal-access-token-for-the-command-line/
@@ -31,18 +39,19 @@ func CloneYaml(url string, branch string, directory string, name string, token s
 		SingleBranch:  true,
 	})
 
-	CheckIfError(err)
+	//CheckIfError(err)
 	// ... retrieving the branch being pointed by HEAD
-	ref, err := r.Head()
-	CheckIfError(err)
+	//ref, err := r.Head()
+	//CheckIfError(err)
 	// ... retrieving the commit object
-	commit, err := r.CommitObject(ref.Hash())
-	CheckIfError(err)
+	//commit, err := r.CommitObject(ref.Hash())
+	//CheckIfError(err)
 
-	fmt.Println(commit)
+	//fmt.Println(commit)
+	return err
 }
 
-func CloneYamlByTag(url string, tag string, directory string, name string, token string) {
+func CloneYamlByTag(url string, tag string, directory string, name string, token string) error {
 	CheckArgs("<url>", "<directory>", "<github_access_token>")
 	//	url, directory, token := os.Args[1], os.Args[2], os.Args[3]
 
@@ -72,4 +81,5 @@ func CloneYamlByTag(url string, tag string, directory string, name string, token
 	CheckIfError(err)
 
 	fmt.Println(commit)
+	return err
 }

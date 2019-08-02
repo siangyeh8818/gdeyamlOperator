@@ -93,6 +93,15 @@ func (s *Deployment) AddK8sStruct(module string, image string, tag string, stage
 	*/
 }
 
+func (s *Deployment) AddBaseStruct(git string, gitbranch string) {
+	var a BASE = BASE{
+		Git:    git,
+		Branch: gitbranch,
+	}
+	s.BASE = append(s.BASE, a)
+
+}
+
 func (s *Deployment) AddOpenfaasStruct(module string, image string, tag string, stage string) {
 	var a Openfaas = Openfaas{
 		Module: module,
