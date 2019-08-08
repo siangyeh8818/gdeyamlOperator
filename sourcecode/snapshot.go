@@ -39,7 +39,12 @@ func snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 	if err != nil {
 		panic(err.Error())
 	}
-	(&test.Deployment).AddBaseStruct("https://github.com/pnetwork/pnbase.git", branch)
+	if branch == "" {
+		(&test.Deployment).AddBaseStruct("https://github.com/pnetwork/pnbase.git", "master")
+	} else {
+		(&test.Deployment).AddBaseStruct("https://github.com/pnetwork/pnbase.git", branch)
+	}
+
 	//var ss []string
 
 	var ss = make(map[string]int)

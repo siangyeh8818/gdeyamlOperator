@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 )
 
 func GetNesuxCpmponet(nexusurl string, nexus_user string, nexus_password string) {
@@ -29,6 +30,9 @@ func GetNesuxCpmponet(nexusurl string, nexus_user string, nexus_password string)
 		log.Println("request failed")
 	}
 	responseData, err := ioutil.ReadAll(resp.Body)
+	log.Println("----------srart of responseData-----------")
 	log.Println(string(responseData))
-
+	log.Println("----------end of responseData-----------")
+	JsonParse(string(responseData))
+	os.Exit(0)
 }
