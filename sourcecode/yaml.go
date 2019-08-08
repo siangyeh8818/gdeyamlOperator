@@ -50,6 +50,12 @@ type Environmentyaml struct {
 			Monitor  []Monitor  `yaml:"monitor"`
 			Redis    []Redis    `yaml:"redis"`
 		} `yaml:"replace"`
+		Ignore struct {
+			K8S      []K8S      `yaml:"k8s"`
+			Openfaas []Openfaas `yaml:"openfaas"`
+			Monitor  []Monitor  `yaml:"monitor"`
+			Redis    []Redis    `yaml:"redis"`
+		} `yaml:"ignore"`
 	} `yaml:"deploymentfile"`
 }
 
@@ -66,14 +72,14 @@ type Redis struct {
 	Stage  string `yaml:"stage"`
 }
 
-/*
-type Environmentyaml struct {
-	NameSpace      NameSpace      `yaml:"namespaces"`
-	Configuration  Configuration  `yaml:"configuration"`
-	Deploymentfile Deploymentfile `yaml:"deploymentfile"`
-}
+func (s *Deployment) AddBaseStruct(git string, gitbranch string) {
+	var a BASE = BASE{
+		Git:    git,
+		Branch: gitbranch,
+	}
+	s.BASE = append(s.BASE, a)
 
-*/
+}
 
 func (s *Deployment) AddK8sStruct(module string, image string, tag string, stage string) {
 	var a K8S = K8S{
@@ -91,15 +97,6 @@ func (s *Deployment) AddK8sStruct(module string, image string, tag string, stage
 		s.K8S[length-1].Tag = tag
 		s.K8S[length-1].Stage = stage
 	*/
-}
-
-func (s *Deployment) AddBaseStruct(git string, gitbranch string) {
-	var a BASE = BASE{
-		Git:    git,
-		Branch: gitbranch,
-	}
-	s.BASE = append(s.BASE, a)
-
 }
 
 func (s *Deployment) AddOpenfaasStruct(module string, image string, tag string, stage string) {
@@ -131,6 +128,20 @@ func (s *Deployment) AddRedisStruct(module string, image string, tag string, sta
 		Stage:  stage,
 	}
 	s.Redis = append(s.Redis, a)
+}
+func (s *Deployment) RemoveK8sStruct(index int) {
+	s.K8S = append(s.K8S[:index], s.K8S[index+1:]...)
+}
+func (s *Deployment) RemoveOpenfaasStruct(index int) {
+	s.Openfaas = append(s.Openfaas[:index], s.Openfaas[index+1:]...)
+}
+func (s *Deployment) RemoveMonitorStruct(index int) {
+
+	s.Monitor = append(s.Monitor[:index], s.Monitor[index+1:]...)
+}
+func (s *Deployment) RemoveRedisStruct(index int) {
+
+	s.Redis = append(s.Redis[:index], s.Redis[index+1:]...)
 }
 
 func (s *K8S) UpdateK8sTag(newtag string) {

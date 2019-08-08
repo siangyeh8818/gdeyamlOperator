@@ -58,6 +58,43 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 			}
 		}
 	}
+
+	Ignore_total := len(envir_yaml.Deploymentfile[0].Ignore.K8S) + len(envir_yaml.Deploymentfile[0].Ignore.Openfaas) + len(envir_yaml.Deploymentfile[0].Ignore.Monitor) + len(envir_yaml.Deploymentfile[0].Ignore.Redis)
+	fmt.Printf("Ignore_total : %d", Ignore_total)
+	if Ignore_total > 0 {
+		if len(envir_yaml.Deploymentfile[0].Ignore.K8S) > 0 {
+			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.K8S); i++ {
+				current_index := SearchIngore(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Ignore.K8S[i].Module, "k8s")
+				fmt.Printf("current_index : %d", current_index)
+				(&inyaml.Deployment).RemoveK8sStruct(current_index)
+			}
+
+		}
+		if len(envir_yaml.Deploymentfile[0].Ignore.Openfaas) > 0 {
+			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.Openfaas); i++ {
+				current_index := SearchIngore(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Ignore.Openfaas[i].Module, "openfaas")
+				fmt.Printf("current_index : %d", current_index)
+				(&inyaml.Deployment).RemoveOpenfaasStruct(current_index)
+			}
+
+		}
+		if len(envir_yaml.Deploymentfile[0].Ignore.Monitor) > 0 {
+			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.Monitor); i++ {
+				current_index := SearchIngore(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Ignore.Monitor[i].Module, "monitor")
+				fmt.Printf("current_index : %d", current_index)
+				(&inyaml.Deployment).RemoveMonitorStruct(current_index)
+			}
+		}
+		if len(envir_yaml.Deploymentfile[0].Ignore.Redis) > 0 {
+			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.Redis); i++ {
+				current_index := SearchIngore(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Ignore.Redis[i].Module, "redis")
+				fmt.Printf("current_index : %d", current_index)
+				(&inyaml.Deployment).RemoveRedisStruct(current_index)
+			}
+
+		}
+	}
+
 	yamlcontent, err := yaml.Marshal(&inyaml)
 	if err != nil {
 		log.Fatalf("error: %v", err)
@@ -91,6 +128,37 @@ func SearchReplace(envir_yaml *Environmentyaml, inyaml *K8sYaml, imagesname stri
 	case "redis":
 		for i := 0; i < len(inyaml.Deployment.Redis); i++ {
 			if inyaml.Deployment.Redis[i].Image == imagesname {
+				resultindex = i
+			}
+		}
+	}
+	return resultindex
+}
+
+func SearchIngore(envir_yaml *Environmentyaml, inyaml *K8sYaml, modulename string, rangestr string) int {
+	var resultindex int
+	switch rangestr {
+	case "k8s":
+		for i := 0; i < len(inyaml.Deployment.K8S); i++ {
+			if inyaml.Deployment.K8S[i].Module == modulename {
+				resultindex = i
+			}
+		}
+	case "openfaas":
+		for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
+			if inyaml.Deployment.Openfaas[i].Module == modulename {
+				resultindex = i
+			}
+		}
+	case "monitor":
+		for i := 0; i < len(inyaml.Deployment.Monitor); i++ {
+			if inyaml.Deployment.Monitor[i].Module == modulename {
+				resultindex = i
+			}
+		}
+	case "redis":
+		for i := 0; i < len(inyaml.Deployment.Redis); i++ {
+			if inyaml.Deployment.Redis[i].Module == modulename {
 				resultindex = i
 			}
 		}

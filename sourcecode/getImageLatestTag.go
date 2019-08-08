@@ -45,7 +45,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.9.0")
+		fmt.Println("version : 1.9.1")
 		os.Exit(0)
 	}
 
@@ -188,6 +188,7 @@ func main() {
 		snapshot(snapshot_pattern, ouputfile, kustom_base, git_branch)
 	case "nesus_api":
 		GetNesuxCpmponet(promote_url, loginuser, loginpassword)
+
 	case "promote":
 		if inputfile != "" && Exists(inputfile) {
 			inyaml := K8sYaml{}
