@@ -38,6 +38,8 @@ var git_branch string
 var git_tag string
 var snapshot_pattern string
 var docker_login string
+var nesus_api_method string
+var nesus_req_body string
 
 func main() {
 
@@ -45,7 +47,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.9.1")
+		fmt.Println("version : 1.9.2")
 		os.Exit(0)
 	}
 
@@ -75,6 +77,8 @@ func main() {
 	fmt.Printf("flag -git-tag: %s\n", git_tag)
 	fmt.Printf("flag -snapshot-pattern: %s\n", snapshot_pattern)
 	fmt.Printf("flag -docker-login: %s\n", docker_login)
+	fmt.Printf("flag -nesus-api-method: %s\n", nesus_api_method)
+	fmt.Printf("flag -nesus-req-body: %s\n", nesus_req_body)
 
 	if loginuser != "" && loginpassword != "" {
 		LoginDockerHub(inputstage, loginuser, loginpassword)
@@ -187,7 +191,32 @@ func main() {
 	case "snapshot":
 		snapshot(snapshot_pattern, ouputfile, kustom_base, git_branch)
 	case "nesus_api":
-		GetNesuxCpmponet(promote_url, loginuser, loginpassword)
+		switch nesus_api_method {
+		case "GET":
+			GET_NesusAPI(promote_url, loginuser, loginpassword)
+		case "Get":
+			GET_NesusAPI(promote_url, loginuser, loginpassword)
+		case "get":
+			GET_NesusAPI(promote_url, loginuser, loginpassword)
+		case "POST":
+			POST_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+		case "Post":
+			POST_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+		case "post":
+			POST_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+		case "PUT":
+			PUT_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+		case "Put":
+			PUT_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+		case "put":
+			PUT_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+		case "DELETE":
+			DELETE_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+		case "Delete":
+			DELETE_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+		case "delete":
+			DELETE_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+		}
 
 	case "promote":
 		if inputfile != "" && Exists(inputfile) {
@@ -299,6 +328,8 @@ func Init() {
 	flag.BoolVar(&version, "v", false, "prints current binary version")
 	flag.StringVar(&snapshot_pattern, "snapshot-pattern", "", "pattern fot output , such as : k8s:default,openfaas:openfaas-fn,monitor:monitor,redis:redis")
 	flag.StringVar(&docker_login, "docker-login", "", "DockerHub url/IP for docekr login")
+	flag.StringVar(&nesus_api_method, "nesus-api-method", "", "Http method for NexusAPI Request, such as 'GET','POST','PUT','DELETE'")
+	flag.StringVar(&nesus_req_body, "nesus-req-body", "", "Requets body for NexusAPI Request")
 }
 
 func GetTag(name string, latestmode string) string {
