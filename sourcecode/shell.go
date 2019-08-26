@@ -95,6 +95,7 @@ func grepFolderName(module string, base_path string, ModuleMap map[string]int) s
 	if err != "" {
 		log.Println("Find image base-folder failed")
 	}
+
 	result_slice := strings.Split(result, "/")
 
 	for x := 0; x < len(result_slice); x++ {
@@ -105,7 +106,12 @@ func grepFolderName(module string, base_path string, ModuleMap map[string]int) s
 			if existtoken == 1 {
 				log.Println("pn-base module can't repeat")
 			} else if existtoken == 0 {
-				token = x - 1
+				if strings.Contains(result_slice[x-1], "gde") {
+					log.Printf("pass folder %s , because it is the gde-folder\n ", result_slice[x-1])
+				} else {
+					token = x - 1
+				}
+				//token = x - 1
 			}
 
 		}

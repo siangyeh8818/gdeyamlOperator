@@ -39,10 +39,16 @@ func PushTagimage(imagename string, push_pattern string, modulename string, modu
 	if err != "" {
 		fmt.Println(err)
 	}
-	cmd_5 := "docker rmi " + push_cpmplete_imagename
-	fmt.Println(cmd_5)
-	_, err = exec_shell(cmd_5)
-	if err != "" {
-		fmt.Println(err)
+
+	if imagename == push_cpmplete_imagename {
+		fmt.Println("we don't need to docker rmi this image")
+	} else if imagename != push_cpmplete_imagename {
+		cmd_5 := "docker rmi " + push_cpmplete_imagename
+		fmt.Println(cmd_5)
+		_, err = exec_shell(cmd_5)
+		if err != "" {
+			fmt.Println(err)
+		}
 	}
+
 }
