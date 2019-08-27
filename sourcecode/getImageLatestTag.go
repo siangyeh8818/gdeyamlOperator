@@ -47,7 +47,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.9.2")
+		fmt.Println("version : 1.9.3")
 		os.Exit(0)
 	}
 
@@ -190,7 +190,7 @@ func main() {
 
 	case "snapshot":
 		snapshot(snapshot_pattern, ouputfile, kustom_base, git_branch)
-	case "nesus_api":
+	case "nexus_api":
 		switch nesus_api_method {
 		case "GET":
 			GET_NesusAPI(promote_url, loginuser, loginpassword)
@@ -313,7 +313,7 @@ func Init() {
 	flag.StringVar(&latest_mode, "latest-mode", "push", "push or build , choose one mode to identify latest tag to you")
 	flag.StringVar(&push_pattern, "push-pattern", "", "(push)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
 	flag.StringVar(&pull_pattern, "pull-pattern", "", "(pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
-	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace' or 'imagedump' or 'nesus_api'")
+	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace' or 'imagedump' or 'nexus_api'")
 	flag.StringVar(&git_url, "git-url", "", "url for git repo")
 	flag.StringVar(&git_branch, "git-branch", "", "branch for git repo")
 	flag.StringVar(&git_tag, "git-tag", "", "Tag for git repo")
