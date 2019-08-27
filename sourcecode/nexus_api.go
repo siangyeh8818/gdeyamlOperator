@@ -61,6 +61,7 @@ func GET_NesusAPI(nexusurl string, nexus_user string, nexus_password string) {
 	}
 	responseData, err := ioutil.ReadAll(resp.Body)
 	log.Println(string(responseData))
+	log.Println(resp.Status)
 	log.Println(resp)
 	//JsonParse(string(responseData))
 }
@@ -86,7 +87,9 @@ func POST_NesusAPI(nexusurl string, nexus_user string, nexus_password string, re
 	}
 	responseData, err := ioutil.ReadAll(resp.Body)
 	log.Println(string(responseData))
+	log.Println(resp.Status)
 	log.Println(resp)
+
 }
 
 func PUT_NesusAPI(nexusurl string, nexus_user string, nexus_password string, request_body string) {
@@ -110,6 +113,7 @@ func PUT_NesusAPI(nexusurl string, nexus_user string, nexus_password string, req
 	}
 	responseData, err := ioutil.ReadAll(resp.Body)
 	log.Println(string(responseData))
+	log.Println(resp.Status)
 	log.Println(resp)
 }
 
@@ -134,5 +138,6 @@ func DELETE_NesusAPI(nexusurl string, nexus_user string, nexus_password string, 
 	}
 	responseData, err := ioutil.ReadAll(resp.Body)
 	log.Println(string(responseData))
+	log.Println(resp.Status)
 	log.Println(resp)
 }
