@@ -38,8 +38,9 @@ var git_branch string
 var git_tag string
 var snapshot_pattern string
 var docker_login string
-var nesus_api_method string
-var nesus_req_body string
+var nexus_api_method string
+var nexus_req_body string
+var nexus_output_pattern string
 
 func main() {
 
@@ -47,7 +48,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.9.3")
+		fmt.Println("version : 1.9.5")
 		os.Exit(0)
 	}
 
@@ -77,8 +78,9 @@ func main() {
 	fmt.Printf("flag -git-tag: %s\n", git_tag)
 	fmt.Printf("flag -snapshot-pattern: %s\n", snapshot_pattern)
 	fmt.Printf("flag -docker-login: %s\n", docker_login)
-	fmt.Printf("flag -nesus-api-method: %s\n", nesus_api_method)
-	fmt.Printf("flag -nesus-req-body: %s\n", nesus_req_body)
+	fmt.Printf("flag -nexus-api-method: %s\n", nexus_api_method)
+	fmt.Printf("flag -nexus-req-body: %s\n", nexus_req_body)
+	fmt.Printf("flag -nexus-output-pattern: %s\n", nexus_output_pattern)
 
 	if loginuser != "" && loginpassword != "" {
 		LoginDockerHub(inputstage, loginuser, loginpassword)
@@ -191,31 +193,32 @@ func main() {
 	case "snapshot":
 		snapshot(snapshot_pattern, ouputfile, kustom_base, git_branch)
 	case "nexus_api":
-		switch nesus_api_method {
+		var output OutputContent
+		switch nexus_api_method {
 		case "GET":
-			GET_NesusAPI(promote_url, loginuser, loginpassword)
+			GET_NesusAPI(promote_url, loginuser, loginpassword, ouputfile, nexus_output_pattern, &output)
 		case "Get":
-			GET_NesusAPI(promote_url, loginuser, loginpassword)
+			GET_NesusAPI(promote_url, loginuser, loginpassword, ouputfile, nexus_output_pattern, &output)
 		case "get":
-			GET_NesusAPI(promote_url, loginuser, loginpassword)
+			GET_NesusAPI(promote_url, loginuser, loginpassword, ouputfile, nexus_output_pattern, &output)
 		case "POST":
-			POST_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+			POST_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "Post":
-			POST_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+			POST_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "post":
-			POST_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+			POST_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "PUT":
-			PUT_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+			PUT_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "Put":
-			PUT_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+			PUT_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "put":
-			PUT_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+			PUT_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "DELETE":
-			DELETE_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+			DELETE_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "Delete":
-			DELETE_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+			DELETE_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "delete":
-			DELETE_NesusAPI(promote_url, loginuser, loginpassword, nesus_req_body)
+			DELETE_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		}
 
 	case "promote":
@@ -328,8 +331,9 @@ func Init() {
 	flag.BoolVar(&version, "v", false, "prints current binary version")
 	flag.StringVar(&snapshot_pattern, "snapshot-pattern", "", "pattern fot output , such as : k8s:default,openfaas:openfaas-fn,monitor:monitor,redis:redis")
 	flag.StringVar(&docker_login, "docker-login", "", "DockerHub url/IP for docekr login")
-	flag.StringVar(&nesus_api_method, "nesus-api-method", "", "Http method for NexusAPI Request, such as 'GET','POST','PUT','DELETE'")
-	flag.StringVar(&nesus_req_body, "nesus-req-body", "", "Requets body for NexusAPI Request")
+	flag.StringVar(&nexus_api_method, "nexus-api-method", "", "Http method for NexusAPI Request, such as 'GET','POST','PUT','DELETE'")
+	flag.StringVar(&nexus_req_body, "nexus-req-body", "", "Requets body for NexusAPI Request")
+	flag.StringVar(&nexus_output_pattern, "nexus-output-pattern", "", "Pattern for output by requesting Nexus-API")
 }
 
 func GetTag(name string, latestmode string) string {

@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
-	"os"
 	"strings"
 )
 
@@ -34,12 +33,12 @@ func GetNesuxCpmponet(nexusurl string, nexus_user string, nexus_password string)
 	log.Println("----------srart of responseData-----------")
 	log.Println(string(responseData))
 	log.Println("----------end of responseData-----------")
-	JsonParse(string(responseData))
-	os.Exit(0)
+	//JsonParse(string(responseData))
+	//os.Exit(0)
 }
 
-func GET_NesusAPI(nexusurl string, nexus_user string, nexus_password string) {
-
+func GET_NesusAPI(nexusurl string, nexus_user string, nexus_password string, outfile string, out_pattern string, output *OutputContent) {
+	var token string
 	// curl -X GET "https://package.pentium.network/service/rest/v1/searchsort=group&repository=scripts&format=raw" -H "accept: application/json"
 	// curl -X GET "https://package.pentium.network/service/rest/v1/search?continuationToken=35303a6562313438303661303938346263663537613436613861663432663439353266&sort=group&repository=scripts&format=raw" -H "accept: application/json"
 
@@ -60,10 +59,30 @@ func GET_NesusAPI(nexusurl string, nexus_user string, nexus_password string) {
 		log.Println("request failed")
 	}
 	responseData, err := ioutil.ReadAll(resp.Body)
+	log.Println("---------srart of responseData---------")
 	log.Println(string(responseData))
+	log.Println("---------end of responseData-----------")
+	log.Println("---------srart of jaonparse------------")
+	JsonParse2(string(responseData), out_pattern, output)
+	log.Println("---------end of jaonparse----------------")
 	log.Println(resp.Status)
 	log.Println(resp)
 	//JsonParse(string(responseData))
+	token = continueTokenParse(string(responseData))
+	if token == "null" || token == "" {
+		log.Printf("output.content 數量 : %d\n", len(output.Content))
+		var temp_out string
+		for i := 0; i < len(output.Content); i++ {
+			temp_out = temp_out + output.Content[i] + "\n"
+			//log.Println(temp_out)
+		}
+		WriteWithIoutil(outfile, string(temp_out))
+	} else {
+		origin_request := strings.Split(nexusurl, "?")
+		new_request_url := origin_request[0] + "?" + "continuationToken=" + token + origin_request[1]
+		GET_NesusAPI(new_request_url, nexus_user, nexus_password, outfile, out_pattern, output)
+	}
+
 }
 
 func POST_NesusAPI(nexusurl string, nexus_user string, nexus_password string, request_body string) {
@@ -79,6 +98,7 @@ func POST_NesusAPI(nexusurl string, nexus_user string, nexus_password string, re
 		req.SetBasicAuth(nexus_user, nexus_password)
 	}
 	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
 	defer resp.Body.Close()
@@ -105,6 +125,7 @@ func PUT_NesusAPI(nexusurl string, nexus_user string, nexus_password string, req
 		req.SetBasicAuth(nexus_user, nexus_password)
 	}
 	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := http.DefaultClient.Do(req)
 	defer resp.Body.Close()
