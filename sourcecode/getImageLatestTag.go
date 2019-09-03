@@ -41,6 +41,8 @@ var docker_login string
 var nexus_api_method string
 var nexus_req_body string
 var nexus_output_pattern string
+var promote_type string
+var promote_destination string
 
 func main() {
 
@@ -48,7 +50,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.9.5")
+		fmt.Println("version : 1.9.7")
 		os.Exit(0)
 	}
 
@@ -81,6 +83,8 @@ func main() {
 	fmt.Printf("flag -nexus-api-method: %s\n", nexus_api_method)
 	fmt.Printf("flag -nexus-req-body: %s\n", nexus_req_body)
 	fmt.Printf("flag -nexus-output-pattern: %s\n", nexus_output_pattern)
+	fmt.Printf("flag -promote-type: %s\n", promote_type)
+	fmt.Printf("flag -promote-destination: %s\n", promote_destination)
 
 	if loginuser != "" && loginpassword != "" {
 		LoginDockerHub(inputstage, loginuser, loginpassword)
@@ -222,22 +226,28 @@ func main() {
 		}
 
 	case "promote":
-		if inputfile != "" && Exists(inputfile) {
-			inyaml := K8sYaml{}
-			inyaml.getConf(inputfile)
-			for i := 0; i < len(inyaml.Deployment.K8S); i++ {
-				if inyaml.Deployment.K8S[i].Image != "" && inyaml.Deployment.K8S[i].Tag != "" {
-					promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+		switch promote_type {
+		case "move":
+			if inputfile != "" && Exists(inputfile) {
+				inyaml := K8sYaml{}
+				inyaml.getConf(inputfile)
+				for i := 0; i < len(inyaml.Deployment.K8S); i++ {
+					if inyaml.Deployment.K8S[i].Image != "" && inyaml.Deployment.K8S[i].Tag != "" {
+						promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+					}
 				}
-			}
-			for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
-				if inyaml.Deployment.Openfaas[i].Image != "" && inyaml.Deployment.Openfaas[i].Tag != "" {
-					promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+				for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
+					if inyaml.Deployment.Openfaas[i].Image != "" && inyaml.Deployment.Openfaas[i].Tag != "" {
+						promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+					}
 				}
+			} else {
+				fmt.Println("Yoy have to setting -inputfile <filename>")
 			}
-		} else {
-			fmt.Println("Yoy have to setting -inputfile <filename>")
+		case "cp":
+			cpcomponetname(promote_url, loginuser, loginpassword,promote_destination)
 		}
+
 	case "gitclone":
 		if git_url != "" && environment_file == "" {
 			if git_branch != "" && git_tag == "" {
@@ -334,6 +344,8 @@ func Init() {
 	flag.StringVar(&nexus_api_method, "nexus-api-method", "", "Http method for NexusAPI Request, such as 'GET','POST','PUT','DELETE'")
 	flag.StringVar(&nexus_req_body, "nexus-req-body", "", "Requets body for NexusAPI Request")
 	flag.StringVar(&nexus_output_pattern, "nexus-output-pattern", "", "Pattern for output by requesting Nexus-API")
+	flag.StringVar(&promote_type, "promote-type", "move", "Different model , 'move' or 'cp' ")
+	flag.StringVar(&promote_destination, "promote-destination", "", "Destination for repository name ")
 }
 
 func GetTag(name string, latestmode string) string {
