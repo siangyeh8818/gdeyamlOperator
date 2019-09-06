@@ -77,7 +77,13 @@ func (s *Deployment) AddBaseStruct(git string, gitbranch string) {
 		Git:    git,
 		Branch: gitbranch,
 	}
+
 	s.BASE = append(s.BASE, a)
+
+}
+func (s *Deployment) UpdateBaseStructBranch(git string, gitbranch string) {
+	s.BASE[0].Git = git
+	s.BASE[0].Branch = gitbranch
 
 }
 

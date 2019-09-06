@@ -43,6 +43,9 @@ var nexus_req_body string
 var nexus_output_pattern string
 var promote_type string
 var promote_destination string
+var git_action string
+var git_repo_path string
+var git_new_branch string
 
 func main() {
 
@@ -50,41 +53,51 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.9.7")
+		fmt.Println("version : 1.9.8")
 		os.Exit(0)
 	}
-
-	fmt.Printf("flag -namespace: %s\n", namespace)
-	fmt.Printf("flag -imagename: %s\n", completeimagename)
-	fmt.Printf("flag -user: %s\n", loginuser)
-	fmt.Printf("flag -password: %s\n", loginpassword)
-	fmt.Printf("flag -list: %d\n", list2)
-	fmt.Printf("flag -inputfile: %s\n", inputfile)
-	fmt.Printf("flag -ouputfile: %s\n", ouputfile)
-	fmt.Printf("flag -stage: %s\n", inputstage)
-	fmt.Printf("flag -push: %t\n", pushimage)
-	fmt.Printf("flag -version: %t\n", version)
-	fmt.Printf("flag -latest-mode: %s\n", latest_mode)
-	fmt.Printf("flag -push-pattern: %s\n", push_pattern)
-	fmt.Printf("flag -pull-pattern: %s\n", pull_pattern)
-	fmt.Printf("flag -kustom-base-path: %s\n", kustom_base)
+	fmt.Println("--------------Main Action -----------------")
 	fmt.Printf("flag -action: %s\n", action)
-	fmt.Printf("flag -promote-url: %s\n", promote_url)
-	fmt.Printf("flag -promote-source: %s\n", promote_source)
+	fmt.Println("--------------Git Related Flag -----------------")
 	fmt.Printf("flag -git-url: %s\n", git_url)
 	fmt.Printf("flag -clone-path: %s\n", clone_path)
+	fmt.Printf("flag -git-repo-path: %s\n", git_repo_path)
 	fmt.Printf("flag -git-user: %s\n", git_user)
 	fmt.Printf("flag -git-token: %s\n", git_token)
-	fmt.Printf("flag -environment-file: %s\n", environment_file)
 	fmt.Printf("flag -git-branch: %s\n", git_branch)
+	fmt.Printf("flag -git-new-branch: %s\n", git_new_branch)
 	fmt.Printf("flag -git-tag: %s\n", git_tag)
-	fmt.Printf("flag -snapshot-pattern: %s\n", snapshot_pattern)
+	fmt.Printf("flag -git-action: %s\n", git_action)
+	fmt.Println("--------------Docker Related Flag -----------------")
 	fmt.Printf("flag -docker-login: %s\n", docker_login)
+	fmt.Printf("flag -push: %t\n", pushimage)
+	fmt.Printf("flag -push-pattern: %s\n", push_pattern)
+	fmt.Printf("flag -pull-pattern: %s\n", pull_pattern)
+	fmt.Printf("flag -imagename: %s\n", completeimagename)
+	fmt.Printf("flag -list: %d\n", list2)
+	fmt.Printf("flag -latest-mode: %s\n", latest_mode)
+	fmt.Println("--------------Nexus-API Related Flag -----------------")
 	fmt.Printf("flag -nexus-api-method: %s\n", nexus_api_method)
 	fmt.Printf("flag -nexus-req-body: %s\n", nexus_req_body)
 	fmt.Printf("flag -nexus-output-pattern: %s\n", nexus_output_pattern)
 	fmt.Printf("flag -promote-type: %s\n", promote_type)
 	fmt.Printf("flag -promote-destination: %s\n", promote_destination)
+	fmt.Printf("flag -promote-url: %s\n", promote_url)
+	fmt.Printf("flag -promote-source: %s\n", promote_source)
+	fmt.Println("--------------GDEyaml/Kucustom Related Flag -----------------")
+	fmt.Printf("flag -environment-file: %s\n", environment_file)
+	fmt.Printf("flag -snapshot-pattern: %s\n", snapshot_pattern)
+	fmt.Printf("flag -kustom-base-path: %s\n", kustom_base)
+	fmt.Printf("flag -stage: %s\n", inputstage)
+	fmt.Println("--------------Kubernetes Related Flag -----------------")
+	fmt.Printf("flag -namespace: %s\n", namespace)
+	fmt.Println("--------------General Related Flag -----------------")
+	fmt.Printf("flag -user: %s\n", loginuser)
+	fmt.Printf("flag -password: %s\n", loginpassword)
+	fmt.Printf("flag -inputfile: %s\n", inputfile)
+	fmt.Printf("flag -ouputfile: %s\n", ouputfile)
+	fmt.Println("--------------Version Related Flag -----------------")
+	fmt.Printf("flag -v: %t\n", version)
 
 	if loginuser != "" && loginpassword != "" {
 		LoginDockerHub(inputstage, loginuser, loginpassword)
@@ -245,7 +258,7 @@ func main() {
 				fmt.Println("Yoy have to setting -inputfile <filename>")
 			}
 		case "cp":
-			cpcomponetname(promote_url, loginuser, loginpassword,promote_destination)
+			cpcomponetname(promote_url, loginuser, loginpassword, promote_destination)
 		}
 
 	case "gitclone":
@@ -290,6 +303,19 @@ func main() {
 			fmt.Println("only one flag you can setting , 'git-url' or 'environment-file'")
 			os.Exit(0)
 		}
+	case "git":
+		switch git_action {
+		case "clone":
+			cloneRepo(git_url, git_branch, git_repo_path, git_user, git_token)
+		case "branch":
+			CreateBranch(git_url, git_branch, git_repo_path)
+		case "checkout":
+			CheckoutBranch(git_url, git_branch, git_repo_path)
+		case "push":
+			PushGit(git_repo_path, git_user, git_token, git_new_branch, git_url)
+		case "clonepush_new-branch":
+			ClonePushNewBranch(git_url, git_branch, git_new_branch, git_repo_path, git_user, git_token)
+		}
 	case "replace":
 		if environment_file != "" && Exists(environment_file) {
 			if inputfile != "" && Exists(inputfile) {
@@ -308,9 +334,12 @@ func main() {
 			fmt.Println("you have to  setting  flag (environment_file)")
 			os.Exit(0)
 		}
+	case "new-release":
+		NewRelease(git_url, git_branch, git_new_branch, git_repo_path, git_user, git_token, ouputfile)
 	case "imagedump":
 		LoginDockerHubNew(docker_login, loginuser, loginpassword)
 		DumpImage(push_pattern, snapshot_pattern, pushimage)
+
 	}
 }
 
@@ -326,9 +355,11 @@ func Init() {
 	flag.StringVar(&latest_mode, "latest-mode", "push", "push or build , choose one mode to identify latest tag to you")
 	flag.StringVar(&push_pattern, "push-pattern", "", "(push)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
 	flag.StringVar(&pull_pattern, "pull-pattern", "", "(pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
-	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace' or 'imagedump' or 'nexus_api'")
+	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace' or 'imagedump' or 'nexus_api' or 'new-release'")
 	flag.StringVar(&git_url, "git-url", "", "url for git repo")
 	flag.StringVar(&git_branch, "git-branch", "", "branch for git repo")
+	flag.StringVar(&git_new_branch, "git-new-branch", "", "New branch for git repo, this branch will be created")
+	flag.StringVar(&git_action, "git-action", "", "git related operation , such as 'branch','push'")
 	flag.StringVar(&git_tag, "git-tag", "", "Tag for git repo")
 	flag.StringVar(&git_user, "git-user", "", "user for git clone")
 	flag.StringVar(&git_token, "git-token", "", "token for git clone")
@@ -346,6 +377,7 @@ func Init() {
 	flag.StringVar(&nexus_output_pattern, "nexus-output-pattern", "", "Pattern for output by requesting Nexus-API")
 	flag.StringVar(&promote_type, "promote-type", "move", "Different model , 'move' or 'cp' ")
 	flag.StringVar(&promote_destination, "promote-destination", "", "Destination for repository name ")
+	flag.StringVar(&git_repo_path, "git-repo-path", "", "directory for git-repo")
 }
 
 func GetTag(name string, latestmode string) string {

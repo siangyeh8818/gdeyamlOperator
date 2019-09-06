@@ -38,7 +38,6 @@ func CloneYaml(url string, branch string, directory string, name string, token s
 		Progress:      os.Stdout,
 		SingleBranch:  true,
 	})
-
 	//CheckIfError(err)
 	// ... retrieving the branch being pointed by HEAD
 	//ref, err := r.Head()
@@ -83,3 +82,5 @@ func CloneYamlByTag(url string, tag string, directory string, name string, token
 	fmt.Println(commit)
 	return err
 }
+
+
