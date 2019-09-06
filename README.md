@@ -20,20 +20,20 @@ Centos:<br>
 ./getImageLatestTag --imagename dockerhub.pentium.network/grafana
 
 主要動作的flag
-| flag      | 說明    | 預設值     |
-| ---------- | :-----------:  | -----------
+| flag       | 說明            | 預設值     |
+| ---------- | :-----------:  | -----------|
 |  action    |  action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace' or 'imagedump' or 'nexus_api' or 'new-release' |  gettag  
 
 Git相關的flag
-| flag      | 說明    | 預設值     |
-| ---------- | :-----------:  | :-----------: |
-| git-url |  url for git repo | null |
-| clone-path | folder path for git clone  | null |
+| flag       | 說明                                                       | 預設值         |
+| ---------- | :--------------------------------------------------------:| :-----------: |
+| git-url    |  url for git repo                                         | null          |
+| clone-path | folder path for git clone                                 | null          |
 | git-repo-path | directory for git-repo  | null |
 | git-user | user for git clone  | null |
 | git-token | token for git clone  | null |
 | git-branch | branch for git repo  | null |
-| git-new-branch | New branch for git repo, this branch will be created  | null |
+| git-new-branch | New branch for git repo, this branch will be created  | null          |
 | git-tag | Tag for git repo  | null |
 | git-action | git related operation , such as 'branch','push'  | null |
 
