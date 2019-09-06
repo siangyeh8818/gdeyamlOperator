@@ -18,6 +18,31 @@ Centos:<br>
 
 # 用法
 ./getImageLatestTag --imagename dockerhub.pentium.network/grafana
+主要動作的flag
+| flag      | 說明    | 預設值     |
+| ---------- | :-----------:  | :-----------: |
+|  action    |  action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace' or 'imagedump' or 'nexus_api' or 'new-release' |  gettag  |
+Git相關的flag
+| flag      | 說明    | 預設值     |
+| git-url | :-----------:  | :-----------: |
+| clone-path | :-----------:  | :-----------: |
+| git-repo-path | :-----------:  | :-----------: |
+| git-user | :-----------:  | :-----------: |
+| git-token | :-----------:  | :-----------: |
+| git-branch | :-----------:  | :-----------: |
+| git-new-branch | :-----------:  | :-----------: |
+| git-tag | :-----------:  | :-----------: |
+| git-action | :-----------:  | :-----------: |
+
+Docker相關的flag
+| flag      | 說明    | 預設值     |
+| docker-login | :-----------:  | :-----------: |
+| push | :-----------:  | :-----------: |
+| push-pattern | :-----------:  | :-----------: |
+| pull-pattern | :-----------:  | :-----------: |
+| imagename | :-----------:  | :-----------: |
+| list | :-----------:  | :-----------: |
+| latest-mode | :-----------:  | :-----------: |
 
 | flag      | 說明    | 預設值     |
 | ---------- | :-----------:  | :-----------: |
