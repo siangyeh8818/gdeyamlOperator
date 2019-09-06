@@ -1,6 +1,15 @@
 # gdeyamlOperator
+主要操作 :
+- gettag : 返回該image 最新的tag並儲存到"getImageLatestTag_result.txt"這個檔案
+- snapshot : 將k8s環境上的deploy,statefulset,daemonset,cronjob 輸出成gdeyaml格式
+- nexus_api : 對Nexus repository 的API操作
+- promote : 對Nexus repository 的資產進行搬移或是複製類型的搬移, 支援將gdeyaml格式的image 進行promote
+- gitclone : 對於git clone的動作 , 參數以branch優先 , 若branch不存在會找tag 做clone
+- git : git 相關操作 , 類似clone,checkoot,commit 等等
+- replace : 將environment格式的replace內容取代gdeyaml的指定內容
+- new-release : 為了開新的branch (gdeyaml & base的repo) , 並把new branch打上去gdeyaml文件
+- imagedump : dump出k8s上的image 並可支援push
 
-返回該image 最新的tag並儲存到"getImageLatestTag_result.txt"這個檔案
 
 # 使用前須安裝
 須能使用jq指令和docker指令 <br>
