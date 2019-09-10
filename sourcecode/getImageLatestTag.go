@@ -46,6 +46,9 @@ var promote_destination string
 var git_action string
 var git_repo_path string
 var git_new_branch string
+var replace_type string
+var new_tag string
+var replace_image string
 
 func main() {
 
@@ -53,7 +56,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.9.8")
+		fmt.Println("version : 1.9.9")
 		os.Exit(0)
 	}
 	fmt.Println("--------------Main Action -----------------")
@@ -89,6 +92,9 @@ func main() {
 	fmt.Printf("flag -snapshot-pattern: %s\n", snapshot_pattern)
 	fmt.Printf("flag -kustom-base-path: %s\n", kustom_base)
 	fmt.Printf("flag -stage: %s\n", inputstage)
+	fmt.Printf("flag -replace-type: %s\n", replace_type)
+	fmt.Printf("flag -replace-image: %s\n", replace_image)
+	fmt.Printf("flag -new-tag: %s\n", new_tag)
 	fmt.Println("--------------Kubernetes Related Flag -----------------")
 	fmt.Printf("flag -namespace: %s\n", namespace)
 	fmt.Println("--------------General Related Flag -----------------")
@@ -317,23 +323,45 @@ func main() {
 			ClonePushNewBranch(git_url, git_branch, git_new_branch, git_repo_path, git_user, git_token)
 		}
 	case "replace":
-		if environment_file != "" && Exists(environment_file) {
-			if inputfile != "" && Exists(inputfile) {
-				if ouputfile != "" {
-					fmt.Println("success to enter func Replacedeploymentfile")
-					Replacedeploymentfile(environment_file, inputfile, ouputfile)
-				} else if ouputfile == "" {
-					fmt.Println("you have to  setting  flag (ouputfile)")
+		switch replace_type {
+		case "local":
+			if environment_file != "" && Exists(environment_file) {
+				if inputfile != "" && Exists(inputfile) {
+					if ouputfile != "" {
+						fmt.Println("success to enter func Replacedeploymentfile")
+						Replacedeploymentfile(environment_file, inputfile, ouputfile)
+					} else if ouputfile == "" {
+						fmt.Println("you have to  setting  flag (ouputfile)")
+						os.Exit(0)
+					}
+				} else if inputfile == "" {
+					fmt.Println("you have to  setting  flag (inputfile)")
 					os.Exit(0)
 				}
-			} else if inputfile == "" {
-				fmt.Println("you have to  setting  flag (inputfile)")
+			} else if environment_file == "" {
+				fmt.Println("you have to  setting  flag (environment_file)")
 				os.Exit(0)
 			}
-		} else if environment_file == "" {
-			fmt.Println("you have to  setting  flag (environment_file)")
-			os.Exit(0)
+		case "git":
+			if git_url == "" {
+				log.Println("you have to  setting  flag (git-url)")
+				os.Exit(0)
+			}
+			if git_branch == "" {
+				log.Println("you have to  setting  flag (git-branch)")
+				os.Exit(0)
+			}
+			log.Println("-----action >> git CloneRepo----")
+			GitClone(git_url, git_branch, git_repo_path, git_user, git_token)
+			log.Println("-----action >> Update Image-Tag to deploy.yml----")
+			Replacedeploymentfile_Image_Tag(replace_image, new_tag, inputfile, ouputfile)
+			log.Println("-----action >> git CommitRepo----")
+			CommitRepo(git_repo_path, "deploy.yml")
+			log.Println("-----action >> git PushRepo----")
+			PushGit(git_repo_path, git_user, git_token, git_branch, git_url)
+			log.Println("-----action finishing----")
 		}
+
 	case "new-release":
 		NewRelease(git_url, git_branch, git_new_branch, git_repo_path, git_user, git_token, ouputfile)
 	case "imagedump":
@@ -378,6 +406,10 @@ func Init() {
 	flag.StringVar(&promote_type, "promote-type", "move", "Different model , 'move' or 'cp' ")
 	flag.StringVar(&promote_destination, "promote-destination", "", "Destination for repository name ")
 	flag.StringVar(&git_repo_path, "git-repo-path", "", "directory for git-repo")
+	flag.StringVar(&replace_type, "replace-type", "local", "you can choose 'local' or 'git'")
+	flag.StringVar(&replace_image, "replace-image", "", "which one image-name you want to br replace")
+	flag.StringVar(&new_tag, "new-tag", "", "New tag you want to replace into gdeyaml")
+
 }
 
 func GetTag(name string, latestmode string) string {

@@ -19,7 +19,7 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 	if Replace_total > 0 {
 		if len(envir_yaml.Deploymentfile[0].Replace.K8S) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Replace.K8S); i++ {
-				current_index := SearchReplace(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Replace.K8S[i].Image, "k8s")
+				current_index := SearchReplace(&inyaml, envir_yaml.Deploymentfile[0].Replace.K8S[i].Image, "k8s")
 				fmt.Printf("current_index : %d", current_index)
 				(&inyaml.Deployment.K8S[current_index]).UpdateK8sTag(envir_yaml.Deploymentfile[0].Replace.K8S[i].Tag)
 				(&inyaml.Deployment.K8S[current_index]).UpdateK8sModule(envir_yaml.Deploymentfile[0].Replace.K8S[i].Module)
@@ -29,7 +29,7 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 		}
 		if len(envir_yaml.Deploymentfile[0].Replace.Openfaas) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Replace.Openfaas); i++ {
-				current_index := SearchReplace(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Image, "openfaas")
+				current_index := SearchReplace(&inyaml, envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Image, "openfaas")
 				fmt.Printf("current_index : %d", current_index)
 				(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasTag(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Tag)
 				(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasModule(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Module)
@@ -39,7 +39,7 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 		}
 		if len(envir_yaml.Deploymentfile[0].Replace.Monitor) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Replace.Monitor); i++ {
-				current_index := SearchReplace(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Replace.Monitor[i].Image, "monitor")
+				current_index := SearchReplace(&inyaml, envir_yaml.Deploymentfile[0].Replace.Monitor[i].Image, "monitor")
 				fmt.Printf("current_index : %d", current_index)
 				(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorTag(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Tag)
 				(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorModule(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Module)
@@ -49,7 +49,7 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 		}
 		if len(envir_yaml.Deploymentfile[0].Replace.Redis) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Replace.Redis); i++ {
-				current_index := SearchReplace(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Replace.Redis[i].Image, "redis")
+				current_index := SearchReplace(&inyaml, envir_yaml.Deploymentfile[0].Replace.Redis[i].Image, "redis")
 				fmt.Printf("current_index : %d", current_index)
 				(&inyaml.Deployment.Redis[current_index]).UpdateRedisTag(envir_yaml.Deploymentfile[0].Replace.Redis[i].Tag)
 				(&inyaml.Deployment.Redis[current_index]).UpdateRedisModule(envir_yaml.Deploymentfile[0].Replace.Redis[i].Module)
@@ -104,7 +104,8 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 	WriteWithIoutil(outputfile, string(yamlcontent))
 }
 
-func SearchReplace(envir_yaml *Environmentyaml, inyaml *K8sYaml, imagesname string, rangestr string) int {
+//func SearchReplace(envir_yaml *Environmentyaml, inyaml *K8sYaml, imagesname string, rangestr string) int {
+func SearchReplace(inyaml *K8sYaml, imagesname string, rangestr string) int {
 	var resultindex int
 	switch rangestr {
 	case "k8s":
@@ -164,4 +165,34 @@ func SearchIngore(envir_yaml *Environmentyaml, inyaml *K8sYaml, modulename strin
 		}
 	}
 	return resultindex
+}
+
+func Replacedeploymentfile_Image_Tag(imagename string, imagetag string, inputfile string, outputfile string) {
+
+	deployyaml := K8sYaml{}
+	deployyaml.getConf(inputfile)
+
+	current_index1 := SearchReplace(&deployyaml, imagename, "k8s")
+	if current_index1 != -1 {
+		(&deployyaml.Deployment.K8S[current_index1]).UpdateK8sTag(imagetag)
+	}
+	current_index2 := SearchReplace(&deployyaml, imagename, "openfaas")
+	if current_index2 != -1 {
+		(&deployyaml.Deployment.Openfaas[current_index2]).UpdateOpenfaasTag(imagetag)
+	}
+	current_index3 := SearchReplace(&deployyaml, imagename, "monitor")
+	if current_index3 != -1 {
+		(&deployyaml.Deployment.Monitor[current_index3]).UpdateMonitorTag(imagetag)
+	}
+	current_index4 := SearchReplace(&deployyaml, imagename, "redis")
+	if current_index4 != -1 {
+		(&deployyaml.Deployment.Redis[current_index4]).UpdateRedisTag(imagetag)
+	}
+
+	yamlcontent, err := yaml.Marshal(&deployyaml)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	WriteWithIoutil(outputfile, string(yamlcontent))
 }
