@@ -38,7 +38,7 @@ Git相關的flag
 | git-action     |   git related operation , such as 'branch','push'    |  null  |
 
 Docker相關的flag
-| flag         |                                                  說明                                                  |    預設值     |
+| flag         |                                                  說明                                                  |    預設值       |
 | ------------ | :----------------------------------------------------------------------------------------------------: | :-----------: |
 | docker-login |                                             :-----------:                                              | :-----------: |
 | push         |                                            push this image                                             |     false     |
