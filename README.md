@@ -25,8 +25,9 @@ Centos:<br>
 | action | action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace' or 'imagedump' or 'nexus_api' or 'new-release' | gettag |
 
 Git相關的flag
+
 | flag           |                     description                      | default value  |
-| -------------- | :--------------------------------------------------: | :------------: |
+| :------------: | :--------------------------------------------------: | :------------: |
 | git-url        |                   url for git repo                   |  null          |
 | clone-path     |              folder path for git clone               |  null          |
 | git-repo-path  |                directory for git-repo                |  null          |
