@@ -40,15 +40,16 @@ Git相關的flag
 | git-action     |   git related operation , such as 'branch','push'    |  null          |
 
 Docker相關的flag
-| flag         |                                                  說明                                                  |    預設值     |
-| ------------ | :----------------------------------------------------------------------------------------------------: | :-----------: |
-| docker-login |                                             :-----------:                                              | :-----------: |
-| push         |                                            push this image                                             |     false     |
-| push-pattern |            (push)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}            |               |
-| pull-pattern |            (pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}            |               |
-| imagename    | docker image , such as dockerhub.pentium.network/grafana (default "dockerhub.pentium.network/grafana") |               |
-| list         |                     After sort tag list , we only deal with these top'number tags                      |       5       |
-| latest-mode  |                     push or build , choose one mode to identify latest tag to you                      |     push      |
+| flag          |                                                  description                                          | default value   |
+| ------------  | :---------------------------------------------------------------------------------------------------: | :-----------------: |
+| docker-login  |                                     DockerHub url/IP for docekr login                                 | null                 |
+| push          |                                            push this image                                             |     false           |
+| push-pattern  |            (push)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}            |                     |
+| pull-pattern  |            (pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}            |                     |
+| imagename     | docker image , such as dockerhub.pentium.network/grafana (default "dockerhub.pentium.network/grafana") |                     |
+| list          |                     After sort tag list , we only deal with these top'number tags                      |       5             |
+| latest-mode   |                     push or build , choose one mode to identify latest tag to you                      |     push            |
+
 
 | flag         |                                       說明                                        |              預設值               |
 | ------------ | :-------------------------------------------------------------------------------: | :-------------------------------: |
