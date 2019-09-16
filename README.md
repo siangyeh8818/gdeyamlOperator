@@ -1,5 +1,7 @@
 # gdeyamlOperator
-主要操作 :
+
+## 主要操作:
+
 - gettag : 返回該image 最新的tag並儲存到"getImageLatestTag_result.txt"這個檔案
 - snapshot : 將k8s環境上的deploy,statefulset,daemonset,cronjob 輸出成gdeyaml格式
 - nexus_api : 對Nexus repository 的API操作
@@ -10,21 +12,24 @@
 - new-release : 為了開新的branch (gdeyaml & base的repo) , 並把new branch打上去gdeyaml文件
 - imagedump : dump出k8s上的image 並可支援push
 
+## 使用前須安裝
 
-# 使用前須安裝
 須能使用jq指令和docker指令 <br>
 Centos:<br>
   yum -y install jq
 
-# 用法
+## 用法
+
 ./getImageLatestTag --imagename dockerhub.pentium.network/grafana
 
 主要動作的flag
+
 | flag   |                                                                   說明                                                                   | 預設值 |
 | ------ | :--------------------------------------------------------------------------------------------------------------------------------------: | ------ |
 | action | action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace' or 'imagedump' or 'nexus_api' or 'new-release' | gettag |
 
 Git相關的flag
+
 | flag           |                         說明                         | 預設值 |
 | -------------- | :--------------------------------------------------: | :----: |
 | git-url        |                   url for git repo                   |  null  |
@@ -38,6 +43,7 @@ Git相關的flag
 | git-action     |   git related operation , such as 'branch','push'    |  null  |
 
 Docker相關的flag
+
 | flag         |                                                  說明                                                  |    預設值     |
 | ------------ | :----------------------------------------------------------------------------------------------------: | :-----------: |
 | docker-login |                                             :-----------:                                              | :-----------: |
