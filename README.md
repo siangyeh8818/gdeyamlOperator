@@ -40,9 +40,10 @@ Git相關的flag
 | git-action     |   git related operation , such as 'branch','push'    |  null          |
 
 Docker相關的flag
-| flag          |                                                  description                                          | default value   |
-| ------------  | :---------------------------------------------------------------------------------------------------: | :-----------------: |
-| docker-login  |                                     DockerHub url/IP for docekr login                                 | null                 |
+
+| flag          |                                                  description                                           | default value       |
+| ------------  | :---------------------------------------------------------------------------------------------------:  | :-----------------: |
+| docker-login  |                                     DockerHub url/IP for docekr login                                  | null                |
 | push          |                                            push this image                                             |     false           |
 | push-pattern  |            (push)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}            |                     |
 | pull-pattern  |            (pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}            |                     |
@@ -50,18 +51,14 @@ Docker相關的flag
 | list          |                     After sort tag list , we only deal with these top'number tags                      |       5             |
 | latest-mode   |                     push or build , choose one mode to identify latest tag to you                      |     push            |
 
+Nexus相關的flag
 
-| flag         |                                       說明                                        |              預設值               |
-| ------------ | :-------------------------------------------------------------------------------: | :-------------------------------: |
-| imagename    |             docker image , such as dockerhub.pentium.network/grafana              | dockerhub.pentium.network/grafana |
-| latest_mode  |           push or build , choose one mode to identify latest tag to you           |               push                |
-| pull-pattern | (pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}" |               null                |
-| push-pattern | (push)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}  |               null                |
-| stage        |                         replace stage , new stage content                         |               null                |
-| inputfile    |                       input file name , such as deploy.yml                        |               null                |
-| ouputfile    |                     output file name , such as deploy-out.yml                     |            tmp_out.yml            |
-| user         |                               user for docker login                               |               null                |
-| password     |                             password for docker login                             |               null                |
-| push         |                        push this image , default is false                         |               false               |
-| version      |                           prints current binary version                           |               false               |
-| list         |           After sort tag list , we only deal with these top'number tags           |                 5                 |
+| flag                 |                                       說明                            |default value|
+| -------------------- | :-------------------------------------------------------------------: |:----------: |
+| nexus-api-method     | Http method for NexusAPI Request, such as 'GET','POST','PUT','DELETE' |             |
+| nexus-req-body       | Requets body for NexusAPI Request                                     |             |
+| nexus-output-pattern | Pattern for output by requesting Nexus-API                            |             |
+| promote-type         | Different model , 'move' or 'cp'                                      | move        |
+| promote-destination  | Destination for repository name                                       |             |
+| promote-url          | destination for you promoting image url (nexus)'                      |             |
+| promote-source       | sourece(Repository name) for you promoting image url (nexus)'         |             |

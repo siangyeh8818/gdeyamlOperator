@@ -69,60 +69,121 @@ func JsonParse2(jsondata string, out_pattern string, output *OutputContent) {
 	json.Unmarshal([]byte(jsondata), &nexusresponse)
 
 	log.Println("---------JsonParse2--------------")
-	var temp_insert_content string
+	var insert_content string
 
 	if len(nexusresponse.Items) > 0 {
 		for i := 0; i < len(nexusresponse.Items); i++ {
-			//temp_insert_content = ""
+			temp_insert_content := ""
+
 			if strings.Contains(out_pattern, "id") {
-				temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Id) + ","
+				if len(temp_insert_content) > 0 {
+					temp_insert_content = temp_insert_content + "," + string(nexusresponse.Items[i].Id)
+				} else {
+					temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Id)
+				}
+				//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Id) + ","
 			}
 			if strings.Contains(out_pattern, "repository") {
-				temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Repository) + ","
+				if len(temp_insert_content) > 0 {
+					temp_insert_content = temp_insert_content + "," + string(nexusresponse.Items[i].Repository)
+				} else {
+					temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Repository)
+				}
+				//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Repository) + ","
 			}
 			if strings.Contains(out_pattern, "format") {
-				temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Format) + ","
+				if len(temp_insert_content) > 0 {
+					temp_insert_content = temp_insert_content + "," + string(nexusresponse.Items[i].Format)
+				} else {
+					temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Format)
+				}
+				//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Format) + ","
 			}
 			if strings.Contains(out_pattern, "group") {
-				temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Group) + ","
+				if len(temp_insert_content) > 0 {
+					temp_insert_content = temp_insert_content + "," + string(nexusresponse.Items[i].Group)
+				} else {
+					temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Group)
+				}
+				//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Group) + ","
 			}
 			if strings.Contains(out_pattern, "name") {
-				temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Name) + ","
+				if len(temp_insert_content) > 0 {
+					temp_insert_content = temp_insert_content + "," + string(nexusresponse.Items[i].Name)
+				} else {
+					temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Name)
+				}
+				//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Name) + ","
 			}
 			if strings.Contains(out_pattern, "version") {
-				temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Version) + ","
+				if len(temp_insert_content) > 0 {
+					temp_insert_content = temp_insert_content + "," + string(nexusresponse.Items[i].Version)
+				} else {
+					temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Version)
+				}
+				//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Version) + ","
 			}
 			for k := 0; k < len(nexusresponse.Items[i].Assets); k++ {
 				if strings.Contains(out_pattern, "assets.downloadUrl") {
-					log.Println(string(nexusresponse.Items[i].Assets[k].DownloadUrl))
-					temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].DownloadUrl) + ","
+					if len(temp_insert_content) > 0 {
+						temp_insert_content = temp_insert_content + "," + string(nexusresponse.Items[i].Assets[k].DownloadUrl)
+					} else {
+						temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].DownloadUrl)
+					}
+					//log.Println(string(nexusresponse.Items[i].Assets[k].DownloadUrl))
+					//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].DownloadUrl) + ","
 				}
 				if strings.Contains(out_pattern, "assets.path") {
-					temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].Path) + ","
+					if len(temp_insert_content) > 0 {
+						temp_insert_content = temp_insert_content + "," + string(nexusresponse.Items[i].Assets[k].Path)
+					} else {
+						temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].Path)
+					}
+					//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].Path) + ","
 				}
 				if strings.Contains(out_pattern, "assets.id") {
-					temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].Id) + ","
+					if len(temp_insert_content) > 0 {
+						temp_insert_content = temp_insert_content + "," + string(nexusresponse.Items[i].Assets[k].Id)
+					} else {
+						temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].Id)
+					}
+					//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].Id) + ","
 				}
 				if strings.Contains(out_pattern, "assets.repository") {
-					temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].Repository) + ","
+					if len(temp_insert_content) > 0 {
+						temp_insert_content = temp_insert_content + "," + string(nexusresponse.Items[i].Assets[k].Repository)
+					} else {
+						temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].Repository)
+					}
+					//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].Repository) + ","
 				}
 				if strings.Contains(out_pattern, "assets.format") {
-					temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].Format) + ","
+					if len(temp_insert_content) > 0 {
+						temp_insert_content = temp_insert_content + "," + string(nexusresponse.Items[i].Assets[k].Format)
+					} else {
+						temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].Format)
+					}
+					//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Assets[k].Format) + ","
 				}
 			}
 
 			for z := 0; z < len(nexusresponse.Items[i].Tags); z++ {
 				if strings.Contains(out_pattern, "tags") {
-					temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Tags[z].Tagname) + ","
+					if len(temp_insert_content) > 0 {
+						temp_insert_content = temp_insert_content + "," + string(nexusresponse.Items[i].Tags[z].Tagname)
+					} else {
+						temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Tags[z].Tagname)
+					}
+					//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Tags[z].Tagname) + ","
 				}
 			}
 			temp_insert_content = temp_insert_content + "\n"
-
+			insert_content = insert_content + temp_insert_content
 		}
 	}
 
-	log.Println(temp_insert_content)
-	output.Addcontent(temp_insert_content)
+	log.Println(insert_content)
+	output.Addcontent(insert_content)
 
 }
 
