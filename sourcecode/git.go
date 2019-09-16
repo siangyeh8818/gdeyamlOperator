@@ -13,6 +13,42 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
 
+type GIT struct {
+	Url         string
+	Branch      string
+	Tag         string
+	Path        string
+	AccessUser  string
+	AccessToken string
+}
+
+func (g *GIT) UpdateGit(url string, branch string, tag string, path string, user string, token string) {
+	g.Url = url
+	g.Branch = branch
+	g.Tag = tag
+	g.Path = path
+	g.AccessUser = user
+	g.AccessToken = token
+}
+func (g *GIT) UpdateGitUrl(url string) {
+	g.Url = url
+}
+func (g *GIT) UpdateGitBranch(branch string) {
+	g.Branch = branch
+}
+func (g *GIT) UpdateGitTag(tag string) {
+	g.Tag = tag
+}
+func (g *GIT) UpdateGitPath(path string) {
+	g.Path = path
+}
+func (g *GIT) UpdateGitAccessUser(user string) {
+	g.AccessUser = user
+}
+func (g *GIT) UpdateGitAccessToken(token string) {
+	g.AccessToken = token
+}
+
 func cloneRepo(url string, branch string, directory string, name string, token string) error {
 	CheckArgs("<url>", "<directory>", "<github_access_token>")
 	//	url, directory, token := os.Args[1], os.Args[2], os.Args[3]
@@ -182,7 +218,6 @@ func CommitRepo(directory string, filename string) {
 	fmt.Println(obj)
 }
 
-
 func ClonePushNewBranch(git_url string, old_branch string, new_branch string, git_repo_path string, git_user string, git_token string) {
 	log.Println("-----action >> cloneRepo----")
 	cloneRepo(git_url, old_branch, git_repo_path, git_user, git_token)
@@ -191,6 +226,6 @@ func ClonePushNewBranch(git_url string, old_branch string, new_branch string, gi
 	log.Println("-----action >> CheckoutBranch----")
 	CheckoutBranch(git_url, new_branch, git_repo_path)
 	log.Println("-----action >> PushGit----")
-	PushGit(git_repo_path, git_user, git_token,new_branch,git_url)
+	PushGit(git_repo_path, git_user, git_token, new_branch, git_url)
 	log.Println("-----action finishing----")
 }

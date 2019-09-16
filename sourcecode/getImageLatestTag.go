@@ -31,7 +31,8 @@ var promote_source string
 var kustom_base string
 var environment_file string
 var git_url string
-var clone_path string
+
+//var clone_path string
 var git_user string
 var git_token string
 var git_branch string
@@ -56,14 +57,27 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.9.9")
+		fmt.Println("version : 1.9.10")
 		os.Exit(0)
 	}
+	newgit := GIT{}
+	(&newgit).UpdateGit(git_url, git_branch, git_tag, git_repo_path, git_user, git_token)
+	/*
+		fmt.Println("--------------Test Git struct -----------------")
+		fmt.Printf("struct newgit.Url: %s\n", newgit.Url)
+		fmt.Printf("struct newgit.Branch: %s\n", newgit.Branch)
+		fmt.Printf("struct newgit.Tag: %s\n", newgit.Tag)
+		fmt.Printf("struct newgit.Path: %s\n", newgit.Path)
+		fmt.Printf("struct newgit.AccessUser: %s\n", newgit.AccessUser)
+		fmt.Printf("struct newgit.AccessToken: %s\n", newgit.AccessToken)
+		fmt.Println("-----------------------------------------------")
+	*/
+
 	fmt.Println("--------------Main Action -----------------")
 	fmt.Printf("flag -action: %s\n", action)
 	fmt.Println("--------------Git Related Flag -----------------")
 	fmt.Printf("flag -git-url: %s\n", git_url)
-	fmt.Printf("flag -clone-path: %s\n", clone_path)
+	//fmt.Printf("flag -clone-path: %s\n", clone_path)
 	fmt.Printf("flag -git-repo-path: %s\n", git_repo_path)
 	fmt.Printf("flag -git-user: %s\n", git_user)
 	fmt.Printf("flag -git-token: %s\n", git_token)
@@ -146,7 +160,6 @@ func main() {
 						cmd_5 := "docker rmi " + push_cpmplete_imagename
 						fmt.Println(cmd_5)
 						RunCommand(cmd_5)
-
 					}
 					new_tag_latest := GetTag(tmp_cpmplete_imagename, latest_mode)
 					new_tag_latest = strings.Trim(new_tag_latest, "\"")
@@ -268,13 +281,15 @@ func main() {
 		}
 
 	case "gitclone":
+		deployyamlgit := GIT{}
+		configurationgit := GIT{}
+		baseyamlgit := GIT{}
 		if git_url != "" && environment_file == "" {
 			if git_branch != "" && git_tag == "" {
-				GitClone(git_url, git_branch, clone_path, git_user, git_token)
-				//CloneYaml(git_url, git_branch, clone_path, git_user, git_token)
+				//GitClone(git_url, git_branch, git_repo_path, git_user, git_token)
+				GitClone(&newgit)
 			} else if git_branch == "" && git_tag != "" {
-				GitClone(git_url, git_tag, clone_path, git_user, git_token)
-				//CloneYamlByTag(git_url, git_tag, clone_path, git_user, git_token)
+				GitClone(&newgit)
 			} else if git_branch != "" && git_tag != "" {
 				fmt.Println("Only one flag that you have to setting (git-branch or git-tag)")
 				fmt.Println("While you setting git-branch , you can't set git-tag")
@@ -284,12 +299,24 @@ func main() {
 		} else if git_url == "" && environment_file != "" {
 			envir_yaml := Environmentyaml{}
 			envir_yaml.getConf(environment_file)
+			log.Println("Used environment file to collect information of git")
+
 			if len(envir_yaml.Configuration) > 0 {
-				GitClone(envir_yaml.Configuration[0].Git, envir_yaml.Configuration[0].Branch, "configuration", git_user, git_token)
+				(&configurationgit).UpdateGitUrl(envir_yaml.Configuration[0].Git)
+				(&configurationgit).UpdateGitBranch(envir_yaml.Configuration[0].Branch)
+				(&configurationgit).UpdateGitPath("configuration")
+				(&configurationgit).UpdateGitAccessUser(git_user)
+				(&configurationgit).UpdateGitAccessToken(git_token)
+				GitClone(&configurationgit)
 				//CloneYaml(envir_yaml.Configuration[0].Git, envir_yaml.Configuration[0].Branch, "configuration", git_user, git_token)
 			}
 			if len(envir_yaml.Deploymentfile) > 0 {
-				GitClone(envir_yaml.Deploymentfile[0].Git, envir_yaml.Deploymentfile[0].Branch, "deploymentfile", git_user, git_token)
+				(&deployyamlgit).UpdateGitUrl(envir_yaml.Deploymentfile[0].Git)
+				(&deployyamlgit).UpdateGitBranch(envir_yaml.Deploymentfile[0].Branch)
+				(&deployyamlgit).UpdateGitPath("deploymentfile")
+				(&deployyamlgit).UpdateGitAccessUser(git_user)
+				(&deployyamlgit).UpdateGitAccessToken(git_token)
+				GitClone(&deployyamlgit)
 				//CloneYaml(envir_yaml.Deploymentfile[0].Git, envir_yaml.Deploymentfile[0].Branch, "deploymentfile", git_user, git_token)
 			}
 
@@ -298,7 +325,12 @@ func main() {
 				inyaml := K8sYaml{}
 				inyaml.getConf(inputfile)
 				if len(inyaml.Deployment.BASE) > 0 {
-					GitClone(inyaml.Deployment.BASE[0].Git, inyaml.Deployment.BASE[0].Branch, "base", git_user, git_token)
+					(&baseyamlgit).UpdateGitUrl(inyaml.Deployment.BASE[0].Git)
+					(&baseyamlgit).UpdateGitBranch(inyaml.Deployment.BASE[0].Branch)
+					(&baseyamlgit).UpdateGitPath("base")
+					(&baseyamlgit).UpdateGitAccessUser(git_user)
+					(&baseyamlgit).UpdateGitAccessToken(git_token)
+					GitClone(&baseyamlgit)
 					//CloneYaml(inyaml.Deployment.BASE[0].Git, inyaml.Deployment.BASE[0].Branch, "base", git_user, git_token)
 				}
 
@@ -352,7 +384,7 @@ func main() {
 				os.Exit(0)
 			}
 			log.Println("-----action >> git CloneRepo----")
-			GitClone(git_url, git_branch, git_repo_path, git_user, git_token)
+			GitClone(&newgit)
 			log.Println("-----action >> Update Image-Tag to deploy.yml----")
 			Replacedeploymentfile_Image_Tag(replace_image, new_tag, inputfile, ouputfile)
 			log.Println("-----action >> git CommitRepo----")
@@ -391,7 +423,7 @@ func Init() {
 	flag.StringVar(&git_tag, "git-tag", "", "Tag for git repo")
 	flag.StringVar(&git_user, "git-user", "", "user for git clone")
 	flag.StringVar(&git_token, "git-token", "", "token for git clone")
-	flag.StringVar(&clone_path, "clone-path", "", "folder path for git clone")
+	//flag.StringVar(&clone_path, "clone-path", "", "folder path for git clone")
 	flag.StringVar(&environment_file, "environment-file", "", "file path of environment.yml")
 	flag.StringVar(&promote_url, "promote-url", "", "destination for you promoting image url (nexus)'")
 	flag.StringVar(&promote_source, "promote-source", "", "sourece(Repository name) for you promoting image url (nexus)'")
