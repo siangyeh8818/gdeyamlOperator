@@ -56,8 +56,8 @@ func cpcomponetname(nexusurl string, nexus_user string, nexus_password string, d
 func downloadComponetFile(fileFullPath string, downloadurl string) {
 
 	filename, _ := ParserRealFilename(fileFullPath)
-
-	resp, err := http.Get(downloadurl)
+	trimdownloadurl := strings.Replace(downloadurl, "\n", "", -1)
+	resp, err := http.Get(trimdownloadurl)
 	if err != nil {
 		panic(err)
 	}
