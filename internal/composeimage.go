@@ -1,4 +1,4 @@
-package main
+package gdeyamloperator
 
 func ComposeImageName(mode string, hubdomain string, stage string, module string, tag string) string {
 

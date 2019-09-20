@@ -1,4 +1,4 @@
-package main
+package gdeyamloperator
 
 import (
 	"regexp"

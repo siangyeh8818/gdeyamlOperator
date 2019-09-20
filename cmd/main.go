@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	. "github.com/siangyeh8818/gdeyamlOperator/internal"
 	"gopkg.in/yaml.v2"
 )
 
@@ -57,7 +58,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.9.11")
+		fmt.Println("version : 1.10.0")
 		os.Exit(0)
 	}
 	newgit := GIT{}
@@ -127,7 +128,7 @@ func main() {
 	case "gettag":
 		if inputfile != "" && Exists(inputfile) {
 			inyaml := K8sYaml{}
-			inyaml.getConf(inputfile)
+			inyaml.GetConf(inputfile)
 			//fmt.Printf("input_YAML:\n%v\n\n", inyaml)
 			//fmt.Println(ComposeImageName(inyaml.Deployment.K8S[0].Stage, inyaml.Deployment.K8S[0].Image, inyaml.Deployment.K8S[0].Tag))
 			for i := 0; i < len(inyaml.Deployment.K8S); i++ {
@@ -227,7 +228,7 @@ func main() {
 		}
 
 	case "snapshot":
-		snapshot(snapshot_pattern, ouputfile, kustom_base, git_branch)
+		Snapshot(snapshot_pattern, ouputfile, kustom_base, git_branch)
 	case "nexus_api":
 		var output OutputContent
 		switch nexus_api_method {
@@ -262,22 +263,22 @@ func main() {
 		case "move":
 			if inputfile != "" && Exists(inputfile) {
 				inyaml := K8sYaml{}
-				inyaml.getConf(inputfile)
+				inyaml.GetConf(inputfile)
 				for i := 0; i < len(inyaml.Deployment.K8S); i++ {
 					if inyaml.Deployment.K8S[i].Image != "" && inyaml.Deployment.K8S[i].Tag != "" {
-						promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+						Promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
 					}
 				}
 				for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
 					if inyaml.Deployment.Openfaas[i].Image != "" && inyaml.Deployment.Openfaas[i].Tag != "" {
-						promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+						Promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
 					}
 				}
 			} else {
 				fmt.Println("Yoy have to setting -inputfile <filename>")
 			}
 		case "cp":
-			cpcomponetname(promote_url, loginuser, loginpassword, promote_destination)
+			Cpcomponetname(promote_url, loginuser, loginpassword, promote_destination)
 		}
 
 	case "gitclone":
@@ -298,7 +299,7 @@ func main() {
 
 		} else if git_url == "" && environment_file != "" {
 			envir_yaml := Environmentyaml{}
-			envir_yaml.getConf(environment_file)
+			envir_yaml.GetConf(environment_file)
 			log.Println("Used environment file to collect information of git")
 
 			if len(envir_yaml.Configuration) > 0 {
@@ -323,7 +324,7 @@ func main() {
 		} else if git_url == "" && environment_file == "" && inputfile != "" {
 			if inputfile != "" && Exists(inputfile) {
 				inyaml := K8sYaml{}
-				inyaml.getConf(inputfile)
+				inyaml.GetConf(inputfile)
 				if len(inyaml.Deployment.BASE) > 0 {
 					(&baseyamlgit).UpdateGitUrl(inyaml.Deployment.BASE[0].Git)
 					(&baseyamlgit).UpdateGitBranch(inyaml.Deployment.BASE[0].Branch)
@@ -344,7 +345,7 @@ func main() {
 	case "git":
 		switch git_action {
 		case "clone":
-			cloneRepo(git_url, git_branch, git_repo_path, git_user, git_token)
+			CloneRepo(git_url, git_branch, git_repo_path, git_user, git_token)
 		case "branch":
 			CreateBranch(git_url, git_branch, git_repo_path)
 		case "checkout":
@@ -540,12 +541,4 @@ func reverseInts(input []string) []string {
 		return input
 	}
 	return append(reverseInts(input[1:]), input[0])
-}
-
-func PatternParse(patterns string, structstage string, structimage string, structtag string) string {
-
-	patterns = strings.Replace(patterns, "{{stage}}", structstage, 1)
-	patterns = strings.Replace(patterns, "{{image}}", structimage, 1)
-	patterns = strings.Replace(patterns, "{{tag}}", structtag, 1)
-	return patterns
 }

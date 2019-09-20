@@ -1,4 +1,4 @@
-package main
+package gdeyamloperator
 
 import (
 	"flag"
@@ -19,7 +19,7 @@ import (
 
 type K8sClient kubernetes.Clientset
 
-func snapshot(pattern string, outputfilename string, kustomyamlfolder string, branch string) {
+func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, branch string) {
 
 	test := K8sYaml{}
 	var kubeconfig *string

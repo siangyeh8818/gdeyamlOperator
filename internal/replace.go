@@ -1,4 +1,4 @@
-package main
+package gdeyamloperator
 
 import (
 	"fmt"
@@ -9,10 +9,10 @@ import (
 
 func Replacedeploymentfile(environment string, deployfile string, outputfile string) {
 	envir_yaml := Environmentyaml{}
-	envir_yaml.getConf(environment)
+	envir_yaml.GetConf(environment)
 
 	inyaml := K8sYaml{}
-	inyaml.getConf(deployfile)
+	inyaml.GetConf(deployfile)
 
 	Replace_total := len(envir_yaml.Deploymentfile[0].Replace.K8S) + len(envir_yaml.Deploymentfile[0].Replace.Openfaas) + len(envir_yaml.Deploymentfile[0].Replace.Monitor) + len(envir_yaml.Deploymentfile[0].Replace.Redis)
 	fmt.Printf("Replace_total : %d", Replace_total)
@@ -170,7 +170,7 @@ func SearchIngore(envir_yaml *Environmentyaml, inyaml *K8sYaml, modulename strin
 func Replacedeploymentfile_Image_Tag(imagename string, imagetag string, inputfile string, outputfile string) {
 
 	deployyaml := K8sYaml{}
-	deployyaml.getConf(inputfile)
+	deployyaml.GetConf(inputfile)
 
 	current_index1 := SearchReplace(&deployyaml, imagename, "k8s")
 	if current_index1 != -1 {
