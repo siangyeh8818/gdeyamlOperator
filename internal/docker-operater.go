@@ -1,6 +1,9 @@
-package main
+package gdeyamloperator
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 func LoginDockerHub(stage string, user string, password string) {
 	var login_cmd string
@@ -51,4 +54,12 @@ func PushTagimage(imagename string, push_pattern string, modulename string, modu
 		}
 	}
 
+}
+
+func PatternParse(patterns string, structstage string, structimage string, structtag string) string {
+
+	patterns = strings.Replace(patterns, "{{stage}}", structstage, 1)
+	patterns = strings.Replace(patterns, "{{image}}", structimage, 1)
+	patterns = strings.Replace(patterns, "{{tag}}", structtag, 1)
+	return patterns
 }

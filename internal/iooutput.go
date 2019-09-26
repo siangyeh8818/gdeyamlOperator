@@ -1,4 +1,4 @@
-package main
+package gdeyamloperator
 
 import (
 	"fmt"
@@ -15,8 +15,8 @@ func WriteWithIoutil(name, content string) {
 	}
 
 }
-
-func (c *K8sYaml) getConf(f string) *K8sYaml {
+//getConf
+func (c *K8sYaml) GetConf(f string) *K8sYaml {
 	//应该是 绝对地址
 	yamlFile, err := ioutil.ReadFile(f)
 	if err != nil {
@@ -31,7 +31,7 @@ func (c *K8sYaml) getConf(f string) *K8sYaml {
 	return c
 }
 
-func (c *Environmentyaml) getConf(f string) *Environmentyaml {
+func (c *Environmentyaml) GetConf(f string) *Environmentyaml {
 
 	yamlFile, err := ioutil.ReadFile(f)
 	if err != nil {

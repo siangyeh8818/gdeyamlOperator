@@ -1,4 +1,4 @@
-package main
+package gdeyamloperator
 
 type Deployment struct {
 	BASE     []BASE     `yaml:"base"`

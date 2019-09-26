@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	. "github.com/siangyeh8818/gdeyamlOperator/internal"
 	"gopkg.in/yaml.v2"
 )
 
@@ -50,6 +51,13 @@ var git_new_branch string
 var replace_type string
 var new_tag string
 var replace_image string
+var kmodules string
+var relPath string
+var outputdir string
+var comparedata string
+var omodules string
+var UrlPattern string
+var Baseloc string
 
 func main() {
 
@@ -57,11 +65,15 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.9.11")
+		fmt.Println("version : 1.10.0")
 		os.Exit(0)
 	}
 	newgit := GIT{}
 	(&newgit).UpdateGit(git_url, git_branch, git_tag, git_repo_path, git_user, git_token)
+
+	kustomize_argument := KustomizeArgument{}
+	(&kustomize_argument).UpdateKustomizeArgument(outputdir, comparedata, namespace, relPath, Baseloc, Baseloc, kmodules, UrlPattern, environment_file)
+
 	/*
 		fmt.Println("--------------Test Git struct -----------------")
 		fmt.Printf("struct newgit.Url: %s\n", newgit.Url)
@@ -101,7 +113,7 @@ func main() {
 	fmt.Printf("flag -promote-destination: %s\n", promote_destination)
 	fmt.Printf("flag -promote-url: %s\n", promote_url)
 	fmt.Printf("flag -promote-source: %s\n", promote_source)
-	fmt.Println("--------------GDEyaml/Kucustom Related Flag -----------------")
+	fmt.Println("--------------GDEyaml/kustomize Related Flag -----------------")
 	fmt.Printf("flag -environment-file: %s\n", environment_file)
 	fmt.Printf("flag -snapshot-pattern: %s\n", snapshot_pattern)
 	fmt.Printf("flag -kustom-base-path: %s\n", kustom_base)
@@ -109,6 +121,13 @@ func main() {
 	fmt.Printf("flag -replace-type: %s\n", replace_type)
 	fmt.Printf("flag -replace-image: %s\n", replace_image)
 	fmt.Printf("flag -new-tag: %s\n", new_tag)
+	fmt.Printf("flag -kustomize-outputdir: %s\n", outputdir)
+	fmt.Printf("flag -kustomize-relpath: %s\n", relPath)
+	fmt.Printf("flag -kustomize-urlpattern: %s\n", UrlPattern)
+	fmt.Printf("flag -kustomize-K8smodule: %s\n", kmodules)
+	fmt.Printf("flag -kustomize-openfaasmodule: %s\n", omodules)
+	fmt.Printf("flag -kustomize-compare: %s\n", comparedata)
+	fmt.Printf("flag -kustomize-basefolder: %s\n", Baseloc)
 	fmt.Println("--------------Kubernetes Related Flag -----------------")
 	fmt.Printf("flag -namespace: %s\n", namespace)
 	fmt.Println("--------------General Related Flag -----------------")
@@ -127,7 +146,7 @@ func main() {
 	case "gettag":
 		if inputfile != "" && Exists(inputfile) {
 			inyaml := K8sYaml{}
-			inyaml.getConf(inputfile)
+			inyaml.GetConf(inputfile)
 			//fmt.Printf("input_YAML:\n%v\n\n", inyaml)
 			//fmt.Println(ComposeImageName(inyaml.Deployment.K8S[0].Stage, inyaml.Deployment.K8S[0].Image, inyaml.Deployment.K8S[0].Tag))
 			for i := 0; i < len(inyaml.Deployment.K8S); i++ {
@@ -227,7 +246,7 @@ func main() {
 		}
 
 	case "snapshot":
-		snapshot(snapshot_pattern, ouputfile, kustom_base, git_branch)
+		Snapshot(snapshot_pattern, ouputfile, kustom_base, git_branch)
 	case "nexus_api":
 		var output OutputContent
 		switch nexus_api_method {
@@ -262,22 +281,22 @@ func main() {
 		case "move":
 			if inputfile != "" && Exists(inputfile) {
 				inyaml := K8sYaml{}
-				inyaml.getConf(inputfile)
+				inyaml.GetConf(inputfile)
 				for i := 0; i < len(inyaml.Deployment.K8S); i++ {
 					if inyaml.Deployment.K8S[i].Image != "" && inyaml.Deployment.K8S[i].Tag != "" {
-						promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+						Promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
 					}
 				}
 				for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
 					if inyaml.Deployment.Openfaas[i].Image != "" && inyaml.Deployment.Openfaas[i].Tag != "" {
-						promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+						Promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
 					}
 				}
 			} else {
 				fmt.Println("Yoy have to setting -inputfile <filename>")
 			}
 		case "cp":
-			cpcomponetname(promote_url, loginuser, loginpassword, promote_destination)
+			Cpcomponetname(promote_url, loginuser, loginpassword, promote_destination)
 		}
 
 	case "gitclone":
@@ -298,7 +317,7 @@ func main() {
 
 		} else if git_url == "" && environment_file != "" {
 			envir_yaml := Environmentyaml{}
-			envir_yaml.getConf(environment_file)
+			envir_yaml.GetConf(environment_file)
 			log.Println("Used environment file to collect information of git")
 
 			if len(envir_yaml.Configuration) > 0 {
@@ -323,7 +342,7 @@ func main() {
 		} else if git_url == "" && environment_file == "" && inputfile != "" {
 			if inputfile != "" && Exists(inputfile) {
 				inyaml := K8sYaml{}
-				inyaml.getConf(inputfile)
+				inyaml.GetConf(inputfile)
 				if len(inyaml.Deployment.BASE) > 0 {
 					(&baseyamlgit).UpdateGitUrl(inyaml.Deployment.BASE[0].Git)
 					(&baseyamlgit).UpdateGitBranch(inyaml.Deployment.BASE[0].Branch)
@@ -344,7 +363,7 @@ func main() {
 	case "git":
 		switch git_action {
 		case "clone":
-			cloneRepo(git_url, git_branch, git_repo_path, git_user, git_token)
+			CloneRepo(git_url, git_branch, git_repo_path, git_user, git_token)
 		case "branch":
 			CreateBranch(git_url, git_branch, git_repo_path)
 		case "checkout":
@@ -399,7 +418,9 @@ func main() {
 	case "imagedump":
 		LoginDockerHubNew(docker_login, loginuser, loginpassword)
 		DumpImage(push_pattern, snapshot_pattern, pushimage)
-
+	case "kustomize":
+		OutputOverlays(&kustomize_argument, inputfile)
+		//OutputOverlays(environment_file, inputfile, namespace, kmodules, relPath, k8sBaseloc)
 	}
 }
 
@@ -441,7 +462,13 @@ func Init() {
 	flag.StringVar(&replace_type, "replace-type", "local", "you can choose 'local' or 'git'")
 	flag.StringVar(&replace_image, "replace-image", "", "which one image-name you want to br replace")
 	flag.StringVar(&new_tag, "new-tag", "", "New tag you want to replace into gdeyaml")
-
+	flag.StringVar(&kmodules, "kustomize-module", "", "k8s modules from command: module:image:stage:tag,module1,image1,stage1,tag1")
+	flag.StringVar(&omodules, "kustomize-openfaasmodule", "", "openfaas modules from command: module:image:stage:tag,module1,image1,stage1,tag1")
+	flag.StringVar(&UrlPattern, "kustomize-urlpattern", "cr.pentium.network/{{image}}:{{tag}}", "define url pattern by {{stage}}, {{image}}, and {{tag}}")
+	flag.StringVar(&outputdir, "kustomize-outputdir", "./overlays", "output data of")
+	flag.StringVar(&comparedata, "kustomize-compare", "./deploy.yml", "deploy data")
+	flag.StringVar(&relPath, "kustomize-relpath", "../../", "relative path of current execution path and kustomize path")
+	flag.StringVar(&Baseloc, "kustomize-basefolder", "base", "could be {relPath}/{Baseloc}, default is ../../{Baseloc}")
 }
 
 func GetTag(name string, latestmode string) string {
@@ -540,12 +567,4 @@ func reverseInts(input []string) []string {
 		return input
 	}
 	return append(reverseInts(input[1:]), input[0])
-}
-
-func PatternParse(patterns string, structstage string, structimage string, structtag string) string {
-
-	patterns = strings.Replace(patterns, "{{stage}}", structstage, 1)
-	patterns = strings.Replace(patterns, "{{image}}", structimage, 1)
-	patterns = strings.Replace(patterns, "{{tag}}", structtag, 1)
-	return patterns
 }

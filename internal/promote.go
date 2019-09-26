@@ -1,4 +1,4 @@
-package main
+package gdeyamloperator
 
 import (
 	"fmt"
@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-func promoteimage(nexusurl string, repository string, nexus_user string, nexus_password string, imagename string, imagetag string) {
+func Promoteimage(nexusurl string, repository string, nexus_user string, nexus_password string, imagename string, imagetag string) {
 
 	var url string
 	if repository != "" {
@@ -34,7 +34,7 @@ func promoteimage(nexusurl string, repository string, nexus_user string, nexus_p
 
 }
 
-func cpcomponetname(nexusurl string, nexus_user string, nexus_password string, dest string) {
+func Cpcomponetname(nexusurl string, nexus_user string, nexus_password string, dest string) {
 
 	var output OutputContent
 

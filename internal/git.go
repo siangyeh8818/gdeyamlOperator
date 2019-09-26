@@ -1,4 +1,4 @@
-package main
+package gdeyamloperator
 
 import (
 	"fmt"
@@ -49,7 +49,7 @@ func (g *GIT) UpdateGitAccessToken(token string) {
 	g.AccessToken = token
 }
 
-func cloneRepo(url string, branch string, directory string, name string, token string) error {
+func CloneRepo(url string, branch string, directory string, name string, token string) error {
 	CheckArgs("<url>", "<directory>", "<github_access_token>")
 	//	url, directory, token := os.Args[1], os.Args[2], os.Args[3]
 
@@ -220,7 +220,7 @@ func CommitRepo(directory string, filename string) {
 
 func ClonePushNewBranch(git_url string, old_branch string, new_branch string, git_repo_path string, git_user string, git_token string) {
 	log.Println("-----action >> cloneRepo----")
-	cloneRepo(git_url, old_branch, git_repo_path, git_user, git_token)
+	CloneRepo(git_url, old_branch, git_repo_path, git_user, git_token)
 	log.Println("-----action >> CreateBranch----")
 	CreateBranch(git_url, new_branch, git_repo_path)
 	log.Println("-----action >> CheckoutBranch----")
