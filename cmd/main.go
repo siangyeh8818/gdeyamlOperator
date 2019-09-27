@@ -65,7 +65,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.10.0")
+		fmt.Println("version : 1.10.1")
 		os.Exit(0)
 	}
 	newgit := GIT{}
@@ -124,7 +124,7 @@ func main() {
 	fmt.Printf("flag -kustomize-outputdir: %s\n", outputdir)
 	fmt.Printf("flag -kustomize-relpath: %s\n", relPath)
 	fmt.Printf("flag -kustomize-urlpattern: %s\n", UrlPattern)
-	fmt.Printf("flag -kustomize-K8smodule: %s\n", kmodules)
+	fmt.Printf("flag -kustomize-module: %s\n", kmodules)
 	fmt.Printf("flag -kustomize-openfaasmodule: %s\n", omodules)
 	fmt.Printf("flag -kustomize-compare: %s\n", comparedata)
 	fmt.Printf("flag -kustomize-basefolder: %s\n", Baseloc)
@@ -421,7 +421,10 @@ func main() {
 	case "kustomize":
 		OutputOverlays(&kustomize_argument, inputfile)
 		//OutputOverlays(environment_file, inputfile, namespace, kmodules, relPath, k8sBaseloc)
+	case "argu-dump":
+		DumpArguments(inputfile, environment_file, ouputfile)
 	}
+
 }
 
 func Init() {

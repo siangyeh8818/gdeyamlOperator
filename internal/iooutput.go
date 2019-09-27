@@ -11,10 +11,11 @@ import (
 func WriteWithIoutil(name, content string) {
 	data := []byte(content)
 	if ioutil.WriteFile(name, data, 0644) == nil {
-		fmt.Println("Success to export to file", content)
+		fmt.Println("Success to export to file\n", content)
 	}
 
 }
+
 //getConf
 func (c *K8sYaml) GetConf(f string) *K8sYaml {
 	//应该是 绝对地址
