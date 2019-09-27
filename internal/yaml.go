@@ -1,15 +1,29 @@
 package gdeyamloperator
 
 type Deployment struct {
-	BASE     []BASE     `yaml:"base"`
-	K8S      []K8S      `yaml:"k8s"`
-	Openfaas []Openfaas `yaml:"openfaas"`
-	Monitor  []Monitor  `yaml:"monitor" `
-	Redis    []Redis    `yaml:"redis"`
+	BASE      []BASE      `yaml:"base"`
+	BLCKS     BLCKS     `yaml:"blcks"`
+	PLAYBOOKS PLAYBOOKS `yaml:"playbooks"`
+	K8S       []K8S       `yaml:"k8s"`
+	Openfaas  []Openfaas  `yaml:"openfaas"`
+	Monitor   []Monitor   `yaml:"monitor" `
+	Redis     []Redis     `yaml:"redis"`
 }
 type BASE struct {
 	Git    string `yaml:"git"`
 	Branch string `yaml:"branch"`
+}
+
+type BLCKS struct {
+	Git     string `yaml:"git"`
+	Branch  string `yaml:"branch"`
+	Version string `yaml:"version"`
+}
+
+type PLAYBOOKS struct {
+	Git     string `yaml:"git"`
+	Branch  string `yaml:"branch"`
+	Version string `yaml:"version"`
 }
 
 type K8S struct {
@@ -82,7 +96,17 @@ func (s *Deployment) AddBaseStruct(git string, gitbranch string) {
 func (s *Deployment) UpdateBaseStructBranch(git string, gitbranch string) {
 	s.BASE[0].Git = git
 	s.BASE[0].Branch = gitbranch
+}
+func (s *Deployment) UpdateBlcksStructBranch(git string, gitbranch string, ver string) {
+	s.BLCKS.Git = git
+	s.BLCKS.Branch = gitbranch
+	s.BLCKS.Version = ver
+}
 
+func (s *Deployment) UpdatePLAYBOOKStructBranch(git string, gitbranch string, ver string) {
+	s.PLAYBOOKS.Git = git
+	s.PLAYBOOKS.Branch = gitbranch
+	s.PLAYBOOKS.Version = ver
 }
 
 func (s *Deployment) AddK8sStruct(module string, image string, tag string, stage string) {
