@@ -108,14 +108,12 @@ func CreateBranch(url string, newbranch string, directory string) error {
 func PushGit(path string, name string, token string, newbranch string, url string) error {
 	CheckArgs("<repository-path>")
 	//path := os.Args[1]
-	log.Println("-------74------")
 	r, err := git.PlainOpen(path)
 	//r, err := git.PlainOpen(path)
 	CheckIfError(err)
 
 	Info("git push")
 	// push using default options
-	log.Println("---------88---------")
 	err = r.Push(&git.PushOptions{
 		Auth: &http.BasicAuth{
 			Username: name,

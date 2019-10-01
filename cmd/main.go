@@ -49,8 +49,9 @@ var git_action string
 var git_repo_path string
 var git_new_branch string
 var replace_type string
-var new_tag string
+var replace_value string
 var replace_image string
+var replace_pattern string
 var kmodules string
 var relPath string
 var outputdir string
@@ -65,7 +66,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.10.1")
+		fmt.Println("version : 1.10.2")
 		os.Exit(0)
 	}
 	newgit := GIT{}
@@ -73,6 +74,9 @@ func main() {
 
 	kustomize_argument := KustomizeArgument{}
 	(&kustomize_argument).UpdateKustomizeArgument(outputdir, comparedata, namespace, relPath, Baseloc, Baseloc, kmodules, UrlPattern, environment_file)
+
+	replace_struct := REPLACEYAML{}
+	(&replace_struct).UpdateREPLACEYAML(replace_type, replace_pattern, replace_image, replace_value)
 
 	/*
 		fmt.Println("--------------Test Git struct -----------------")
@@ -120,7 +124,8 @@ func main() {
 	fmt.Printf("flag -stage: %s\n", inputstage)
 	fmt.Printf("flag -replace-type: %s\n", replace_type)
 	fmt.Printf("flag -replace-image: %s\n", replace_image)
-	fmt.Printf("flag -new-tag: %s\n", new_tag)
+	fmt.Printf("flag -replace-pattern: %s\n", replace_pattern)
+	fmt.Printf("flag -replace-value: %s\n", replace_value)
 	fmt.Printf("flag -kustomize-outputdir: %s\n", outputdir)
 	fmt.Printf("flag -kustomize-relpath: %s\n", relPath)
 	fmt.Printf("flag -kustomize-urlpattern: %s\n", UrlPattern)
@@ -405,7 +410,8 @@ func main() {
 			log.Println("-----action >> git CloneRepo----")
 			GitClone(&newgit)
 			log.Println("-----action >> Update Image-Tag to deploy.yml----")
-			Replacedeploymentfile_Image_Tag(replace_image, new_tag, inputfile, ouputfile)
+			ReplacedeByPattern(&replace_struct, inputfile, ouputfile)
+			//Replacedeploymentfile_Image_Tag(&replace_struct, inputfile, ouputfile)
 			log.Println("-----action >> git CommitRepo----")
 			CommitRepo(git_repo_path, "deploy.yml")
 			log.Println("-----action >> git PushRepo----")
@@ -464,7 +470,6 @@ func Init() {
 	flag.StringVar(&git_repo_path, "git-repo-path", "", "directory for git-repo")
 	flag.StringVar(&replace_type, "replace-type", "local", "you can choose 'local' or 'git'")
 	flag.StringVar(&replace_image, "replace-image", "", "which one image-name you want to br replace")
-	flag.StringVar(&new_tag, "new-tag", "", "New tag you want to replace into gdeyaml")
 	flag.StringVar(&kmodules, "kustomize-module", "", "k8s modules from command: module:image:stage:tag,module1,image1,stage1,tag1")
 	flag.StringVar(&omodules, "kustomize-openfaasmodule", "", "openfaas modules from command: module:image:stage:tag,module1,image1,stage1,tag1")
 	flag.StringVar(&UrlPattern, "kustomize-urlpattern", "cr.pentium.network/{{image}}:{{tag}}", "define url pattern by {{stage}}, {{image}}, and {{tag}}")
@@ -472,6 +477,9 @@ func Init() {
 	flag.StringVar(&comparedata, "kustomize-compare", "./deploy.yml", "deploy data")
 	flag.StringVar(&relPath, "kustomize-relpath", "../../", "relative path of current execution path and kustomize path")
 	flag.StringVar(&Baseloc, "kustomize-basefolder", "base", "could be {relPath}/{Baseloc}, default is ../../{Baseloc}")
+	flag.StringVar(&replace_pattern, "replace-pattern", "", "pattern for release , for example : blcks:version")
+	flag.StringVar(&replace_value, "replace-value", "", "value for pattern tou want to update")
+
 }
 
 func GetTag(name string, latestmode string) string {

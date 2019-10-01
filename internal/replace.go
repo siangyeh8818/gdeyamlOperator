@@ -3,9 +3,24 @@ package gdeyamloperator
 import (
 	"fmt"
 	"log"
+	"strings"
 
 	yaml "gopkg.in/yaml.v3"
 )
+
+type REPLACEYAML struct {
+	Type     string
+	Pattern  string
+	Image    string
+	NewValue string
+}
+
+func (rep *REPLACEYAML) UpdateREPLACEYAML(types string, pattern string, image string, newvalue string) {
+	rep.Type = types
+	rep.Pattern = pattern
+	rep.Image = image
+	rep.NewValue = newvalue
+}
 
 func Replacedeploymentfile(environment string, deployfile string, outputfile string) {
 	envir_yaml := Environmentyaml{}
@@ -167,28 +182,85 @@ func SearchIngore(envir_yaml *Environmentyaml, inyaml *K8sYaml, modulename strin
 	return resultindex
 }
 
-func Replacedeploymentfile_Image_Tag(imagename string, imagetag string, inputfile string, outputfile string) {
+func Replacedeploymentfile_Image_Tag(rep *REPLACEYAML, inputfile string, outputfile string) {
 
 	deployyaml := K8sYaml{}
 	deployyaml.GetConf(inputfile)
 
-	current_index1 := SearchReplace(&deployyaml, imagename, "k8s")
+	current_index1 := SearchReplace(&deployyaml, rep.Image, "k8s")
 	if current_index1 != -1 {
-		(&deployyaml.Deployment.K8S[current_index1]).UpdateK8sTag(imagetag)
+		(&deployyaml.Deployment.K8S[current_index1]).UpdateK8sTag(rep.NewValue)
 	}
-	current_index2 := SearchReplace(&deployyaml, imagename, "openfaas")
+	current_index2 := SearchReplace(&deployyaml, rep.Image, "openfaas")
 	if current_index2 != -1 {
-		(&deployyaml.Deployment.Openfaas[current_index2]).UpdateOpenfaasTag(imagetag)
+		(&deployyaml.Deployment.Openfaas[current_index2]).UpdateOpenfaasTag(rep.NewValue)
 	}
-	current_index3 := SearchReplace(&deployyaml, imagename, "monitor")
+	current_index3 := SearchReplace(&deployyaml, rep.Image, "monitor")
 	if current_index3 != -1 {
-		(&deployyaml.Deployment.Monitor[current_index3]).UpdateMonitorTag(imagetag)
+		(&deployyaml.Deployment.Monitor[current_index3]).UpdateMonitorTag(rep.NewValue)
 	}
-	current_index4 := SearchReplace(&deployyaml, imagename, "redis")
+	current_index4 := SearchReplace(&deployyaml, rep.Image, "redis")
 	if current_index4 != -1 {
-		(&deployyaml.Deployment.Redis[current_index4]).UpdateRedisTag(imagetag)
+		(&deployyaml.Deployment.Redis[current_index4]).UpdateRedisTag(rep.NewValue)
 	}
 
+	yamlcontent, err := yaml.Marshal(&deployyaml)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	WriteWithIoutil(outputfile, string(yamlcontent))
+}
+
+func ReplacedeByPattern(rep *REPLACEYAML, inputfile string, outputfile string) {
+
+	deployyaml := K8sYaml{}
+	deployyaml.GetConf(inputfile)
+
+	pattern := strings.Split(rep.Pattern, ":")
+
+	switch pattern[0] {
+	case "base":
+		switch pattern[1] {
+		case "git":
+			temp_branch := (&deployyaml.Deployment).BASE[0].Branch
+			(&deployyaml.Deployment).UpdateBaseStructBranch(rep.NewValue, temp_branch)
+		case "branch":
+			temp_git := (&deployyaml.Deployment).BASE[0].Git
+			(&deployyaml.Deployment).UpdateBaseStructBranch(temp_git, rep.NewValue)
+		}
+	case "blcks":
+		switch pattern[1] {
+		case "git":
+			temp_version := (&deployyaml.Deployment).BLCKS.Version
+			temp_branch := (&deployyaml.Deployment).BLCKS.Branch
+			(&deployyaml.Deployment).UpdateBlcksStructBranch(rep.NewValue, temp_branch, temp_version)
+		case "branch":
+			temp_git := (&deployyaml.Deployment).BLCKS.Git
+			temp_version := (&deployyaml.Deployment).BLCKS.Version
+			(&deployyaml.Deployment).UpdateBlcksStructBranch(temp_git, rep.NewValue, temp_version)
+		case "version":
+			temp_git := (&deployyaml.Deployment).BLCKS.Git
+			temp_branch := (&deployyaml.Deployment).BLCKS.Branch
+			(&deployyaml.Deployment).UpdateBlcksStructBranch(temp_git, temp_branch, rep.NewValue)
+		}
+
+	case "playbooks":
+		switch pattern[1] {
+		case "git":
+			temp_version := (&deployyaml.Deployment).PLAYBOOKS.Version
+			temp_branch := (&deployyaml.Deployment).PLAYBOOKS.Branch
+			(&deployyaml.Deployment).UpdatePLAYBOOKStructBranch(rep.NewValue, temp_branch, temp_version)
+		case "branch":
+			temp_git := (&deployyaml.Deployment).PLAYBOOKS.Git
+			temp_version := (&deployyaml.Deployment).PLAYBOOKS.Version
+			(&deployyaml.Deployment).UpdatePLAYBOOKStructBranch(temp_git, rep.NewValue, temp_version)
+		case "version":
+			temp_git := (&deployyaml.Deployment).PLAYBOOKS.Git
+			temp_branch := (&deployyaml.Deployment).PLAYBOOKS.Branch
+			(&deployyaml.Deployment).UpdatePLAYBOOKStructBranch(temp_git, temp_branch, rep.NewValue)
+		}
+	}
 	yamlcontent, err := yaml.Marshal(&deployyaml)
 	if err != nil {
 		log.Fatalf("error: %v", err)
