@@ -66,7 +66,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.10.2")
+		fmt.Println("version : 1.10.3")
 		os.Exit(0)
 	}
 	newgit := GIT{}
@@ -429,6 +429,8 @@ func main() {
 		//OutputOverlays(environment_file, inputfile, namespace, kmodules, relPath, k8sBaseloc)
 	case "argu-dump":
 		DumpArguments(inputfile, environment_file, ouputfile)
+	case "jenkins":
+		INit_Jenkins()
 	}
 
 }
@@ -445,7 +447,7 @@ func Init() {
 	flag.StringVar(&latest_mode, "latest-mode", "push", "push or build , choose one mode to identify latest tag to you")
 	flag.StringVar(&push_pattern, "push-pattern", "", "(push)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
 	flag.StringVar(&pull_pattern, "pull-pattern", "", "(pull)pattern for imagename , ex: cr-{{stage}}.pentium.network/{{image}}:{{tag}}")
-	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace' or 'imagedump' or 'nexus_api' or 'new-release'")
+	flag.StringVar(&action, "action", "gettag", "choose 'gettag' or 'snapshot' or 'promote' or 'gitclone' or 'replace' or 'imagedump' or 'nexus_api' or 'new-release' or 'kustomize' or 'argu-dump' or 'jenkins'")
 	flag.StringVar(&git_url, "git-url", "", "url for git repo")
 	flag.StringVar(&git_branch, "git-branch", "", "branch for git repo")
 	flag.StringVar(&git_new_branch, "git-new-branch", "", "New branch for git repo, this branch will be created")
