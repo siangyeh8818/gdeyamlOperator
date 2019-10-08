@@ -3,6 +3,7 @@ package gdeyamloperator
 import (
 	"fmt"
 	"log"
+	"os"
 	"strings"
 
 	yaml "gopkg.in/yaml.v3"
@@ -122,32 +123,41 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 //func SearchReplace(envir_yaml *Environmentyaml, inyaml *K8sYaml, imagesname string, rangestr string) int {
 func SearchReplace(inyaml *K8sYaml, imagesname string, rangestr string) int {
 	var resultindex int
+	changotoken := false
 	switch rangestr {
 	case "k8s":
 		for i := 0; i < len(inyaml.Deployment.K8S); i++ {
 			if inyaml.Deployment.K8S[i].Image == imagesname {
 				resultindex = i
+				changotoken = true
 			}
 		}
 	case "openfaas":
 		for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
 			if inyaml.Deployment.Openfaas[i].Image == imagesname {
 				resultindex = i
+				changotoken = true
 			}
 		}
 	case "monitor":
 		for i := 0; i < len(inyaml.Deployment.Monitor); i++ {
 			if inyaml.Deployment.Monitor[i].Image == imagesname {
 				resultindex = i
+				changotoken = true
 			}
 		}
 	case "redis":
 		for i := 0; i < len(inyaml.Deployment.Redis); i++ {
 			if inyaml.Deployment.Redis[i].Image == imagesname {
 				resultindex = i
+				changotoken = true
 			}
 		}
 	}
+	if changotoken == false {
+		resultindex = -1
+	}
+
 	return resultindex
 }
 
@@ -259,6 +269,40 @@ func ReplacedeByPattern(rep *REPLACEYAML, inputfile string, outputfile string) {
 			temp_git := (&deployyaml.Deployment).PLAYBOOKS.Git
 			temp_branch := (&deployyaml.Deployment).PLAYBOOKS.Branch
 			(&deployyaml.Deployment).UpdatePLAYBOOKStructBranch(temp_git, temp_branch, rep.NewValue)
+		}
+	case "all":
+		switch pattern[1] {
+		case "module":
+			fmt.Println("This pattern have't not supported~~~~~")
+			os.Exit(0)
+		case "image":
+			fmt.Println("This pattern have't not supported~~~~~")
+			os.Exit(0)
+		case "tag":
+			current_index1 := SearchReplace(&deployyaml, rep.Image, "k8s")
+			fmt.Printf("current_index1 : %d\n", current_index1)
+			if current_index1 != -1 {
+				fmt.Printf("replace.go : %d\n", 285)
+				(&deployyaml.Deployment.K8S[current_index1]).UpdateK8sTag(rep.NewValue)
+			}
+			current_index2 := SearchReplace(&deployyaml, rep.Image, "openfaas")
+			fmt.Printf("current_index2 : %d\n", current_index2)
+			if current_index2 != -1 {
+				fmt.Printf("replace.go : %d\n", 290)
+				(&deployyaml.Deployment.Openfaas[current_index2]).UpdateOpenfaasTag(rep.NewValue)
+			}
+			current_index3 := SearchReplace(&deployyaml, rep.Image, "monitor")
+			fmt.Printf("current_index3 : %d\n", current_index3)
+			if current_index3 != -1 {
+				fmt.Printf("replace.go : %d\n", 297)
+				(&deployyaml.Deployment.Monitor[current_index3]).UpdateMonitorTag(rep.NewValue)
+			}
+			current_index4 := SearchReplace(&deployyaml, rep.Image, "redis")
+			fmt.Printf("current_index4 : %d\n", current_index4)
+			if current_index4 != -1 {
+				fmt.Printf("replace.go : %d\n", 303)
+				(&deployyaml.Deployment.Redis[current_index4]).UpdateRedisTag(rep.NewValue)
+			}
 		}
 	}
 	yamlcontent, err := yaml.Marshal(&deployyaml)

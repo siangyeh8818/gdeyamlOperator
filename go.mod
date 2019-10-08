@@ -5,6 +5,7 @@ go 1.12
 require (
 	cloud.google.com/go v0.46.3 // indirect
 	github.com/NYTimes/gziphandler v1.1.1 // indirect
+	github.com/bndr/gojenkins v0.2.0
 	github.com/buger/jsonparser v0.0.0-20181115193947-bf1c66bbce23
 	github.com/docker/spdystream v0.0.0-20181023171402-6480d4af844c // indirect
 	github.com/elazarl/goproxy v0.0.0-20190911111923-ecfe977594f1 // indirect
