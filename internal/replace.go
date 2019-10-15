@@ -253,6 +253,7 @@ func ReplacedeByPattern(rep *REPLACEYAML, inputfile string, outputfile string) {
 			temp_git := (&deployyaml.Deployment).BLCKS.Git
 			temp_branch := (&deployyaml.Deployment).BLCKS.Branch
 			(&deployyaml.Deployment).UpdateBlcksStructBranch(temp_git, temp_branch, rep.NewValue)
+
 		}
 
 	case "playbooks":
@@ -282,26 +283,28 @@ func ReplacedeByPattern(rep *REPLACEYAML, inputfile string, outputfile string) {
 			current_index1 := SearchReplace(&deployyaml, rep.Image, "k8s")
 			fmt.Printf("current_index1 : %d\n", current_index1)
 			if current_index1 != -1 {
-				fmt.Printf("replace.go : %d\n", 285)
 				(&deployyaml.Deployment.K8S[current_index1]).UpdateK8sTag(rep.NewValue)
 			}
 			current_index2 := SearchReplace(&deployyaml, rep.Image, "openfaas")
 			fmt.Printf("current_index2 : %d\n", current_index2)
 			if current_index2 != -1 {
-				fmt.Printf("replace.go : %d\n", 290)
 				(&deployyaml.Deployment.Openfaas[current_index2]).UpdateOpenfaasTag(rep.NewValue)
 			}
 			current_index3 := SearchReplace(&deployyaml, rep.Image, "monitor")
 			fmt.Printf("current_index3 : %d\n", current_index3)
 			if current_index3 != -1 {
-				fmt.Printf("replace.go : %d\n", 297)
 				(&deployyaml.Deployment.Monitor[current_index3]).UpdateMonitorTag(rep.NewValue)
 			}
 			current_index4 := SearchReplace(&deployyaml, rep.Image, "redis")
 			fmt.Printf("current_index4 : %d\n", current_index4)
 			if current_index4 != -1 {
-				fmt.Printf("replace.go : %d\n", 303)
 				(&deployyaml.Deployment.Redis[current_index4]).UpdateRedisTag(rep.NewValue)
+			}
+			if rep.Image == deployyaml.Deployment.BLCKS.TOOL.Image {
+				(&deployyaml.Deployment.BLCKS.TOOL).UpdateToolTag(rep.NewValue)
+			}
+			if rep.Image == deployyaml.Deployment.PLAYBOOKS.TOOL.Image {
+				(&deployyaml.Deployment.PLAYBOOKS.TOOL).UpdateToolTag(rep.NewValue)
 			}
 		}
 	}

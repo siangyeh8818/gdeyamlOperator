@@ -1,29 +1,37 @@
 package gdeyamloperator
 
 type Deployment struct {
-	BASE      []BASE      `yaml:"base"`
-	BLCKS     BLCKS     `yaml:"blcks"`
-	PLAYBOOKS PLAYBOOKS `yaml:"playbooks"`
-	K8S       []K8S       `yaml:"k8s"`
-	Openfaas  []Openfaas  `yaml:"openfaas"`
-	Monitor   []Monitor   `yaml:"monitor" `
-	Redis     []Redis     `yaml:"redis"`
+	BASE      []BASE     `yaml:"base"`
+	BLCKS     BLCKS      `yaml:"blcks"`
+	PLAYBOOKS PLAYBOOKS  `yaml:"playbooks"`
+	K8S       []K8S      `yaml:"k8s"`
+	Openfaas  []Openfaas `yaml:"openfaas"`
+	Monitor   []Monitor  `yaml:"monitor" `
+	Redis     []Redis    `yaml:"redis"`
 }
 type BASE struct {
 	Git    string `yaml:"git"`
 	Branch string `yaml:"branch"`
 }
 
+type TOOL struct {
+	Module string `yaml:"module"`
+	Image  string `yaml:"image"`
+	Tag    string `yaml:"tag"`
+}
+
 type BLCKS struct {
 	Git     string `yaml:"git"`
 	Branch  string `yaml:"branch"`
 	Version string `yaml:"version"`
+	TOOL    TOOL   `yaml:"tool"`
 }
 
 type PLAYBOOKS struct {
 	Git     string `yaml:"git"`
 	Branch  string `yaml:"branch"`
 	Version string `yaml:"version"`
+	TOOL    TOOL   `yaml:"tool"`
 }
 
 type K8S struct {
@@ -250,4 +258,9 @@ func (s *Redis) UpdateRedisTag(newtag string) {
 func (s *Redis) UpdateRedisStage(newstage string) {
 
 	s.Stage = newstage
+}
+
+func (s *TOOL) UpdateToolTag(newtag string) {
+
+	s.Tag = newtag
 }
