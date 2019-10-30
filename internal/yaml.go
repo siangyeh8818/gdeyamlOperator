@@ -264,3 +264,11 @@ func (s *TOOL) UpdateToolTag(newtag string) {
 
 	s.Tag = newtag
 }
+func (s *TOOL) UpdateToolImage(newimage string) {
+
+	s.Tag = newimage
+}
+func (s *TOOL) UpdateToolModule(newmodule string) {
+
+	s.Tag = newmodule
+}

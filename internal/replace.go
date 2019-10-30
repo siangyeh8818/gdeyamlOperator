@@ -37,40 +37,60 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Replace.K8S); i++ {
 				current_index := SearchReplace(&inyaml, envir_yaml.Deploymentfile[0].Replace.K8S[i].Image, "k8s")
 				fmt.Printf("current_index : %d", current_index)
-				(&inyaml.Deployment.K8S[current_index]).UpdateK8sTag(envir_yaml.Deploymentfile[0].Replace.K8S[i].Tag)
-				(&inyaml.Deployment.K8S[current_index]).UpdateK8sModule(envir_yaml.Deploymentfile[0].Replace.K8S[i].Module)
-				(&inyaml.Deployment.K8S[current_index]).UpdateK8sImage(envir_yaml.Deploymentfile[0].Replace.K8S[i].Image)
-				(&inyaml.Deployment.K8S[current_index]).UpdateK8sStage(envir_yaml.Deploymentfile[0].Replace.K8S[i].Stage)
+				if current_index ==-1 {
+                    fmt.Println("Action Replace,this module is not exist in k8s")
+				}else {
+					(&inyaml.Deployment.K8S[current_index]).UpdateK8sTag(envir_yaml.Deploymentfile[0].Replace.K8S[i].Tag)
+					(&inyaml.Deployment.K8S[current_index]).UpdateK8sModule(envir_yaml.Deploymentfile[0].Replace.K8S[i].Module)
+					(&inyaml.Deployment.K8S[current_index]).UpdateK8sImage(envir_yaml.Deploymentfile[0].Replace.K8S[i].Image)
+					(&inyaml.Deployment.K8S[current_index]).UpdateK8sStage(envir_yaml.Deploymentfile[0].Replace.K8S[i].Stage)
+				}
+
 			}
 		}
 		if len(envir_yaml.Deploymentfile[0].Replace.Openfaas) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Replace.Openfaas); i++ {
 				current_index := SearchReplace(&inyaml, envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Image, "openfaas")
 				fmt.Printf("current_index : %d", current_index)
-				(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasTag(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Tag)
-				(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasModule(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Module)
-				(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasImage(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Image)
-				(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasStage(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Stage)
+				if current_index ==-1 {
+                    fmt.Println("Action Replace,this module is not exist in openfaas")
+				}else {
+					(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasTag(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Tag)
+					(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasModule(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Module)
+					(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasImage(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Image)
+					(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasStage(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Stage)
+				}
+
 			}
 		}
 		if len(envir_yaml.Deploymentfile[0].Replace.Monitor) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Replace.Monitor); i++ {
 				current_index := SearchReplace(&inyaml, envir_yaml.Deploymentfile[0].Replace.Monitor[i].Image, "monitor")
 				fmt.Printf("current_index : %d", current_index)
-				(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorTag(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Tag)
-				(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorModule(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Module)
-				(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorImage(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Image)
-				(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorStage(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Stage)
+				if current_index ==-1 {
+                    fmt.Println("Action Replace,this module is not exist in monitor")
+				}else {
+					(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorTag(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Tag)
+					(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorModule(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Module)
+					(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorImage(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Image)
+					(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorStage(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Stage)
+				}
+
 			}
 		}
 		if len(envir_yaml.Deploymentfile[0].Replace.Redis) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Replace.Redis); i++ {
 				current_index := SearchReplace(&inyaml, envir_yaml.Deploymentfile[0].Replace.Redis[i].Image, "redis")
 				fmt.Printf("current_index : %d", current_index)
-				(&inyaml.Deployment.Redis[current_index]).UpdateRedisTag(envir_yaml.Deploymentfile[0].Replace.Redis[i].Tag)
-				(&inyaml.Deployment.Redis[current_index]).UpdateRedisModule(envir_yaml.Deploymentfile[0].Replace.Redis[i].Module)
-				(&inyaml.Deployment.Redis[current_index]).UpdateRedisImage(envir_yaml.Deploymentfile[0].Replace.Redis[i].Image)
-				(&inyaml.Deployment.Redis[current_index]).UpdateRedisStage(envir_yaml.Deploymentfile[0].Replace.Redis[i].Stage)
+				if current_index ==-1 {
+                    fmt.Println("Action Replace,this module is not exist in redis")
+				}else {
+					(&inyaml.Deployment.Redis[current_index]).UpdateRedisTag(envir_yaml.Deploymentfile[0].Replace.Redis[i].Tag)
+					(&inyaml.Deployment.Redis[current_index]).UpdateRedisModule(envir_yaml.Deploymentfile[0].Replace.Redis[i].Module)
+					(&inyaml.Deployment.Redis[current_index]).UpdateRedisImage(envir_yaml.Deploymentfile[0].Replace.Redis[i].Image)
+					(&inyaml.Deployment.Redis[current_index]).UpdateRedisStage(envir_yaml.Deploymentfile[0].Replace.Redis[i].Stage)
+				}
+
 			}
 		}
 	}
@@ -82,15 +102,24 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.K8S); i++ {
 				current_index := SearchIngore(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Ignore.K8S[i].Module, "k8s")
 				fmt.Printf("current_index : %d", current_index)
-				(&inyaml.Deployment).RemoveK8sStruct(current_index)
+				if current_index ==-1 {
+                    fmt.Println("Action Ignore,this module is not exist in k8s")
+				}else {
+					(&inyaml.Deployment).RemoveK8sStruct(current_index)
+				}
+				
 			}
-
 		}
 		if len(envir_yaml.Deploymentfile[0].Ignore.Openfaas) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.Openfaas); i++ {
 				current_index := SearchIngore(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Ignore.Openfaas[i].Module, "openfaas")
 				fmt.Printf("current_index : %d", current_index)
-				(&inyaml.Deployment).RemoveOpenfaasStruct(current_index)
+				if current_index ==-1 {
+                    fmt.Println("Action Ignore,this module is not exist in openfaas")
+				}else {
+					(&inyaml.Deployment).RemoveOpenfaasStruct(current_index)
+				}
+				
 			}
 
 		}
@@ -98,16 +127,23 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.Monitor); i++ {
 				current_index := SearchIngore(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Ignore.Monitor[i].Module, "monitor")
 				fmt.Printf("current_index : %d", current_index)
-				(&inyaml.Deployment).RemoveMonitorStruct(current_index)
+				if current_index ==-1 {
+                    fmt.Println("Action Ignore,this module is not exist in monitor")
+				}else {
+					(&inyaml.Deployment).RemoveMonitorStruct(current_index)
+				}
 			}
 		}
 		if len(envir_yaml.Deploymentfile[0].Ignore.Redis) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.Redis); i++ {
 				current_index := SearchIngore(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Ignore.Redis[i].Module, "redis")
 				fmt.Printf("current_index : %d", current_index)
-				(&inyaml.Deployment).RemoveRedisStruct(current_index)
+				if current_index ==-1 {
+                    fmt.Println("Action Ignore,this module is not exist in redis")
+				}else {
+					(&inyaml.Deployment).RemoveRedisStruct(current_index)
+				}
 			}
-
 		}
 	}
 
@@ -163,31 +199,39 @@ func SearchReplace(inyaml *K8sYaml, imagesname string, rangestr string) int {
 
 func SearchIngore(envir_yaml *Environmentyaml, inyaml *K8sYaml, modulename string, rangestr string) int {
 	var resultindex int
+	changotoken := false
 	switch rangestr {
 	case "k8s":
 		for i := 0; i < len(inyaml.Deployment.K8S); i++ {
 			if inyaml.Deployment.K8S[i].Module == modulename {
 				resultindex = i
+				changotoken = true
 			}
 		}
 	case "openfaas":
 		for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
 			if inyaml.Deployment.Openfaas[i].Module == modulename {
 				resultindex = i
+				changotoken = true
 			}
 		}
 	case "monitor":
 		for i := 0; i < len(inyaml.Deployment.Monitor); i++ {
 			if inyaml.Deployment.Monitor[i].Module == modulename {
 				resultindex = i
+				changotoken = true
 			}
 		}
 	case "redis":
 		for i := 0; i < len(inyaml.Deployment.Redis); i++ {
 			if inyaml.Deployment.Redis[i].Module == modulename {
 				resultindex = i
+				changotoken = true
 			}
 		}
+	}
+	if changotoken == false {
+		resultindex = -1
 	}
 	return resultindex
 }

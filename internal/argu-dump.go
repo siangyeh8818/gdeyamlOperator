@@ -15,10 +15,14 @@ func DumpArguments(inputfile string, environment_file string, ouputfile string) 
 		write_content = write_content + blcks_Branch
 		blcks_version := "BLCKS_VERSION=" + deploy_yaml.Deployment.BLCKS.Version + "\n"
 		write_content = write_content + blcks_version
+		blcks_tool_tag := "BLCKS_TOOL_TAG=" + deploy_yaml.Deployment.BLCKS.TOOL.Tag + "\n"
+		write_content = write_content + blcks_tool_tag
 		playbook_Branch := "PLAYBOOK_BRANCH=" + deploy_yaml.Deployment.PLAYBOOKS.Branch + "\n"
 		write_content = write_content + playbook_Branch
 		playbook_version := "PLAYBOOK_VERSION=" + deploy_yaml.Deployment.PLAYBOOKS.Version + "\n"
 		write_content = write_content + playbook_version
+		playbook_tool_tag := "PLAYBOOK_TOOL_TAG=" + deploy_yaml.Deployment.PLAYBOOKS.TOOL.Tag + "\n"
+		write_content = write_content + playbook_tool_tag
 		kubestomize_base_Branch := "BASE_BRANCH=" + deploy_yaml.Deployment.BASE[0].Branch + "\n"
 		write_content = write_content + kubestomize_base_Branch
 	}

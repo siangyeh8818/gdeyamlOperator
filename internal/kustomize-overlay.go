@@ -104,12 +104,12 @@ func GetNameSpaceMapping(kus_argument *KustomizeArgument) map[string]string {
 		fmt.Println("val:", d.(map[string]interface{})[l])
 		ret[key] = val
 	}
-
 	//ret["openfaas"] = "openfaas-fn"
 	fmt.Println(ret)
 	//log.Panic("stop")
 	return ret
 }
+
 func GetKeys(v interface{}) ([]string, error) {
 	rv := reflect.ValueOf(v)
 	if rv.Kind() != reflect.Map {
