@@ -44,6 +44,14 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 	} else {
 		(&test.Deployment).AddBaseStruct("https://github.com/pnetwork/pnbase.git", branch)
 	}
+	(&test.Deployment).UpdateBlcksStructBranch("https://github.com/pnetwork/pn.blcks.git", "master", "Suggest you build new zip file for blcks")
+	(&test.Deployment.BLCKS.TOOL).UpdateToolModule("core.tool.python.scripts.migration")
+	(&test.Deployment.BLCKS.TOOL).UpdateToolImage("deploy-scripts")
+	(&test.Deployment.BLCKS.TOOL).UpdateToolTag("Suggest you build new tool for 'deploy-scripts' this module")
+	(&test.Deployment).UpdatePLAYBOOKStructBranch("https://github.com/pnetwork/core.playbooks.git", "master", "Suggest you build new zip file for playbooks")
+	(&test.Deployment.PLAYBOOKS.TOOL).UpdateToolModule("core.tool.python.scripts.migration")
+	(&test.Deployment.PLAYBOOKS.TOOL).UpdateToolImage("deploy-scripts")
+	(&test.Deployment.PLAYBOOKS.TOOL).UpdateToolTag("Suggest you build new tool for 'deploy-scripts' this module")
 
 	//var ss []string
 
