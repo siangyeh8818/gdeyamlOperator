@@ -46,12 +46,14 @@ var nexus_output_pattern string
 var promote_type string
 var promote_destination string
 var git_action string
+var GitCommitFile string
 var git_repo_path string
 var git_new_branch string
 var replace_type string
 var replace_value string
 var replace_image string
 var replace_pattern string
+var ReplaceYamlType string
 var kmodules string
 var relPath string
 var outputdir string
@@ -66,17 +68,17 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.10.6")
+		fmt.Println("version : 1.10.7")
 		os.Exit(0)
 	}
 	newgit := GIT{}
-	(&newgit).UpdateGit(git_url, git_branch, git_tag, git_repo_path, git_user, git_token)
+	(&newgit).UpdateGit(git_url, git_branch, git_tag, git_repo_path, git_user, git_token , GitCommitFile)
 
 	kustomize_argument := KustomizeArgument{}
 	(&kustomize_argument).UpdateKustomizeArgument(outputdir, comparedata, namespace, relPath, Baseloc, Baseloc, kmodules, UrlPattern, environment_file)
 
 	replace_struct := REPLACEYAML{}
-	(&replace_struct).UpdateREPLACEYAML(replace_type, replace_pattern, replace_image, replace_value)
+	(&replace_struct).UpdateREPLACEYAML(replace_type, replace_pattern, replace_image, replace_value , ReplaceYamlType)
 
 	/*
 		fmt.Println("--------------Test Git struct -----------------")
@@ -101,6 +103,7 @@ func main() {
 	fmt.Printf("flag -git-new-branch: %s\n", git_new_branch)
 	fmt.Printf("flag -git-tag: %s\n", git_tag)
 	fmt.Printf("flag -git-action: %s\n", git_action)
+	fmt.Printf("flag -git-commit-file: %s\n", GitCommitFile)
 	fmt.Println("--------------Docker Related Flag -----------------")
 	fmt.Printf("flag -docker-login: %s\n", docker_login)
 	fmt.Printf("flag -push: %t\n", pushimage)
@@ -123,6 +126,7 @@ func main() {
 	fmt.Printf("flag -kustom-base-path: %s\n", kustom_base)
 	fmt.Printf("flag -stage: %s\n", inputstage)
 	fmt.Printf("flag -replace-type: %s\n", replace_type)
+	fmt.Printf("flag -replace-yaml-type: %s\n", ReplaceYamlType)
 	fmt.Printf("flag -replace-image: %s\n", replace_image)
 	fmt.Printf("flag -replace-pattern: %s\n", replace_pattern)
 	fmt.Printf("flag -replace-value: %s\n", replace_value)
@@ -413,14 +417,14 @@ func main() {
 			ReplacedeByPattern(&replace_struct, inputfile, ouputfile)
 			//Replacedeploymentfile_Image_Tag(&replace_struct, inputfile, ouputfile)
 			log.Println("-----action >> git CommitRepo----")
-			CommitRepo(git_repo_path, "deploy.yml")
+			CommitRepo(&newgit, inputfile)
 			log.Println("-----action >> git PushRepo----")
 			PushGit(git_repo_path, git_user, git_token, git_branch, git_url)
 			log.Println("-----action finishing----")
 		}
 
 	case "new-release":
-		NewRelease(git_url, git_branch, git_new_branch, git_repo_path, git_user, git_token, ouputfile)
+		NewRelease(git_url, git_branch, git_new_branch, git_repo_path, git_user, git_token, ouputfile , &newgit)
 	case "imagedump":
 		LoginDockerHubNew(docker_login, loginuser, loginpassword)
 		DumpImage(push_pattern, snapshot_pattern, pushimage)
@@ -455,6 +459,7 @@ func Init() {
 	flag.StringVar(&git_tag, "git-tag", "", "Tag for git repo")
 	flag.StringVar(&git_user, "git-user", "", "user for git clone")
 	flag.StringVar(&git_token, "git-token", "", "token for git clone")
+	flag.StringVar(&GitCommitFile, "git-commit-file", "deploy.yml", "File name that you want to commit , default value is 'deploy.yml'")
 	//flag.StringVar(&clone_path, "clone-path", "", "folder path for git clone")
 	flag.StringVar(&environment_file, "environment-file", "", "file path of environment.yml")
 	flag.StringVar(&promote_url, "promote-url", "", "destination for you promoting image url (nexus)'")
@@ -471,6 +476,7 @@ func Init() {
 	flag.StringVar(&promote_destination, "promote-destination", "", "Destination for repository name ")
 	flag.StringVar(&git_repo_path, "git-repo-path", "", "directory for git-repo")
 	flag.StringVar(&replace_type, "replace-type", "local", "you can choose 'local' or 'git'")
+	flag.StringVar(&ReplaceYamlType, "replace-yaml-type", "deployyaml", "whinh yaml-type you want to deal with , 'deployyaml' or 'environmentyaml'")
 	flag.StringVar(&replace_image, "replace-image", "", "which one image-name you want to br replace")
 	flag.StringVar(&kmodules, "kustomize-module", "", "k8s modules from command: module:image:stage:tag,module1,image1,stage1,tag1")
 	flag.StringVar(&omodules, "kustomize-openfaasmodule", "", "openfaas modules from command: module:image:stage:tag,module1,image1,stage1,tag1")

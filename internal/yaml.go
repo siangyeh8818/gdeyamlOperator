@@ -59,26 +59,31 @@ type Environmentyaml struct {
 		Monitor  string `yaml:"monitor"`
 		Redis    string `yaml:"redis"`
 	} `yaml:"namespaces"`
-	Configuration []struct {
-		Git    string `yaml:"git"`
-		Branch string `yaml:"branch"`
-	} `yaml:"configuration"`
-	Deploymentfile []struct {
-		Git     string `yaml:"git"`
-		Branch  string `yaml:"branch"`
-		Replace struct {
-			K8S      []K8S      `yaml:"k8s"`
-			Openfaas []Openfaas `yaml:"openfaas"`
-			Monitor  []Monitor  `yaml:"monitor"`
-			Redis    []Redis    `yaml:"redis"`
-		} `yaml:"replace"`
-		Ignore struct {
-			K8S      []K8S      `yaml:"k8s"`
-			Openfaas []Openfaas `yaml:"openfaas"`
-			Monitor  []Monitor  `yaml:"monitor"`
-			Redis    []Redis    `yaml:"redis"`
-		} `yaml:"ignore"`
-	} `yaml:"deploymentfile"`
+	Configuration  []Configuration  `yaml:"configuration"`
+	Deploymentfile []Deploymentfile `yaml:"deploymentfile"`
+}
+
+type Configuration struct {
+	Git     string `yaml:"git"`
+	Branch  string `yaml:"branch"`
+}
+
+
+type Deploymentfile struct {
+	Git     string `yaml:"git"`
+	Branch  string `yaml:"branch"`
+	Replace struct {
+		K8S      []K8S      `yaml:"k8s"`
+		Openfaas []Openfaas `yaml:"openfaas"`
+		Monitor  []Monitor  `yaml:"monitor"`
+		Redis    []Redis    `yaml:"redis"`
+	} `yaml:"replace"`
+	Ignore struct {
+		K8S      []K8S      `yaml:"k8s"`
+		Openfaas []Openfaas `yaml:"openfaas"`
+		Monitor  []Monitor  `yaml:"monitor"`
+		Redis    []Redis    `yaml:"redis"`
+	} `yaml:"ignore"`
 }
 
 type Monitor struct {
@@ -272,3 +277,16 @@ func (s *TOOL) UpdateToolModule(newmodule string) {
 
 	s.Tag = newmodule
 }
+
+func (envir_deploy *Deploymentfile) UpdateBranch(gitbranch string) {
+
+	envir_deploy.Branch = gitbranch
+
+}
+
+func (envir_config *Configuration) UpdateBranch(gitbranch string) {
+
+	envir_config.Branch = gitbranch
+
+}
+
