@@ -6,7 +6,7 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func NewRelease(git_url string, old_branch string, new_branch string, git_repo_path string, git_user string, git_token string, outputfilename string) {
+func NewRelease(git_url string, old_branch string, new_branch string, git_repo_path string, git_user string, git_token string, outputfilename string , g *GIT) {
 	log.Println("-----action >> cloneRepo----")
 	CloneRepo(git_url, old_branch, git_repo_path, git_user, git_token)
 	log.Println("-----action >> CreateBranch----")
@@ -27,7 +27,7 @@ func NewRelease(git_url string, old_branch string, new_branch string, git_repo_p
 	log.Println("-----action >> Write output file----")
 	WriteWithIoutil(inputfile, string(outputcontent))
 	log.Println("-----action >> CommitRepo----")
-	CommitRepo(git_repo_path, "deploy.yml")
+	CommitRepo(g, "deploy.yml")
 	log.Println("-----action >> PushGit----")
 	PushGit(git_repo_path, git_user, git_token,new_branch,git_url)
 	log.Println("-----action finishing----")

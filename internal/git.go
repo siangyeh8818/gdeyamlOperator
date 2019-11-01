@@ -20,15 +20,17 @@ type GIT struct {
 	Path        string
 	AccessUser  string
 	AccessToken string
+	CommitFIle  string
 }
 
-func (g *GIT) UpdateGit(url string, branch string, tag string, path string, user string, token string) {
+func (g *GIT) UpdateGit(url string, branch string, tag string, path string, user string, token string , commitfile string) {
 	g.Url = url
 	g.Branch = branch
 	g.Tag = tag
 	g.Path = path
 	g.AccessUser = user
 	g.AccessToken = token
+	g.CommitFIle = commitfile
 }
 func (g *GIT) UpdateGitUrl(url string) {
 	g.Url = url
@@ -162,12 +164,12 @@ func CheckoutBranch(url string, newbranch string, directory string) {
 	fmt.Println(ref.Hash())
 }
 
-func CommitRepo(directory string, filename string) {
+func CommitRepo(g *GIT, filename string) {
 	CheckArgs("<directory>")
 	//directory := os.Args[1]
 
 	// Opens an already existing repository.
-	r, err := git.PlainOpen(directory)
+	r, err := git.PlainOpen(g.Path)
 	CheckIfError(err)
 
 	w, err := r.Worktree()
@@ -183,8 +185,9 @@ func CommitRepo(directory string, filename string) {
 		CheckIfError(err)
 	*/
 	// Adds the new file to the staging area.
-	fmt.Printf("git add %s\n", filename)
-	_, err = w.Add(filename)
+	fmt.Printf("git add %s\n", g.CommitFIle)
+	//_, err = w.Add("environment.yml")
+	_, err = w.Add(g.CommitFIle)
 	CheckIfError(err)
 
 	// We can verify the current status of the worktree using the method Status.

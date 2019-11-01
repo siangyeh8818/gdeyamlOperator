@@ -14,13 +14,15 @@ type REPLACEYAML struct {
 	Pattern  string
 	Image    string
 	NewValue string
+	YamlType string
 }
 
-func (rep *REPLACEYAML) UpdateREPLACEYAML(types string, pattern string, image string, newvalue string) {
+func (rep *REPLACEYAML) UpdateREPLACEYAML(types string, pattern string, image string, newvalue string , yamltype string) {
 	rep.Type = types
 	rep.Pattern = pattern
 	rep.Image = image
 	rep.NewValue = newvalue
+	rep.YamlType = yamltype
 }
 
 func Replacedeploymentfile(environment string, deployfile string, outputfile string) {
@@ -267,6 +269,50 @@ func Replacedeploymentfile_Image_Tag(rep *REPLACEYAML, inputfile string, outputf
 }
 
 func ReplacedeByPattern(rep *REPLACEYAML, inputfile string, outputfile string) {
+
+	if rep.YamlType == "deployyaml" {
+		UpdateDeployFile(rep , inputfile , outputfile)
+
+	}else if rep.YamlType == "environmentyaml"{
+		UpdateEnvironmentFile(rep , inputfile , outputfile)
+	}
+}
+
+func UpdateEnvironmentFile(rep *REPLACEYAML, inputfile string, outputfile string) {
+
+	environmentfile := Environmentyaml{}
+	fmt.Println("284")
+	fmt.Println(inputfile)
+	environmentfile.GetConf(inputfile)
+	fmt.Println("286")
+	pattern := strings.Split(rep.Pattern, ":")
+	switch pattern[0] {
+	case "configuration":
+		switch pattern[1] {
+		case "branch":
+			//temp_branch := (&environmentfile.Configuration[0]).Branch
+			(&environmentfile.Configuration[0]).UpdateBranch(rep.NewValue)
+		}
+	case "deploymentfile":	
+		switch pattern[1] {
+		case "branch":
+			//temp_branch := (&environmentfile.Deploymentfile[0]).Branch
+			fmt.Println(environmentfile.Deploymentfile[0])
+			(&environmentfile.Deploymentfile[0]).UpdateBranch(rep.NewValue)
+		}	
+	}
+
+	yamlcontent, err := yaml.Marshal(&environmentfile)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	WriteWithIoutil(outputfile, string(yamlcontent))
+
+}
+
+
+func UpdateDeployFile(rep *REPLACEYAML, inputfile string, outputfile string) {
 
 	deployyaml := K8sYaml{}
 	deployyaml.GetConf(inputfile)
