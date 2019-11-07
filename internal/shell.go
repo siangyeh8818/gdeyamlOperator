@@ -95,7 +95,6 @@ func grepFolderName(module string, base_path string, ModuleMap map[string]int) s
 	if err != "" {
 		log.Println("Find image base-folder failed")
 	}
-
 	result_slice := strings.Split(result, "/")
 
 	for x := 0; x < len(result_slice); x++ {
@@ -113,10 +112,8 @@ func grepFolderName(module string, base_path string, ModuleMap map[string]int) s
 				}
 				//token = x - 1
 			}
-
 		}
 	}
-
 	return result_slice[token]
 }
 

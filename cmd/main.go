@@ -68,7 +68,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.10.7")
+		fmt.Println("version : 1.10.8")
 		os.Exit(0)
 	}
 	newgit := GIT{}
@@ -421,6 +421,25 @@ func main() {
 			log.Println("-----action >> git PushRepo----")
 			PushGit(git_repo_path, git_user, git_token, git_branch, git_url)
 			log.Println("-----action finishing----")
+		case "git-patch":
+			if git_url == "" {
+				log.Println("you have to  setting  flag (git-url)")
+				os.Exit(0)
+			}
+			if git_branch == "" {
+				log.Println("you have to  setting  flag (git-branch)")
+				os.Exit(0)
+			}
+			log.Println("-----action >> git CloneRepo----")
+			GitClone(&newgit)
+			log.Println("-----action >> Update Image Info to deploy.yml----")
+			PatchDeployFile(&replace_struct, inputfile, ouputfile, &kustomize_argument)
+			log.Println("-----action >> git CommitRepo----")
+			CommitRepo(&newgit, inputfile)
+			log.Println("-----action >> git PushRepo----")
+			PushGit(git_repo_path, git_user, git_token, git_branch, git_url)
+			log.Println("-----action finishing----")
+
 		}
 
 	case "new-release":
@@ -435,6 +454,8 @@ func main() {
 		DumpArguments(inputfile, environment_file, ouputfile)
 	case "jenkins":
 		INit_Jenkins()
+	//case "playbook":
+
 	}
 
 }
@@ -460,7 +481,6 @@ func Init() {
 	flag.StringVar(&git_user, "git-user", "", "user for git clone")
 	flag.StringVar(&git_token, "git-token", "", "token for git clone")
 	flag.StringVar(&GitCommitFile, "git-commit-file", "deploy.yml", "File name that you want to commit , default value is 'deploy.yml'")
-	//flag.StringVar(&clone_path, "clone-path", "", "folder path for git clone")
 	flag.StringVar(&environment_file, "environment-file", "", "file path of environment.yml")
 	flag.StringVar(&promote_url, "promote-url", "", "destination for you promoting image url (nexus)'")
 	flag.StringVar(&promote_source, "promote-source", "", "sourece(Repository name) for you promoting image url (nexus)'")
