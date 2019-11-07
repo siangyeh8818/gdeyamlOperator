@@ -102,7 +102,7 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 	if Ignore_total > 0 {
 		if len(envir_yaml.Deploymentfile[0].Ignore.K8S) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.K8S); i++ {
-				current_index := SearchIngore(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Ignore.K8S[i].Module, "k8s")
+				current_index := SearchYamlModuleIndex(&inyaml, envir_yaml.Deploymentfile[0].Ignore.K8S[i].Module, "k8s")
 				fmt.Printf("current_index : %d", current_index)
 				if current_index ==-1 {
                     fmt.Println("Action Ignore,this module is not exist in k8s")
@@ -114,7 +114,7 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 		}
 		if len(envir_yaml.Deploymentfile[0].Ignore.Openfaas) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.Openfaas); i++ {
-				current_index := SearchIngore(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Ignore.Openfaas[i].Module, "openfaas")
+				current_index := SearchYamlModuleIndex(&inyaml, envir_yaml.Deploymentfile[0].Ignore.Openfaas[i].Module, "openfaas")
 				fmt.Printf("current_index : %d", current_index)
 				if current_index ==-1 {
                     fmt.Println("Action Ignore,this module is not exist in openfaas")
@@ -127,7 +127,7 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 		}
 		if len(envir_yaml.Deploymentfile[0].Ignore.Monitor) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.Monitor); i++ {
-				current_index := SearchIngore(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Ignore.Monitor[i].Module, "monitor")
+				current_index := SearchYamlModuleIndex(&inyaml, envir_yaml.Deploymentfile[0].Ignore.Monitor[i].Module, "monitor")
 				fmt.Printf("current_index : %d", current_index)
 				if current_index ==-1 {
                     fmt.Println("Action Ignore,this module is not exist in monitor")
@@ -138,7 +138,7 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 		}
 		if len(envir_yaml.Deploymentfile[0].Ignore.Redis) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.Redis); i++ {
-				current_index := SearchIngore(&envir_yaml, &inyaml, envir_yaml.Deploymentfile[0].Ignore.Redis[i].Module, "redis")
+				current_index := SearchYamlModuleIndex(&inyaml, envir_yaml.Deploymentfile[0].Ignore.Redis[i].Module, "redis")
 				fmt.Printf("current_index : %d", current_index)
 				if current_index ==-1 {
                     fmt.Println("Action Ignore,this module is not exist in redis")
@@ -199,7 +199,7 @@ func SearchReplace(inyaml *K8sYaml, imagesname string, rangestr string) int {
 	return resultindex
 }
 
-func SearchIngore(envir_yaml *Environmentyaml, inyaml *K8sYaml, modulename string, rangestr string) int {
+func SearchYamlModuleIndex(inyaml *K8sYaml, modulename string, rangestr string) int {
 	var resultindex int
 	changotoken := false
 	switch rangestr {
@@ -398,6 +398,75 @@ func UpdateDeployFile(rep *REPLACEYAML, inputfile string, outputfile string) {
 			}
 		}
 	}
+	yamlcontent, err := yaml.Marshal(&deployyaml)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+
+	WriteWithIoutil(outputfile, string(yamlcontent))
+}
+
+
+func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string , kust *KustomizeArgument) {
+
+	deployyaml := K8sYaml{}
+	deployyaml.GetConf(inputfile)
+	var ss = make(map[string]int)
+
+	base_folder := grepFolderName(rep.Image, kust.K8sBaseloc, ss)
+
+	if len(base_folder) > 0 {
+		
+		switch rep.Pattern {
+		case "k8s":
+			current_index1 := SearchYamlModuleIndex(&deployyaml,base_folder , "k8s")
+			if current_index1 == -1 {
+
+				ss[base_folder] = 1
+				(&deployyaml.Deployment).AddK8sStruct(base_folder, rep.Image, rep.NewValue, "")
+			}else {
+				(&deployyaml.Deployment.K8S[current_index1]).UpdateK8sImage(rep.Image)
+				(&deployyaml.Deployment.K8S[current_index1]).UpdateK8sTag(rep.NewValue)
+			}
+		case "openfaas":
+			current_index1 := SearchYamlModuleIndex(&deployyaml,base_folder , "openfaas")
+			if current_index1 == -1 {
+				ss[base_folder] = 1
+				(&deployyaml.Deployment).AddOpenfaasStruct(base_folder, rep.Image, rep.NewValue, "")
+			}else {
+				(&deployyaml.Deployment.Openfaas[current_index1]).UpdateOpenfaasImage(rep.Image)
+				(&deployyaml.Deployment.Openfaas[current_index1]).UpdateOpenfaasTag(rep.NewValue)
+			}
+		case "monitor":
+			current_index1 := SearchYamlModuleIndex(&deployyaml,base_folder , "monitor")
+			if current_index1 == -1 {
+				ss[base_folder] = 1
+				(&deployyaml.Deployment).AddMonitorStruct(base_folder, rep.Image, rep.NewValue, "")
+			}else {
+				(&deployyaml.Deployment.Monitor[current_index1]).UpdateMonitorImage(rep.Image)
+				(&deployyaml.Deployment.Monitor[current_index1]).UpdateMonitorTag(rep.NewValue)
+			}
+		case "redis":
+			current_index1 := SearchYamlModuleIndex(&deployyaml,base_folder , "redis")
+			if current_index1 == -1 {
+				ss[base_folder] = 1
+				(&deployyaml.Deployment).AddRedisStruct(base_folder, rep.Image, rep.NewValue, "")
+			}else {
+				(&deployyaml.Deployment.Redis[current_index1]).UpdateRedisImage(rep.Image)
+				(&deployyaml.Deployment.Redis[current_index1]).UpdateRedisTag(rep.NewValue)
+			}
+		case "blcks/ansibleDeployTool":
+			(&deployyaml.Deployment.PLAYBOOKS.TOOL).UpdateToolImage(rep.Image)
+			(&deployyaml.Deployment.PLAYBOOKS.TOOL).UpdateToolTag(rep.NewValue)
+			(&deployyaml.Deployment.BLCKS.TOOL).UpdateToolImage(rep.Image)
+			(&deployyaml.Deployment.BLCKS.TOOL).UpdateToolTag(rep.NewValue)
+		}
+
+	} else {
+		fmt.Println("folder name can't be space")
+		(&deployyaml.Deployment).AddK8sStruct("You_have_to_fix_base_repo", rep.Image, rep.NewValue, "")
+	}
+
 	yamlcontent, err := yaml.Marshal(&deployyaml)
 	if err != nil {
 		log.Fatalf("error: %v", err)
