@@ -68,17 +68,17 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.10.8")
+		fmt.Println("version : 1.10.9")
 		os.Exit(0)
 	}
 	newgit := GIT{}
-	(&newgit).UpdateGit(git_url, git_branch, git_tag, git_repo_path, git_user, git_token , GitCommitFile)
+	(&newgit).UpdateGit(git_url, git_branch, git_tag, git_repo_path, git_user, git_token, GitCommitFile)
 
 	kustomize_argument := KustomizeArgument{}
 	(&kustomize_argument).UpdateKustomizeArgument(outputdir, comparedata, namespace, relPath, Baseloc, Baseloc, kmodules, UrlPattern, environment_file)
 
 	replace_struct := REPLACEYAML{}
-	(&replace_struct).UpdateREPLACEYAML(replace_type, replace_pattern, replace_image, replace_value , ReplaceYamlType)
+	(&replace_struct).UpdateREPLACEYAML(replace_type, replace_pattern, replace_image, replace_value, ReplaceYamlType)
 
 	/*
 		fmt.Println("--------------Test Git struct -----------------")
@@ -443,7 +443,7 @@ func main() {
 		}
 
 	case "new-release":
-		NewRelease(git_url, git_branch, git_new_branch, git_repo_path, git_user, git_token, ouputfile , &newgit)
+		NewRelease(git_url, git_branch, git_new_branch, git_repo_path, git_user, git_token, ouputfile, &newgit)
 	case "imagedump":
 		LoginDockerHubNew(docker_login, loginuser, loginpassword)
 		DumpImage(push_pattern, snapshot_pattern, pushimage)
@@ -454,7 +454,7 @@ func main() {
 		DumpArguments(inputfile, environment_file, ouputfile)
 	case "jenkins":
 		INit_Jenkins()
-	//case "playbook":
+		//case "playbook":
 
 	}
 
