@@ -52,7 +52,8 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 	(&test.Deployment.PLAYBOOKS.TOOL).UpdateToolModule("core.tool.python.scripts.migration")
 	(&test.Deployment.PLAYBOOKS.TOOL).UpdateToolImage("deploy-scripts")
 	(&test.Deployment.PLAYBOOKS.TOOL).UpdateToolTag("Suggest you build new tool for 'deploy-scripts' this module")
-
+	(&test.Deployment.SCRIPTS.TOOL).UpdateToolModule("core.tool.python.scripts.migration")
+	(&test.Deployment.SCRIPTS.TOOL).UpdateToolImage("deploy-scripts")
 	//var ss []string
 
 	var ss = make(map[string]int)

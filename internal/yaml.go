@@ -2,6 +2,7 @@ package gdeyamloperator
 
 type Deployment struct {
 	BASE      []BASE     `yaml:"base"`
+	SCRIPTS   SCRIPTS    `yaml:"scripts"`
 	BLCKS     BLCKS      `yaml:"blcks"`
 	PLAYBOOKS PLAYBOOKS  `yaml:"playbooks"`
 	K8S       []K8S      `yaml:"k8s"`
@@ -18,6 +19,11 @@ type TOOL struct {
 	Module string `yaml:"module"`
 	Image  string `yaml:"image"`
 	Tag    string `yaml:"tag"`
+}
+
+type SCRIPTS struct {
+	TOOL    TOOL   `yaml:"tool"`
+	URLS    *[]string `yaml:"urls"`
 }
 
 type BLCKS struct {
@@ -121,7 +127,11 @@ func (s *Deployment) UpdatePLAYBOOKStructBranch(git string, gitbranch string, ve
 	s.PLAYBOOKS.Branch = gitbranch
 	s.PLAYBOOKS.Version = ver
 }
-
+/*
+func (s *SCRIPTS) addUrl(newurl string) {
+	s.URLS = append(s.URLS, newurl)
+}
+*/
 func (s *Deployment) AddK8sStruct(module string, image string, tag string, stage string) {
 	var a K8S = K8S{
 		Module: module,
@@ -130,14 +140,6 @@ func (s *Deployment) AddK8sStruct(module string, image string, tag string, stage
 		Stage:  stage,
 	}
 	s.K8S = append(s.K8S, a)
-	/*
-		append(s.K8S, K8S{})
-		length := len(s.K8S)
-		s.K8S[length-1].Module = module
-		s.K8S[length-1].Image = image
-		s.K8S[length-1].Tag = tag
-		s.K8S[length-1].Stage = stage
-	*/
 }
 
 func (s *Deployment) AddOpenfaasStruct(module string, image string, tag string, stage string) {
@@ -148,7 +150,6 @@ func (s *Deployment) AddOpenfaasStruct(module string, image string, tag string, 
 		Stage:  stage,
 	}
 	s.Openfaas = append(s.Openfaas, a)
-
 }
 
 func (s *Deployment) AddMonitorStruct(module string, image string, tag string, stage string) {

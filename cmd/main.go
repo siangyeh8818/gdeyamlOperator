@@ -68,7 +68,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.10.9")
+		fmt.Println("version : 1.11.0")
 		os.Exit(0)
 	}
 	newgit := GIT{}
@@ -454,8 +454,8 @@ func main() {
 		DumpArguments(inputfile, environment_file, ouputfile)
 	case "jenkins":
 		INit_Jenkins()
-		//case "playbook":
-
+	case "group-file":
+		GroupNexusOutput(inputfile , ouputfile , &newgit)
 	}
 
 }

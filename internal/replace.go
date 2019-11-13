@@ -459,6 +459,8 @@ func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string , kus
 			(&deployyaml.Deployment.PLAYBOOKS.TOOL).UpdateToolTag(rep.NewValue)
 			(&deployyaml.Deployment.BLCKS.TOOL).UpdateToolImage(rep.Image)
 			(&deployyaml.Deployment.BLCKS.TOOL).UpdateToolTag(rep.NewValue)
+			(&deployyaml.Deployment.SCRIPTS.TOOL).UpdateToolImage(rep.Image)
+			(&deployyaml.Deployment.SCRIPTS.TOOL).UpdateToolTag(rep.NewValue)
 		}
 
 	} else {

@@ -2,18 +2,23 @@ package gdeyamloperator
 
 import(
 	//"io/ioutil"
+	yaml "gopkg.in/yaml.v3"
 	"os"
 	"bufio"
+	"log"
 	"strings"
 	"fmt"
 	"strconv"
 )
 
-func GroupNexusOutput(input string , output string){
+func GroupNexusOutput(input string , output string , git *GIT){
 
 	var versionMap = make(map[string]string)
 	fileContent , fileContentCount , _ := readLines(input)
+	fmt.Printf("File line number : %d\n",fileContentCount)
 	for i:=0 ; i<fileContentCount ; i++ {
+		fmt.Println(fileContent[i])
+		fmt.Println("----------")
 		tempContentArray := strings.Split(fileContent[i],"/")
 		value , ok := versionMap[tempContentArray[0]]
         if ok==true{
@@ -21,16 +26,19 @@ func GroupNexusOutput(input string , output string){
 			oldVersionArray := strings.Split(value,".")
 			latestVersion := NexusVersionCompare(newVersionArray,oldVersionArray)
 			versionMap[tempContentArray[0]] = latestVersion
-		}else if ok==false{
+		}else if ok==false {
 			versionMap[tempContentArray[0]] = tempContentArray[1]
 		}
 	}
 	fmt.Println("------Map start -----")
 	fmt.Println(versionMap)
 	fmt.Println("------Map end-----")
+	/*
 	resultContent := putContentToFile(versionMap , fileContent)
-	
 	WriteWithIoutil(output, resultContent)
+	*/
+	putContentToGityaml( versionMap , fileContent , git)
+
 }
 
 func readLines(path string) ([]string, int, error) {
@@ -103,4 +111,38 @@ func putContentToFile( Map1 map[string]string , fileContent []string)string{
 		}
 	}
 	return resultContent
+}
+
+func putContentToGityaml( Map1 map[string]string , fileContent []string , git *GIT){
+
+	log.Println("-----action >> cloneRepo----")
+	CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
+
+
+	log.Println("-----action >> add urls to deploy.yml----")
+	deployyaml := K8sYaml{}
+	deployyaml.GetConf(git.Path+"/"+git.CommitFIle)
+	
+	var urlArray []string
+	for i:=0 ; i<len(fileContent) ; i++ {
+		tempContentArray := strings.Split(fileContent[i],"/")
+		if Map1[tempContentArray[0]]== tempContentArray[1]{
+			fmt.Printf("Put this content to deploy.yml : %s",fileContent[i])
+			tempInsert := fileContent[i]
+			//(&deployyaml.Deployment.SCRIPTS).addUrl(tempInsert)
+			urlArray = append(urlArray, tempInsert)
+		}
+	}
+	(&deployyaml.Deployment.SCRIPTS).URLS = (&urlArray)
+	outputcontent, err := yaml.Marshal(&deployyaml)
+	if err != nil {
+		log.Fatalf("error: %v", err)
+	}
+	WriteWithIoutil(git.Path+"/"+git.CommitFIle, string(outputcontent))
+	log.Println("-----action >> CommitRepo----")
+	CommitRepo(git, git.CommitFIle)
+	log.Println("-----action >> PushGit----")
+	PushGit(git.Path, git.AccessUser, git.AccessToken, git.Branch, git.Url)
+	log.Println("-----action finishing----")
+	
 }
