@@ -47,7 +47,6 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 					(&inyaml.Deployment.K8S[current_index]).UpdateK8sImage(envir_yaml.Deploymentfile[0].Replace.K8S[i].Image)
 					(&inyaml.Deployment.K8S[current_index]).UpdateK8sStage(envir_yaml.Deploymentfile[0].Replace.K8S[i].Stage)
 				}
-
 			}
 		}
 		if len(envir_yaml.Deploymentfile[0].Replace.Openfaas) > 0 {

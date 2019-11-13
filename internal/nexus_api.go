@@ -86,7 +86,7 @@ func GET_NesusAPI(nexusurl string, nexus_user string, nexus_password string, out
 		WriteWithIoutil(outfile, string(temp_out))
 	} else {
 		origin_request := strings.Split(nexusurl, "?")
-		new_request_url := origin_request[0] + "?" + "continuationToken=" + token + origin_request[1]
+		new_request_url := origin_request[0] + "?" + "continuationToken=" + token +"&"+ origin_request[1]
 		GET_NesusAPI(new_request_url, nexus_user, nexus_password, outfile, out_pattern, output)
 	}
 
