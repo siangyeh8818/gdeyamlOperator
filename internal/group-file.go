@@ -72,8 +72,10 @@ func NexusVersionCompare(version1 []string , version2 []string)string{
 		
 		if s > len(version1)-1{
 			result = ComposeString(version2,".")
+			break
 		}else if s > len(version2)-1{
 			result = ComposeString(version1,".")
+			break
 		}
 		intValue1,_ := strconv.Atoi(version1[s])
 		intValue2,_ := strconv.Atoi(version2[s])
