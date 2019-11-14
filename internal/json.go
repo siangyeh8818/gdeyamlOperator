@@ -177,7 +177,12 @@ func JsonParse2(jsondata string, out_pattern string, output *OutputContent) {
 					//temp_insert_content = temp_insert_content + string(nexusresponse.Items[i].Tags[z].Tagname) + ","
 				}
 			}
-			temp_insert_content = temp_insert_content + "\n"
+			if len(nexusresponse.Items)-1 == i {
+				temp_insert_content = temp_insert_content
+			}else {
+				temp_insert_content = temp_insert_content + "\n"
+			}
+			
 			insert_content = insert_content + temp_insert_content
 		}
 	}
