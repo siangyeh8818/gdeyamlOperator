@@ -8,7 +8,6 @@ import (
 	"regexp"
 	"strings"
 	"time"
-
 	. "github.com/siangyeh8818/gdeyamlOperator/internal"
 	"gopkg.in/yaml.v2"
 )
@@ -68,7 +67,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.11.2")
+		fmt.Println("version : 1.11.3")
 		os.Exit(0)
 	}
 	newgit := GIT{}
@@ -79,17 +78,6 @@ func main() {
 
 	replace_struct := REPLACEYAML{}
 	(&replace_struct).UpdateREPLACEYAML(replace_type, replace_pattern, replace_image, replace_value, ReplaceYamlType)
-
-	/*
-		fmt.Println("--------------Test Git struct -----------------")
-		fmt.Printf("struct newgit.Url: %s\n", newgit.Url)
-		fmt.Printf("struct newgit.Branch: %s\n", newgit.Branch)
-		fmt.Printf("struct newgit.Tag: %s\n", newgit.Tag)
-		fmt.Printf("struct newgit.Path: %s\n", newgit.Path)
-		fmt.Printf("struct newgit.AccessUser: %s\n", newgit.AccessUser)
-		fmt.Printf("struct newgit.AccessToken: %s\n", newgit.AccessToken)
-		fmt.Println("-----------------------------------------------")
-	*/
 
 	fmt.Println("--------------Main Action -----------------")
 	fmt.Printf("flag -action: %s\n", action)

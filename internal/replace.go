@@ -413,10 +413,20 @@ func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string , kus
 	var ss = make(map[string]int)
 
 	base_folder := grepFolderName(rep.Image, kust.K8sBaseloc, ss)
+	completePath := kust.K8sBaseloc + "/" +base_folder
+	tempNamespace := getBaseModuleNamespace(completePath,"namespace")
+	namespace := strings.TrimSpace(tempNamespace)  
 
+    if (strings.Count(namespace,"")-1)==0 {
+		fmt.Printf("base folder name : %s",base_folder)
+		fmt.Println("This folder is loss info about namespace , You can check this folder")
+		namespace=rep.Pattern
+	}
+    fmt.Printf("namespace: %s , base_folder: %s\n",namespace,base_folder)
 	if len(base_folder) > 0 {
-		
-		switch rep.Pattern {
+		fmt.Println("426")
+		//switch rep.Pattern {
+		switch namespace {
 		case "k8s":
 			current_index1 := SearchYamlModuleIndex(&deployyaml,base_folder , "k8s")
 			if current_index1 == -1 {
@@ -428,6 +438,7 @@ func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string , kus
 				(&deployyaml.Deployment.K8S[current_index1]).UpdateK8sTag(rep.NewValue)
 			}
 		case "openfaas":
+			fmt.Println("440")
 			current_index1 := SearchYamlModuleIndex(&deployyaml,base_folder , "openfaas")
 			if current_index1 == -1 {
 				ss[base_folder] = 1
@@ -462,12 +473,10 @@ func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string , kus
 			(&deployyaml.Deployment.SCRIPTS.TOOL).UpdateToolImage(rep.Image)
 			(&deployyaml.Deployment.SCRIPTS.TOOL).UpdateToolTag(rep.NewValue)
 		}
-
 	} else {
 		fmt.Println("folder name can't be space")
 		(&deployyaml.Deployment).AddK8sStruct("You_have_to_fix_base_repo", rep.Image, rep.NewValue, "")
 	}
-
 	yamlcontent, err := yaml.Marshal(&deployyaml)
 	if err != nil {
 		log.Fatalf("error: %v", err)
@@ -475,3 +484,4 @@ func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string , kus
 
 	WriteWithIoutil(outputfile, string(yamlcontent))
 }
+
