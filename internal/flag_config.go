@@ -1,8 +1,8 @@
 package gdeyamloperator
 
-//import (
-//	"flag"
-//)
+type ACTION interface {
+    RunAction() bool
+}
 
 type BINARYCONFIG struct {
 	Action string

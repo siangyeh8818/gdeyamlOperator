@@ -8,6 +8,7 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"io/ioutil"
 	//	"k8s.io/apimachinery/pkg/api/errors"
 )
 
@@ -115,6 +116,17 @@ func grepFolderName(module string, base_path string, ModuleMap map[string]int) s
 		}
 	}
 	return result_slice[token]
+}
+
+func getBaseModuleNamespace(path string, doc string)string{
+
+    f := path + "/"+doc
+	namespaceFileContent, err := ioutil.ReadFile(f)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
+	fmt.Println("Contents of file:", string(namespaceFileContent))
+	return string(namespaceFileContent)
 }
 
 /*
