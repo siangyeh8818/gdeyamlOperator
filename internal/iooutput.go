@@ -22,12 +22,14 @@ func (c *K8sYaml) GetConf(f string) *K8sYaml {
 	yamlFile, err := ioutil.ReadFile(f)
 	if err != nil {
 		fmt.Println(err.Error())
+		panic(err)
 	}
 
 	err = yaml.Unmarshal(yamlFile, c)
 
 	if err != nil {
 		fmt.Println(err.Error())
+		panic(err)
 	}
 	return c
 }
@@ -37,12 +39,14 @@ func (c *Environmentyaml) GetConf(f string) *Environmentyaml {
 	yamlFile, err := ioutil.ReadFile(f)
 	if err != nil {
 		fmt.Println(err.Error())
+		panic(err)
 	}
 
 	err = yaml.Unmarshal(yamlFile, c)
 
 	if err != nil {
 		fmt.Println(err.Error())
+		panic(err)
 	}
 	return c
 }
