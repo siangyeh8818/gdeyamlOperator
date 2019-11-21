@@ -272,11 +272,11 @@ func (s *TOOL) UpdateToolTag(newtag string) {
 }
 func (s *TOOL) UpdateToolImage(newimage string) {
 
-	s.Tag = newimage
+	s.Image = newimage
 }
 func (s *TOOL) UpdateToolModule(newmodule string) {
 
-	s.Tag = newmodule
+	s.Module = newmodule
 }
 
 func (envir_deploy *Deploymentfile) UpdateBranch(gitbranch string) {

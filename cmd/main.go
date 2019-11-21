@@ -67,7 +67,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.11.3")
+		fmt.Println("version : 1.11.4")
 		os.Exit(0)
 	}
 	newgit := GIT{}
