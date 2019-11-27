@@ -125,7 +125,7 @@ func putContentToGityaml( Map1 map[string]string , fileContent []string , git *G
 		CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
 	case "patch":
 		pattern_array := strings.Split(pattern,".")
-		var tempGitBranch
+		var tempGitBranch string
 		for i:=0 ; i<len(pattern_array) ; i++ {
 
 			if i== len(pattern_array)-1 {
