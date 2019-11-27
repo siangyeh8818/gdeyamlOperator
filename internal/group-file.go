@@ -122,24 +122,29 @@ func putContentToGityaml( Map1 map[string]string , fileContent []string , git *G
 	pattern := valid.Validate(git.Branch)
 	switch pattern {
 	case "release":
+        log.Printf("Gitbranch: %s ,VaildReturn: %s",git.Branch,pattern)
 		CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
 	case "patch":
-		pattern_array := strings.Split(pattern,".")
+		pattern_array := strings.Split(git.Branch,".")
+		log.Printf("len(pattern_array): %d",len(pattern_array))
 		var tempGitBranch string
 		for i:=0 ; i<len(pattern_array) ; i++ {
-
-			if i== len(pattern_array)-1 {
-				continue
+            log.Printf("tempGitBranch: %s",tempGitBranch)
+			if i==len(pattern_array)-1 {
 			}else if i==0 {
 				tempGitBranch = pattern_array[i]
-				continue
+			}else {
+				tempGitBranch = tempGitBranch + "." + pattern_array[i]
 			}
-			tempGitBranch = tempGitBranch + "." + pattern_array[i]
+			
 		}
+		log.Printf("Gitbranch: %s ,VaildReturn: %s , Newbranch: %s",git.Branch,pattern,tempGitBranch)
 		CloneRepo(git.Url, tempGitBranch, git.Path, git.AccessUser, git.AccessToken)
 	case "feature":
+		log.Printf("Gitbranch: %s ,VaildReturn: %s",git.Branch,pattern)
 		CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
 	case "misc":
+		log.Printf("Gitbranch: %s ,VaildReturn: %s",git.Branch,pattern)
 		CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
 	}
 	
