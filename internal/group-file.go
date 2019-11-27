@@ -9,6 +9,7 @@ import(
 	"strings"
 	"fmt"
 	"strconv"
+	valid "github.com/siangyeh8818/gdeyamlOperator/internal/validation"
 )
 
 func GroupNexusOutput(input string , output string , git *GIT){
@@ -118,9 +119,30 @@ func putContentToFile( Map1 map[string]string , fileContent []string)string{
 func putContentToGityaml( Map1 map[string]string , fileContent []string , git *GIT){
 
 	log.Println("-----action >> cloneRepo----")
-	CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
+	pattern := valid.Validate(git.Branch)
+	switch pattern {
+	case "release":
+		CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
+	case "patch":
+		pattern_array := strings.Split(pattern,".")
+		var tempGitBranch
+		for i:=0 ; i<len(pattern_array) ; i++ {
 
-
+			if i== len(pattern_array)-1 {
+				continue
+			}else if i==0 {
+				tempGitBranch = pattern_array[i]
+				continue
+			}
+			tempGitBranch = tempGitBranch + "." + pattern_array[i]
+		}
+		CloneRepo(git.Url, tempGitBranch, git.Path, git.AccessUser, git.AccessToken)
+	case "feature":
+		CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
+	case "misc":
+		CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
+	}
+	
 	log.Println("-----action >> add urls to deploy.yml----")
 	deployyaml := K8sYaml{}
 	deployyaml.GetConf(git.Path+"/"+git.CommitFIle)
