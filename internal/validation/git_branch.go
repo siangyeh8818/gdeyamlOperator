@@ -58,7 +58,7 @@ func Validate(branch string) (BranchConvention, error) {
 	}
 
 	if match {
-		fmt.Printf("Feature %d\n", Feature)
+		fmt.Printf("%s %d\n", Feature, Feature)
 		return Feature, err
 	}
 
@@ -68,7 +68,7 @@ func Validate(branch string) (BranchConvention, error) {
 	}
 
 	if match {
-		fmt.Printf("Misc %d\n", Misc)
+		fmt.Printf("%s %d\n", Misc, Misc)
 		return Misc, err
 	}
 
@@ -78,7 +78,7 @@ func Validate(branch string) (BranchConvention, error) {
 	}
 
 	if match {
-		fmt.Printf("Release %d\n", Release)
+		fmt.Printf("%s %d\n", Release, Release)
 		return Release, err
 	}
 
@@ -88,10 +88,10 @@ func Validate(branch string) (BranchConvention, error) {
 	}
 
 	if match {
-		fmt.Printf("Patch %d\n", Patch)
+		fmt.Printf("%s %d\n", Patch, Patch)
 		return Patch, err
 	}
 
-	fmt.Printf("Invalid %d\n", Invalid)
+	fmt.Printf("%s %d\n", Invalid, Invalid)
 	return Invalid, err
 }

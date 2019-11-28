@@ -19,5 +19,5 @@ func main() {
 	if err != nil {
 		fmt.Printf("err: %v", err)
 	}
-	fmt.Printf("pattern: %s\n", pattern)
+	fmt.Printf("Convention: %s\n", pattern)
 }
