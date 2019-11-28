@@ -127,10 +127,7 @@ func putContentToGityaml(Map1 map[string]string, fileContent []string, git *GIT)
 		log.Printf("Validate gitbranch error :%v\n", err)
 	}
 	switch pattern {
-	case "release":
-		log.Printf("Gitbranch: %s ,ValidReturn: %s", git.Branch, pattern)
-		CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
-	case "patch":
+	case valid.Patch:
 		patternArray := strings.Split(git.Branch, ".")
 		log.Printf("len(patternArray): %d", len(patternArray))
 		var tempGitBranch string
@@ -149,12 +146,16 @@ func putContentToGityaml(Map1 map[string]string, fileContent []string, git *GIT)
 
 		log.Printf("Gitbranch: %s ,ValidReturn: %s , Newbranch: %s", git.Branch, pattern, tempGitBranch)
 		CloneRepo(git.Url, tempGitBranch, git.Path, git.AccessUser, git.AccessToken)
-	case "feature":
+	case valid.Release:
+	case valid.Feature:
+	case valid.Misc:
 		log.Printf("Gitbranch: %s ,ValidReturn: %s", git.Branch, pattern)
 		CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
-	case "misc":
+	case valid.Invalid:
 		log.Printf("Gitbranch: %s ,ValidReturn: %s", git.Branch, pattern)
-		CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
+		fmt.Print("Invalid git branch convention")
+	default:
+		break
 	}
 
 	log.Println("-----action >> add urls to deploy.yml----")

@@ -11,10 +11,13 @@ func main() {
 
 	// branch := "0.145.22"
 
-	// branch := "p/123/ricks_sta-ss"
+	branch := "p/123/ricks_sta-ss"
 
-	branch := "wayn002"
-	pattern := valid.Validate(branch)
+	// branch := "fasdfjl%&3"
+	pattern, err := valid.Validate(branch)
 
-	fmt.Printf("pattern: %v\n", pattern)
+	if err != nil {
+		fmt.Printf("err: %v", err)
+	}
+	fmt.Printf("pattern: %s\n", pattern)
 }
