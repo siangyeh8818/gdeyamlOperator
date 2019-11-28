@@ -153,7 +153,7 @@ func putContentToGityaml(Map1 map[string]string, fileContent []string, git *GIT)
 		CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
 	case valid.Invalid:
 		log.Printf("Gitbranch: %s ,ValidReturn: %s", git.Branch, pattern)
-		fmt.Print("Invalid git branch convention")
+		log.Fatalln("Invalid git branch!!!")
 	default:
 		break
 	}
