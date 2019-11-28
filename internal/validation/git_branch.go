@@ -21,14 +21,14 @@ const feature = `^[a-zA-Z][/_][0-9]+[/_]{1,1}[a-zA-Z0-9_-]+$`
 const misc = `^[a-z0-9_-]+$`
 
 // Validate check the input git branch is matched a predefined pattern
-func Validate(branch string) string {
+func Validate(branch string) (string, error) {
 
 	match, err := regexp.MatchString(feature, branch)
 	if err != nil {
 		fmt.Printf("MatchString err: %v", err)
 	}
 	if match {
-		return "feature"
+		return "feature", err
 	}
 
 	match, err = regexp.MatchString(misc, branch)
@@ -36,7 +36,7 @@ func Validate(branch string) string {
 		fmt.Printf("MatchString err: %v", err)
 	}
 	if match {
-		return "misc"
+		return "misc", err
 	}
 
 	match, err = regexp.MatchString(release, branch)
@@ -44,7 +44,7 @@ func Validate(branch string) string {
 		fmt.Printf("MatchString err: %v", err)
 	}
 	if match {
-		return "release"
+		return "release", err
 	}
 
 	match, err = regexp.MatchString(patch, branch)
@@ -52,8 +52,8 @@ func Validate(branch string) string {
 		fmt.Printf("MatchString err: %v", err)
 	}
 	if match {
-		return "patch"
+		return "patch", err
 	}
 
-	return "N/A"
+	return "N/A", err
 }
