@@ -148,7 +148,7 @@ func putContentToGityaml(Map1 map[string]string, fileContent []string, git *GIT)
 		CloneRepo(git.Url, tempGitBranch, git.Path, git.AccessUser, git.AccessToken)
 	case valid.Release:
 	case valid.Feature:
-	case valid.Misc:
+	case valid.Custom:
 		log.Printf("Gitbranch: %s ,ValidReturn: %s", git.Branch, pattern)
 		CloneRepo(git.Url, git.Branch, git.Path, git.AccessUser, git.AccessToken)
 	case valid.Invalid:

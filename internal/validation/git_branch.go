@@ -9,16 +9,16 @@ import (
 type BranchConvention int
 
 const (
+	// Invalid not able to recognized
+	Invalid BranchConvention = iota - 1
 	// Release representing a release branch
-	Release BranchConvention = iota
+	Release
 	// Patch a pattern represents a patch
 	Patch
 	// Feature representing a feature branch
 	Feature
-	// Misc representing a custom named branch
-	Misc
-	// Invalid not able to recognized
-	Invalid
+	// Custom representing a custom named branch
+	Custom
 )
 
 // 0.155: continue
@@ -31,7 +31,7 @@ const patch = `^v?(\d+)(\.(\d+))(\.(\d+))$`
 const feature = `^[a-zA-Z][/_][0-9]+[/_]{1,1}[a-zA-Z0-9_-]+$`
 
 // wayne002: continue
-const misc = `^[a-z0-9_-]+$`
+const custom = `^[a-z0-9_-]+$`
 
 func (bc BranchConvention) String() string {
 	switch bc {
@@ -41,8 +41,8 @@ func (bc BranchConvention) String() string {
 		return "patch"
 	case Feature:
 		return "feature"
-	case Misc:
-		return "misc"
+	case Custom:
+		return "custom"
 	case Invalid:
 		return "invalid"
 	}
@@ -52,27 +52,7 @@ func (bc BranchConvention) String() string {
 // Validate check the input git branch is matched a predefined pattern
 func Validate(branch string) (BranchConvention, error) {
 
-	match, err := regexp.MatchString(feature, branch)
-	if err != nil {
-		fmt.Printf("MatchString err: %v", err)
-	}
-
-	if match {
-		fmt.Printf("%s %d\n", Feature, Feature)
-		return Feature, err
-	}
-
-	match, err = regexp.MatchString(misc, branch)
-	if err != nil {
-		fmt.Printf("MatchString err: %v", err)
-	}
-
-	if match {
-		fmt.Printf("%s %d\n", Misc, Misc)
-		return Misc, err
-	}
-
-	match, err = regexp.MatchString(release, branch)
+	match, err := regexp.MatchString(release, branch)
 	if err != nil {
 		fmt.Printf("MatchString err: %v", err)
 	}
@@ -90,6 +70,26 @@ func Validate(branch string) (BranchConvention, error) {
 	if match {
 		fmt.Printf("%s %d\n", Patch, Patch)
 		return Patch, err
+	}
+
+	match, err = regexp.MatchString(feature, branch)
+	if err != nil {
+		fmt.Printf("MatchString err: %v", err)
+	}
+
+	if match {
+		fmt.Printf("%s %d\n", Feature, Feature)
+		return Feature, err
+	}
+
+	match, err = regexp.MatchString(custom, branch)
+	if err != nil {
+		fmt.Printf("MatchString err: %v", err)
+	}
+
+	if match {
+		fmt.Printf("%s %d\n", Custom, Custom)
+		return Custom, err
 	}
 
 	fmt.Printf("%s %d\n", Invalid, Invalid)

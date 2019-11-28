@@ -11,7 +11,9 @@ func main() {
 
 	// branch := "0.145.22"
 
-	branch := "p/123/ricks_sta-ss"
+	// branch := "p/123/ricks_sta-ss"
+
+	branch := "wayne002"
 
 	// branch := "fasdfjl%&3"
 	pattern, err := valid.Validate(branch)
