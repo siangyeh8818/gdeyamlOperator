@@ -31,7 +31,7 @@ const patch = `^v?(\d+)(\.(\d+))(\.(\d+))$`
 const feature = `^[a-zA-Z][/_][0-9]+[/_]{1,1}[a-zA-Z0-9_-]+$`
 
 // wayne002: continue
-const custom = `^[a-z0-9_-]+$`
+const custom = `^[a-z0-9._-]+$`
 
 func (bc BranchConvention) String() string {
 	switch bc {

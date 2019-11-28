@@ -13,6 +13,7 @@ func main() {
 
 	// branch := "p/123/ricks_sta-ss"
 
+	// branch := "rick-0.167.2-releasev2"
 	branch := "wayne002"
 
 	// branch := "fasdfjl%&3"
