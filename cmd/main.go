@@ -8,6 +8,7 @@ import (
 	"regexp"
 	"strings"
 	"time"
+
 	. "github.com/siangyeh8818/gdeyamlOperator/internal"
 	"gopkg.in/yaml.v2"
 )
@@ -67,7 +68,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.11.5")
+		fmt.Println("version : 1.11.6")
 		os.Exit(0)
 	}
 	newgit := GIT{}
@@ -443,7 +444,7 @@ func main() {
 	case "jenkins":
 		INit_Jenkins()
 	case "group-file":
-		GroupNexusOutput(inputfile , ouputfile , &newgit)
+		GroupNexusOutput(inputfile, ouputfile, &newgit)
 	}
 
 }
