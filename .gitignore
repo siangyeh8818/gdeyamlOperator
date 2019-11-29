@@ -2,3 +2,6 @@
 
 deploymentfile/
 build/
+
+output.csv
+pn.deploy/
