@@ -36,10 +36,10 @@ func GroupNexusOutput(input string, output string, git *GIT) {
 	fmt.Println("------Map start -----")
 	fmt.Println(versionMap)
 	fmt.Println("------Map end-----")
-	/*
-		resultContent := putContentToFile(versionMap , fileContent)
-		WriteWithIoutil(output, resultContent)
-	*/
+	
+	resultContent := putContentToFile(versionMap , fileContent)
+	WriteWithIoutil(output, resultContent)
+	
 	putContentToGityaml(versionMap, fileContent, git)
 
 }
@@ -113,7 +113,7 @@ func putContentToFile(Map1 map[string]string, fileContent []string) string {
 		tempContentArray := strings.Split(fileContent[i], "/")
 		if Map1[tempContentArray[0]] == tempContentArray[1] {
 			fmt.Printf("Put this content to result : %s", fileContent[i])
-			resultContent = resultContent + fileContent[i]
+			resultContent = resultContent + fileContent[i]+","
 		}
 	}
 	return resultContent
