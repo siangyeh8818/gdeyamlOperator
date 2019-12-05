@@ -17,7 +17,7 @@ type REPLACEYAML struct {
 	YamlType string
 }
 
-func (rep *REPLACEYAML) UpdateREPLACEYAML(types string, pattern string, image string, newvalue string , yamltype string) {
+func (rep *REPLACEYAML) UpdateREPLACEYAML(types string, pattern string, image string, newvalue string, yamltype string) {
 	rep.Type = types
 	rep.Pattern = pattern
 	rep.Image = image
@@ -39,9 +39,9 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Replace.K8S); i++ {
 				current_index := SearchReplace(&inyaml, envir_yaml.Deploymentfile[0].Replace.K8S[i].Image, "k8s")
 				fmt.Printf("current_index : %d", current_index)
-				if current_index ==-1 {
-                    fmt.Println("Action Replace,this module is not exist in k8s")
-				}else {
+				if current_index == -1 {
+					fmt.Println("Action Replace,this module is not exist in k8s")
+				} else {
 					(&inyaml.Deployment.K8S[current_index]).UpdateK8sTag(envir_yaml.Deploymentfile[0].Replace.K8S[i].Tag)
 					(&inyaml.Deployment.K8S[current_index]).UpdateK8sModule(envir_yaml.Deploymentfile[0].Replace.K8S[i].Module)
 					(&inyaml.Deployment.K8S[current_index]).UpdateK8sImage(envir_yaml.Deploymentfile[0].Replace.K8S[i].Image)
@@ -53,9 +53,9 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Replace.Openfaas); i++ {
 				current_index := SearchReplace(&inyaml, envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Image, "openfaas")
 				fmt.Printf("current_index : %d", current_index)
-				if current_index ==-1 {
-                    fmt.Println("Action Replace,this module is not exist in openfaas")
-				}else {
+				if current_index == -1 {
+					fmt.Println("Action Replace,this module is not exist in openfaas")
+				} else {
 					(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasTag(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Tag)
 					(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasModule(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Module)
 					(&inyaml.Deployment.Openfaas[current_index]).UpdateOpenfaasImage(envir_yaml.Deploymentfile[0].Replace.Openfaas[i].Image)
@@ -68,9 +68,9 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Replace.Monitor); i++ {
 				current_index := SearchReplace(&inyaml, envir_yaml.Deploymentfile[0].Replace.Monitor[i].Image, "monitor")
 				fmt.Printf("current_index : %d", current_index)
-				if current_index ==-1 {
-                    fmt.Println("Action Replace,this module is not exist in monitor")
-				}else {
+				if current_index == -1 {
+					fmt.Println("Action Replace,this module is not exist in monitor")
+				} else {
 					(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorTag(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Tag)
 					(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorModule(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Module)
 					(&inyaml.Deployment.Monitor[current_index]).UpdateMonitorImage(envir_yaml.Deploymentfile[0].Replace.Monitor[i].Image)
@@ -83,9 +83,9 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Replace.Redis); i++ {
 				current_index := SearchReplace(&inyaml, envir_yaml.Deploymentfile[0].Replace.Redis[i].Image, "redis")
 				fmt.Printf("current_index : %d", current_index)
-				if current_index ==-1 {
-                    fmt.Println("Action Replace,this module is not exist in redis")
-				}else {
+				if current_index == -1 {
+					fmt.Println("Action Replace,this module is not exist in redis")
+				} else {
 					(&inyaml.Deployment.Redis[current_index]).UpdateRedisTag(envir_yaml.Deploymentfile[0].Replace.Redis[i].Tag)
 					(&inyaml.Deployment.Redis[current_index]).UpdateRedisModule(envir_yaml.Deploymentfile[0].Replace.Redis[i].Module)
 					(&inyaml.Deployment.Redis[current_index]).UpdateRedisImage(envir_yaml.Deploymentfile[0].Replace.Redis[i].Image)
@@ -103,24 +103,24 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.K8S); i++ {
 				current_index := SearchYamlModuleIndex(&inyaml, envir_yaml.Deploymentfile[0].Ignore.K8S[i].Module, "k8s")
 				fmt.Printf("current_index : %d", current_index)
-				if current_index ==-1 {
-                    fmt.Println("Action Ignore,this module is not exist in k8s")
-				}else {
+				if current_index == -1 {
+					fmt.Println("Action Ignore,this module is not exist in k8s")
+				} else {
 					(&inyaml.Deployment).RemoveK8sStruct(current_index)
 				}
-				
+
 			}
 		}
 		if len(envir_yaml.Deploymentfile[0].Ignore.Openfaas) > 0 {
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.Openfaas); i++ {
 				current_index := SearchYamlModuleIndex(&inyaml, envir_yaml.Deploymentfile[0].Ignore.Openfaas[i].Module, "openfaas")
 				fmt.Printf("current_index : %d", current_index)
-				if current_index ==-1 {
-                    fmt.Println("Action Ignore,this module is not exist in openfaas")
-				}else {
+				if current_index == -1 {
+					fmt.Println("Action Ignore,this module is not exist in openfaas")
+				} else {
 					(&inyaml.Deployment).RemoveOpenfaasStruct(current_index)
 				}
-				
+
 			}
 
 		}
@@ -128,9 +128,9 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.Monitor); i++ {
 				current_index := SearchYamlModuleIndex(&inyaml, envir_yaml.Deploymentfile[0].Ignore.Monitor[i].Module, "monitor")
 				fmt.Printf("current_index : %d", current_index)
-				if current_index ==-1 {
-                    fmt.Println("Action Ignore,this module is not exist in monitor")
-				}else {
+				if current_index == -1 {
+					fmt.Println("Action Ignore,this module is not exist in monitor")
+				} else {
 					(&inyaml.Deployment).RemoveMonitorStruct(current_index)
 				}
 			}
@@ -139,9 +139,9 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 			for i := 0; i < len(envir_yaml.Deploymentfile[0].Ignore.Redis); i++ {
 				current_index := SearchYamlModuleIndex(&inyaml, envir_yaml.Deploymentfile[0].Ignore.Redis[i].Module, "redis")
 				fmt.Printf("current_index : %d", current_index)
-				if current_index ==-1 {
-                    fmt.Println("Action Ignore,this module is not exist in redis")
-				}else {
+				if current_index == -1 {
+					fmt.Println("Action Ignore,this module is not exist in redis")
+				} else {
 					(&inyaml.Deployment).RemoveRedisStruct(current_index)
 				}
 			}
@@ -270,10 +270,10 @@ func Replacedeploymentfile_Image_Tag(rep *REPLACEYAML, inputfile string, outputf
 func ReplacedeByPattern(rep *REPLACEYAML, inputfile string, outputfile string) {
 
 	if rep.YamlType == "deployyaml" {
-		UpdateDeployFile(rep , inputfile , outputfile)
+		UpdateDeployFile(rep, inputfile, outputfile)
 
-	}else if rep.YamlType == "environmentyaml"{
-		UpdateEnvironmentFile(rep , inputfile , outputfile)
+	} else if rep.YamlType == "environmentyaml" {
+		UpdateEnvironmentFile(rep, inputfile, outputfile)
 	}
 }
 
@@ -292,13 +292,13 @@ func UpdateEnvironmentFile(rep *REPLACEYAML, inputfile string, outputfile string
 			//temp_branch := (&environmentfile.Configuration[0]).Branch
 			(&environmentfile.Configuration[0]).UpdateBranch(rep.NewValue)
 		}
-	case "deploymentfile":	
+	case "deploymentfile":
 		switch pattern[1] {
 		case "branch":
 			//temp_branch := (&environmentfile.Deploymentfile[0]).Branch
 			fmt.Println(environmentfile.Deploymentfile[0])
 			(&environmentfile.Deploymentfile[0]).UpdateBranch(rep.NewValue)
-		}	
+		}
 	}
 
 	yamlcontent, err := yaml.Marshal(&environmentfile)
@@ -309,7 +309,6 @@ func UpdateEnvironmentFile(rep *REPLACEYAML, inputfile string, outputfile string
 	WriteWithIoutil(outputfile, string(yamlcontent))
 
 }
-
 
 func UpdateDeployFile(rep *REPLACEYAML, inputfile string, outputfile string) {
 
@@ -405,63 +404,62 @@ func UpdateDeployFile(rep *REPLACEYAML, inputfile string, outputfile string) {
 	WriteWithIoutil(outputfile, string(yamlcontent))
 }
 
-
-func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string , kust *KustomizeArgument) {
+func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string, kust *KustomizeArgument) {
 
 	deployyaml := K8sYaml{}
 	deployyaml.GetConf(inputfile)
 	var ss = make(map[string]int)
 
 	base_folder := grepFolderName(rep.Image, kust.K8sBaseloc, ss)
-	completePath := kust.K8sBaseloc + "/" +base_folder
-	tempNamespace := getBaseModuleNamespace(completePath,"namespace")
-	namespace := strings.TrimSpace(tempNamespace)  
+	completePath := kust.K8sBaseloc + "/" + base_folder
+	tempNamespace := getBaseModuleNamespace(completePath, "namespace")
+	namespace := strings.TrimSpace(tempNamespace)
 
-    if (strings.Count(namespace,"")-1)==0 {
-		fmt.Printf("base folder name : %s",base_folder)
+	if (strings.Count(namespace, "") - 1) == 0 {
+		fmt.Printf("base folder name : %s", base_folder)
 		fmt.Println("This folder is loss info about namespace , You can check this folder")
-		namespace=rep.Pattern
+		namespace = rep.Pattern
 	}
-    fmt.Printf("namespace: %s , base_folder: %s\n",namespace,base_folder)
+	fmt.Printf("namespace: %s , base_folder: %s\n", namespace, base_folder)
 	if len(base_folder) > 0 {
 		fmt.Println("426")
 		//switch rep.Pattern {
 		switch namespace {
 		case "k8s":
-			current_index1 := SearchYamlModuleIndex(&deployyaml,base_folder , "k8s")
+			current_index1 := SearchYamlModuleIndex(&deployyaml, base_folder, "k8s")
 			if current_index1 == -1 {
 
 				ss[base_folder] = 1
 				(&deployyaml.Deployment).AddK8sStruct(base_folder, rep.Image, rep.NewValue, "")
-			}else {
+			} else {
 				(&deployyaml.Deployment.K8S[current_index1]).UpdateK8sImage(rep.Image)
 				(&deployyaml.Deployment.K8S[current_index1]).UpdateK8sTag(rep.NewValue)
 			}
 		case "openfaas":
 			fmt.Println("440")
-			current_index1 := SearchYamlModuleIndex(&deployyaml,base_folder , "openfaas")
+			current_index1 := SearchYamlModuleIndex(&deployyaml, base_folder, "openfaas")
 			if current_index1 == -1 {
 				ss[base_folder] = 1
 				(&deployyaml.Deployment).AddOpenfaasStruct(base_folder, rep.Image, rep.NewValue, "")
-			}else {
+			} else {
 				(&deployyaml.Deployment.Openfaas[current_index1]).UpdateOpenfaasImage(rep.Image)
 				(&deployyaml.Deployment.Openfaas[current_index1]).UpdateOpenfaasTag(rep.NewValue)
 			}
 		case "monitor":
-			current_index1 := SearchYamlModuleIndex(&deployyaml,base_folder , "monitor")
+			current_index1 := SearchYamlModuleIndex(&deployyaml, base_folder, "monitor")
 			if current_index1 == -1 {
 				ss[base_folder] = 1
 				(&deployyaml.Deployment).AddMonitorStruct(base_folder, rep.Image, rep.NewValue, "")
-			}else {
+			} else {
 				(&deployyaml.Deployment.Monitor[current_index1]).UpdateMonitorImage(rep.Image)
 				(&deployyaml.Deployment.Monitor[current_index1]).UpdateMonitorTag(rep.NewValue)
 			}
 		case "redis":
-			current_index1 := SearchYamlModuleIndex(&deployyaml,base_folder , "redis")
+			current_index1 := SearchYamlModuleIndex(&deployyaml, base_folder, "redis")
 			if current_index1 == -1 {
 				ss[base_folder] = 1
 				(&deployyaml.Deployment).AddRedisStruct(base_folder, rep.Image, rep.NewValue, "")
-			}else {
+			} else {
 				(&deployyaml.Deployment.Redis[current_index1]).UpdateRedisImage(rep.Image)
 				(&deployyaml.Deployment.Redis[current_index1]).UpdateRedisTag(rep.NewValue)
 			}
@@ -470,6 +468,7 @@ func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string , kus
 			(&deployyaml.Deployment.PLAYBOOKS.TOOL).UpdateToolTag(rep.NewValue)
 			(&deployyaml.Deployment.BLCKS.TOOL).UpdateToolImage(rep.Image)
 			(&deployyaml.Deployment.BLCKS.TOOL).UpdateToolTag(rep.NewValue)
+		case "scriptsTool":
 			(&deployyaml.Deployment.SCRIPTS.TOOL).UpdateToolImage(rep.Image)
 			(&deployyaml.Deployment.SCRIPTS.TOOL).UpdateToolTag(rep.NewValue)
 		}
@@ -484,4 +483,3 @@ func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string , kus
 
 	WriteWithIoutil(outputfile, string(yamlcontent))
 }
-

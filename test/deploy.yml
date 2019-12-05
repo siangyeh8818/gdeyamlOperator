@@ -1,0 +1,53 @@
+deployment:
+  base:
+    - git: https://github.com/pnetwork/pnbase.git
+      branch: master
+  scripts:
+    tool:
+      module: core.tool.python.scripts.migration
+      image: deploy-scripts
+      tag: 13348f1.20191122154702
+    urls:
+      - arraytransformer/0.2/dist/script.zip
+  blcks:
+    git: https://github.com/pnetwork/pn.blcks.git
+    branch: master
+    version: 0.168.999
+    tool:
+      module: core.tool.python.scripts.migration
+      image: deploy-scripts
+      tag: 0.168.999.20191202171945
+      branch: master
+  playbooks:
+    git: https://github.com/pnetwork/core.playbooks.git
+    branch: master
+    version: 0.168.999
+    tool:
+      module: core.tool.python.scripts.migration
+      image: deploy-scripts
+      tag: 0.168.999.20191202171945
+      branch: master
+  k8s:
+    - module: platform.neo4j.data.versioning
+      image: neo4j-migration
+      tag: 0.167.hotfix.20191129105232
+      stage: ""
+    - module: core.cloudkit.v2
+      image: cloudkit
+      tag: 0.149.20191002172111
+      stage: ""
+  openfaas:
+    - module: appstorecheck
+      image: appstorecheck
+      tag: d90f53b.20191031192711
+      stage: ""
+    - module: arraytransformer
+      image: arraytransformer
+      tag: 0.148.20190927175102
+      stage: preview
+  monitor:
+    - module: kafka
+      image: kafka
+      tag: 1.8.20191120163227
+      stage: ""
+  redis: []

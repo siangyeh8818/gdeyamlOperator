@@ -7,6 +7,7 @@ require (
 	github.com/NYTimes/gziphandler v1.1.1 // indirect
 	github.com/bndr/gojenkins v0.2.0
 	github.com/buger/jsonparser v0.0.0-20181115193947-bf1c66bbce23
+	github.com/cweill/gotests v1.5.3
 	github.com/docker/spdystream v0.0.0-20181023171402-6480d4af844c // indirect
 	github.com/elazarl/goproxy v0.0.0-20190911111923-ecfe977594f1 // indirect
 	github.com/elazarl/goproxy/ext v0.0.0-20190911111923-ecfe977594f1 // indirect
