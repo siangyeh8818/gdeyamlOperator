@@ -2,6 +2,7 @@
 
 deploymentfile/
 build/
+tmp/
 
 output.csv
 pn.deploy/

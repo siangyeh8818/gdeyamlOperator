@@ -23,23 +23,26 @@ func GroupNexusOutput(input string, output string, git *GIT) {
 		fmt.Println(fileContent[i])
 		fmt.Println("----------")
 		tempContentArray := strings.Split(fileContent[i], "/")
-		value, ok := versionMap[tempContentArray[0]]
-		if ok == true {
-			newVersionArray := strings.Split(tempContentArray[1], ".")
-			oldVersionArray := strings.Split(value, ".")
-			latestVersion := NexusVersionCompare(newVersionArray, oldVersionArray)
-			versionMap[tempContentArray[0]] = latestVersion
-		} else if ok == false {
-			versionMap[tempContentArray[0]] = tempContentArray[1]
+		if fileContent[i] != "\n" {
+			fmt.Println(len(tempContentArray))
+			value, ok := versionMap[tempContentArray[0]]
+			if ok == true {
+				newVersionArray := strings.Split(tempContentArray[1], ".")
+				oldVersionArray := strings.Split(value, ".")
+				latestVersion := NexusVersionCompare(newVersionArray, oldVersionArray)
+				versionMap[tempContentArray[0]] = latestVersion
+			} else if ok == false {
+				versionMap[tempContentArray[0]] = tempContentArray[1]
+			}
 		}
 	}
 	fmt.Println("------Map start -----")
 	fmt.Println(versionMap)
 	fmt.Println("------Map end-----")
-	
-	resultContent := putContentToFile(versionMap , fileContent)
+
+	resultContent := putContentToFile(versionMap, fileContent)
 	WriteWithIoutil(output, resultContent)
-	
+
 	putContentToGityaml(versionMap, fileContent, git)
 
 }
@@ -55,7 +58,9 @@ func readLines(path string) ([]string, int, error) {
 	linecount := 0
 	scanner := bufio.NewScanner(file)
 	for scanner.Scan() {
-		lines = append(lines, scanner.Text())
+		newline := strings.TrimSuffix(scanner.Text(), "\n")
+		lines = append(lines, newline)
+		//lines = append(lines, scanner.Text())
 		linecount++
 	}
 	return lines, linecount, scanner.Err()
@@ -113,7 +118,7 @@ func putContentToFile(Map1 map[string]string, fileContent []string) string {
 		tempContentArray := strings.Split(fileContent[i], "/")
 		if Map1[tempContentArray[0]] == tempContentArray[1] {
 			fmt.Printf("Put this content to result : %s", fileContent[i])
-			resultContent = resultContent + fileContent[i]+","
+			resultContent = resultContent + fileContent[i] + ","
 		}
 	}
 	return resultContent

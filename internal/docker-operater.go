@@ -5,6 +5,17 @@ import (
 	"strings"
 )
 
+type Docker struct {
+	DockerLogin string
+	Push bool
+	PushPattern string
+	PullPattern string
+	Imagename string
+	List int
+	LatestMode string
+	Stage string
+}
+
 func LoginDockerHub(stage string, user string, password string) {
 	var login_cmd string
 	login_cmd = "docker login cr-" + stage + ".pentium.network -u " + user + " -p " + password

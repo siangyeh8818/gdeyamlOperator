@@ -1,0 +1,13 @@
+namespaces:
+  - k8s: default
+    openfaas: openfaas-fn
+    monitor: monitor
+    redis: redis
+
+configuration:
+  - git: https://github.com/pnetwork/platform.configuration.git
+    branch: test
+
+deploymentfile:
+  - git: https://github.com/pnetwork/pn.deploy.git
+    branch: test

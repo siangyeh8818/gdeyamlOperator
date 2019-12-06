@@ -13,6 +13,17 @@ import (
 	"strings"
 )
 
+type Nexus struct {
+	NexusApiMethod string 
+	NexusReqBody  string 
+	NexusOutputPattern    string 
+	NexusPromoteType  string 
+	NexusPromoteDestination string
+	NexusPromoteUrl string
+	NexusPromoteSource string
+}
+
+
 func GetNesuxCpmponet(nexusurl string, nexus_user string, nexus_password string) {
 
 	var url string
