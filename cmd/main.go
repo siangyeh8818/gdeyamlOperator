@@ -70,7 +70,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.11.9")
+		fmt.Println("version : 1.11.10")
 		os.Exit(0)
 	}
 	newgit := gdeyamloperator.GIT{}
@@ -510,7 +510,7 @@ func Init() {
 	flag.StringVar(&Baseloc, "kustomize-basefolder", "base", "could be {relPath}/{Baseloc}, default is ../../{Baseloc}")
 	flag.StringVar(&replace_pattern, "replace-pattern", "", "pattern for release , for example : blcks:version")
 	flag.StringVar(&replace_value, "replace-value", "", "value for pattern tou want to update")
-	flag.StringVar(&optype, "optype", "default", "please choose a type of operation to perform")
+	flag.StringVar(&optype, "optype", "delete", "please choose a type of operation to perform")
 }
 
 func GetTag(name string, latestmode string) string {
