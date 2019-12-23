@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"strings"
 
 	yaml "gopkg.in/yaml.v3"
 	batchv1 "k8s.io/api/batch/v1"
@@ -51,12 +52,6 @@ func DeleteResources(git *gdeyamloperator.GIT) {
 	}
 	fmt.Printf("envYaml: %v\n", envYaml)
 
-	// get k8s client
-	clientSet, err := getClientSet()
-	if err != nil {
-		panic(err)
-	}
-
 	// clone prune file
 	newGit := &gdeyamloperator.GIT{
 		Branch:      envYaml.Prune.Branch,
@@ -79,12 +74,15 @@ func DeleteResources(git *gdeyamloperator.GIT) {
 
 	fmt.Printf("%v\n", pruneYaml)
 
+	// get k8s client
+	clientSet, err := getClientSet()
+	if err != nil {
+		panic(err)
+	}
+
 	// Debug
 	// createJob(clientSet, "workflow-stable", "demo-job")
 	// time.Sleep(2 * time.Second)
-
-	// dict := makeResourceDict(envYaml)
-	// fmt.Printf("dict: %v\n", dict)
 
 	// Delete
 	for i := 0; i < len(pruneYaml.Targets); i++ {
@@ -94,9 +92,9 @@ func DeleteResources(git *gdeyamloperator.GIT) {
 }
 
 func deleteResource(cs *kubernetes.Clientset, deletion gdeyamloperator.PruneTarget) {
-	switch deletion.Kind {
+	switch strings.ToLower(deletion.Kind) {
 	case "namespace", "ns":
-		deleteNamespace(cs, deletion.Namespace, deletion.Name)
+		deleteNamespace(cs, deletion.Name)
 	case "job":
 		deleteJob(cs, deletion.Namespace, deletion.Name)
 	case "cronjob":
@@ -117,6 +115,12 @@ func deleteResource(cs *kubernetes.Clientset, deletion gdeyamloperator.PruneTarg
 		deleteIngress(cs, deletion.Namespace, deletion.Name)
 	case "pod", "po":
 		deletePod(cs, deletion.Namespace, deletion.Name)
+	case "clusterrole":
+		deleteClusterRole(cs, deletion.Name)
+	case "clusterrolebinding":
+		deleteClusterRoleBinding(cs, deletion.Name)
+	case "sa", "serviceaccount":
+		deleteServiceAccount(cs, deletion.Namespace, deletion.Name)
 	default:
 		fmt.Println("Notthing to delete")
 		break
@@ -206,7 +210,6 @@ func createJob(cs *kubernetes.Clientset, ns string, name string) {
 func deleteJob(clientSet *kubernetes.Clientset, namespace string, name string) {
 	client := clientSet.BatchV1().Jobs(namespace)
 	if err := client.Delete(name, &metav1.DeleteOptions{}); err != nil {
-		// panic(err)
 		fmt.Printf("Delete Job Error: %v\n", err)
 	} else {
 		fmt.Printf("Successfully deleted job %v at %v namespace\n", name, namespace)
@@ -223,7 +226,7 @@ func deleteCronjob(clientSet *kubernetes.Clientset, namespace string, name strin
 
 }
 
-func deleteNamespace(clientSet *kubernetes.Clientset, namespace string, name string) {
+func deleteNamespace(clientSet *kubernetes.Clientset, name string) {
 	client := clientSet.CoreV1().Namespaces()
 	if err := client.Delete(name, &metav1.DeleteOptions{}); err != nil {
 		fmt.Printf("Delete Namespace Error: %v\n", err.Error())
@@ -308,6 +311,33 @@ func deleteIngress(clientSet *kubernetes.Clientset, namespace string, name strin
 		fmt.Printf("Delete Ingress Error: %v\n", err.Error())
 	} else {
 		fmt.Printf("Successfully deleted ingress %v at %v namespace\n", name, namespace)
+	}
+}
+
+func deleteClusterRole(clientSet *kubernetes.Clientset, name string) {
+	client := clientSet.RbacV1().ClusterRoles()
+	if err := client.Delete(name, &metav1.DeleteOptions{}); err != nil {
+		fmt.Printf("Delete ServiceAccounts Error: %v\n", err.Error())
+	} else {
+		fmt.Printf("Successfully deleted serviceaccount %v\n", name)
+	}
+}
+
+func deleteClusterRoleBinding(clientSet *kubernetes.Clientset, name string) {
+	client := clientSet.RbacV1().ClusterRoleBindings()
+	if err := client.Delete(name, &metav1.DeleteOptions{}); err != nil {
+		fmt.Printf("Delete ServiceAccounts Error: %v\n", err.Error())
+	} else {
+		fmt.Printf("Successfully deleted serviceaccount %v\n", name)
+	}
+}
+
+func deleteServiceAccount(clientSet *kubernetes.Clientset, namespace string, name string) {
+	client := clientSet.CoreV1().ServiceAccounts(namespace)
+	if err := client.Delete(name, &metav1.DeleteOptions{}); err != nil {
+		fmt.Printf("Delete ServiceAccounts Error: %v\n", err.Error())
+	} else {
+		fmt.Printf("Successfully deleted serviceaccount %v at %v namespace\n", name, namespace)
 	}
 }
 
