@@ -317,18 +317,18 @@ func deleteIngress(clientSet *kubernetes.Clientset, namespace string, name strin
 func deleteClusterRole(clientSet *kubernetes.Clientset, name string) {
 	client := clientSet.RbacV1().ClusterRoles()
 	if err := client.Delete(name, &metav1.DeleteOptions{}); err != nil {
-		fmt.Printf("Delete ServiceAccounts Error: %v\n", err.Error())
+		fmt.Printf("Delete ClusterRole Error: %v\n", err.Error())
 	} else {
-		fmt.Printf("Successfully deleted serviceaccount %v\n", name)
+		fmt.Printf("Successfully deleted clusterrole %v\n", name)
 	}
 }
 
 func deleteClusterRoleBinding(clientSet *kubernetes.Clientset, name string) {
 	client := clientSet.RbacV1().ClusterRoleBindings()
 	if err := client.Delete(name, &metav1.DeleteOptions{}); err != nil {
-		fmt.Printf("Delete ServiceAccounts Error: %v\n", err.Error())
+		fmt.Printf("Delete ClusterRoleBinding Error: %v\n", err.Error())
 	} else {
-		fmt.Printf("Successfully deleted serviceaccount %v\n", name)
+		fmt.Printf("Successfully deleted clusterrolebinding %v\n", name)
 	}
 }
 
