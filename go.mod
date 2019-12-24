@@ -50,7 +50,7 @@ require (
 	gopkg.in/src-d/go-git.v4 v4.13.1
 	gopkg.in/yaml.v2 v2.2.2
 	gopkg.in/yaml.v3 v3.0.0-20190905181640-827449938966
-	k8s.io/api v0.0.0-20190919035539-41700d9d0c5b // indirect
+	k8s.io/api v0.0.0-20190919035539-41700d9d0c5b
 	k8s.io/apimachinery v0.0.0-20190919161714-83fef8059749
 	k8s.io/client-go v0.0.0-20190620085101-78d2af792bab
 	k8s.io/gengo v0.0.0-20190907103519-ebc107f98eab // indirect

@@ -3,6 +3,7 @@ package gdeyamloperator
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"gopkg.in/src-d/go-git.v4"
 	. "gopkg.in/src-d/go-git.v4/_examples"
@@ -23,7 +24,26 @@ func CloneYaml(g *GIT) error {
 	//	url, directory, token := os.Args[1], os.Args[2], os.Args[3]
 
 	// Clone the given repository to the given directory
+	fmt.Printf("branch: %v\n", g.Branch)
+	fmt.Printf("URL: %v\n", g.Url)
+	fmt.Printf("path: %v\n", g.Path)
 	Info("git clone -b %s --single-branch %s %s", g.Branch, g.Url, g.Path)
+
+	// mimic git clone
+	if g.Path == "" {
+		domainRepo := strings.Split(g.Url, "//")[1]
+		repoDotGit := strings.Split(domainRepo, "/")[2]
+		g.Path = strings.Split(repoDotGit, ".git")[0]
+
+		// append default clone repo
+		clonePath := "clone/" + g.Path
+		fmt.Printf("g.Path: %s\n", g.Path)
+		if _, err := os.Stat(clonePath); !os.IsNotExist(err) {
+			// if g.Path already exists, remove the directory before clone
+			os.RemoveAll(clonePath)
+		}
+		g.Path = clonePath
+	}
 
 	_, err := git.PlainClone(g.Path, false, &git.CloneOptions{
 		// The intended use of a GitHub personal access token is in replace of your password
@@ -37,6 +57,7 @@ func CloneYaml(g *GIT) error {
 		URL:           g.Url,
 		Progress:      os.Stdout,
 		SingleBranch:  true,
+		Depth:         1,
 	})
 	//CheckIfError(err)
 	// ... retrieving the branch being pointed by HEAD

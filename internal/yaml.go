@@ -22,8 +22,8 @@ type TOOL struct {
 }
 
 type SCRIPTS struct {
-	TOOL    TOOL   `yaml:"tool"`
-	URLS    *[]string `yaml:"urls"`
+	TOOL TOOL      `yaml:"tool"`
+	URLS *[]string `yaml:"urls"`
 }
 
 type BLCKS struct {
@@ -67,13 +67,13 @@ type Environmentyaml struct {
 	} `yaml:"namespaces"`
 	Configuration  []Configuration  `yaml:"configuration"`
 	Deploymentfile []Deploymentfile `yaml:"deploymentfile"`
+	Prune          Prune            `yaml:"prune"`
 }
 
 type Configuration struct {
-	Git     string `yaml:"git"`
-	Branch  string `yaml:"branch"`
+	Git    string `yaml:"git"`
+	Branch string `yaml:"branch"`
 }
-
 
 type Deploymentfile struct {
 	Git     string `yaml:"git"`
@@ -90,6 +90,29 @@ type Deploymentfile struct {
 		Monitor  []Monitor  `yaml:"monitor"`
 		Redis    []Redis    `yaml:"redis"`
 	} `yaml:"ignore"`
+}
+
+// Prune defines where the repository dealing with pruning operation
+type Prune struct {
+	Git    string `yaml:"git"`
+	Branch string `yaml:"branch"`
+}
+
+// PruneYaml is a file describes the list of removing objects from in the
+// cluster
+type PruneYaml struct {
+	NSGroup NSGroup       `yaml:"nsgroup"`
+	Targets []PruneTarget `yaml:"targets"`
+}
+
+// NSGroup defines the default namesapces uesed by pnbase
+type NSGroup struct{}
+
+// PruneTarget defines the unit object of removing
+type PruneTarget struct {
+	Namespace string `yaml:"namespace"`
+	Kind      string `yaml:"kind"`
+	Name      string `yaml:"name"`
 }
 
 type Monitor struct {
@@ -127,6 +150,7 @@ func (s *Deployment) UpdatePLAYBOOKStructBranch(git string, gitbranch string, ve
 	s.PLAYBOOKS.Branch = gitbranch
 	s.PLAYBOOKS.Version = ver
 }
+
 /*
 func (s *SCRIPTS) addUrl(newurl string) {
 	s.URLS = append(s.URLS, newurl)
@@ -290,4 +314,3 @@ func (envir_config *Configuration) UpdateBranch(gitbranch string) {
 	envir_config.Branch = gitbranch
 
 }
-
