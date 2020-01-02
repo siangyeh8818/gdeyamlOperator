@@ -70,7 +70,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.11.10")
+		fmt.Println("version : 1.11.11")
 		os.Exit(0)
 	}
 	newgit := gdeyamloperator.GIT{}
