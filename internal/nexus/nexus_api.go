@@ -1,4 +1,4 @@
-package gdeyamloperator
+package nexus
 
 import (
 	"bytes"
@@ -11,18 +11,20 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+
+	IO "github.com/siangyeh8818/gdeyamlOperator/internal/myIo"
+	myJson "github.com/siangyeh8818/gdeyamlOperator/internal/json"
 )
 
 type Nexus struct {
-	NexusApiMethod string 
-	NexusReqBody  string 
-	NexusOutputPattern    string 
-	NexusPromoteType  string 
+	NexusApiMethod          string
+	NexusReqBody            string
+	NexusOutputPattern      string
+	NexusPromoteType        string
 	NexusPromoteDestination string
-	NexusPromoteUrl string
-	NexusPromoteSource string
+	NexusPromoteUrl         string
+	NexusPromoteSource      string
 }
-
 
 func GetNesuxCpmponet(nexusurl string, nexus_user string, nexus_password string) {
 
@@ -53,7 +55,7 @@ func GetNesuxCpmponet(nexusurl string, nexus_user string, nexus_password string)
 	//os.Exit(0)
 }
 
-func GET_NesusAPI(nexusurl string, nexus_user string, nexus_password string, outfile string, out_pattern string, output *OutputContent) {
+func GET_NesusAPI(nexusurl string, nexus_user string, nexus_password string, outfile string, out_pattern string, output *myJson.OutputContent) {
 	var token string
 	// curl -X GET "https://package.pentium.network/service/rest/v1/searchsort=group&repository=scripts&format=raw" -H "accept: application/json"
 	// curl -X GET "https://package.pentium.network/service/rest/v1/search?continuationToken=35303a6562313438303661303938346263663537613436613861663432663439353266&sort=group&repository=scripts&format=raw" -H "accept: application/json"
@@ -83,10 +85,10 @@ func GET_NesusAPI(nexusurl string, nexus_user string, nexus_password string, out
 
 	//if out_pattern != "" {
 	log.Println("---------srart of jaonparse------------")
-	JsonParse2(string(responseData), out_pattern, output)
+	myJson.JsonParse2(string(responseData), out_pattern, output)
 	log.Println("---------end of jaonparse----------------")
 	//}
-	token = continueTokenParse(string(responseData))
+	token = myJson.ContinueTokenParse(string(responseData))
 	if token == "null" || token == "" {
 		log.Printf("output.content 數量 : %d\n", len(output.Content))
 		var temp_out string
@@ -94,10 +96,10 @@ func GET_NesusAPI(nexusurl string, nexus_user string, nexus_password string, out
 			temp_out = temp_out + output.Content[i] + "\n"
 			//log.Println(temp_out)
 		}
-		WriteWithIoutil(outfile, string(temp_out))
+		IO.WriteWithIoutil(outfile, string(temp_out))
 	} else {
 		origin_request := strings.Split(nexusurl, "?")
-		new_request_url := origin_request[0] + "?" + "continuationToken=" + token +"&"+ origin_request[1]
+		new_request_url := origin_request[0] + "?" + "continuationToken=" + token + "&" + origin_request[1]
 		GET_NesusAPI(new_request_url, nexus_user, nexus_password, outfile, out_pattern, output)
 	}
 

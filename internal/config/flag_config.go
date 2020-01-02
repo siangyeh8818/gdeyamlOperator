@@ -1,4 +1,11 @@
-package gdeyamloperator
+package config
+
+import (
+	//. "github.com/siangyeh8818/gdeyamlOperator/internal"
+	myDocker "github.com/siangyeh8818/gdeyamlOperator/internal/docker"
+	kustomize "github.com/siangyeh8818/gdeyamlOperator/internal/kustomize"
+	myNexus "github.com/siangyeh8818/gdeyamlOperator/internal/nexus"
+)
 
 type ACTION interface {
 	InitConfig()
@@ -31,7 +38,7 @@ type BINARYCONFIG struct {
 		LatestMode string
 		Stage string
 	*/
-	Docker Docker
+	Docker myDocker.Docker
 	//-------nexus flag ----------
 	/*
 		NexusApiMethod string
@@ -42,7 +49,7 @@ type BINARYCONFIG struct {
 		NexusPromoteUrl string
 		NexusPromoteSource string
 	*/
-	Nexus Nexus
+	Nexus myNexus.Nexus
 	//-------replace flag ----------
 	/*
 		ReplaceType string                         //REPLACEYAML{}
@@ -65,7 +72,7 @@ type BINARYCONFIG struct {
 
 		EnvironmentFile string                     //KustomizeArgument{}
 	*/
-	KustomizeArgument KustomizeArgument
+	KustomizeArgument kustomize.KustomizeArgument
 	//----------kubernetes flag -------------
 	Namespace       string
 	SnapshotPattern string

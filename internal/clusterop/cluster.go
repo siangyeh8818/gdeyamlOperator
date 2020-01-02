@@ -17,7 +17,8 @@ import (
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/clientcmd"
 
-	gdeyamloperator "github.com/siangyeh8818/gdeyamlOperator/internal"
+	mygit "github.com/siangyeh8818/gdeyamlOperator/internal/git"
+	CustomStruct "github.com/siangyeh8818/gdeyamlOperator/internal/structs"
 )
 
 // AddResource is a method to create/apply k8s resources in the cluster
@@ -31,11 +32,11 @@ func PatchResource() {
 }
 
 // DeleteResources is a method to delete those k8s resources in the cluster
-func DeleteResources(git *gdeyamloperator.GIT) {
+func DeleteResources(git *mygit.GIT) {
 	fmt.Printf("DeleteResource: %v\n", git)
 
 	// clone environment file
-	gdeyamloperator.GitClone(git)
+	mygit.GitClone(git)
 
 	// read and parse "deletion" section
 	environmentFile, err := ioutil.ReadFile("clone/pn.environment/environment.yml")
@@ -45,7 +46,7 @@ func DeleteResources(git *gdeyamloperator.GIT) {
 
 	fmt.Printf("%v\n", string(environmentFile))
 
-	envYaml := &gdeyamloperator.Environmentyaml{}
+	envYaml := &CustomStruct.Environmentyaml{}
 	err = yaml.Unmarshal(environmentFile, envYaml)
 	if err != nil {
 		log.Printf("Unmarshal error: %v\n", err)
@@ -53,13 +54,13 @@ func DeleteResources(git *gdeyamloperator.GIT) {
 	fmt.Printf("envYaml: %v\n", envYaml)
 
 	// clone prune file
-	newGit := &gdeyamloperator.GIT{
+	newGit := &mygit.GIT{
 		Branch:      envYaml.Prune.Branch,
 		Url:         envYaml.Prune.Git,
 		AccessUser:  git.AccessUser,
 		AccessToken: git.AccessToken,
 	}
-	gdeyamloperator.GitClone(newGit)
+	mygit.GitClone(newGit)
 
 	pruneFile, err := ioutil.ReadFile("clone/pn.prune/prune.yml")
 	if err != nil {
@@ -67,7 +68,7 @@ func DeleteResources(git *gdeyamloperator.GIT) {
 	}
 
 	fmt.Printf("%v\n", string(pruneFile))
-	pruneYaml := &gdeyamloperator.PruneYaml{}
+	pruneYaml := &CustomStruct.PruneYaml{}
 	if err := yaml.Unmarshal(pruneFile, pruneYaml); err != nil {
 		log.Printf("Unmarshal error: %v\n", err)
 	}
@@ -91,7 +92,7 @@ func DeleteResources(git *gdeyamloperator.GIT) {
 
 }
 
-func deleteResource(cs *kubernetes.Clientset, deletion gdeyamloperator.PruneTarget) {
+func deleteResource(cs *kubernetes.Clientset, deletion CustomStruct.PruneTarget) {
 	switch strings.ToLower(deletion.Kind) {
 	case "namespace", "ns":
 		deleteNamespace(cs, deletion.Name)

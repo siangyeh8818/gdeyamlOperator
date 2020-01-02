@@ -1,9 +1,12 @@
-package gdeyamloperator
+package git
 
 import (
 	"log"
 
 	"gopkg.in/yaml.v2"
+
+	IO "github.com/siangyeh8818/gdeyamlOperator/internal/myIo"
+	CustomStruct "github.com/siangyeh8818/gdeyamlOperator/internal/structs"
 )
 
 func NewRelease(git_url string, old_branch string, new_branch string, git_repo_path string, git_user string, git_token string, outputfilename string, g *GIT) {
@@ -16,7 +19,7 @@ func NewRelease(git_url string, old_branch string, new_branch string, git_repo_p
 
 	log.Println("-----action >> Parser deploy.yml----")
 	inputfile := git_repo_path + "/deploy.yml"
-	deployyaml := K8sYaml{}
+	deployyaml := CustomStruct.K8sYaml{}
 	deployyaml.GetConf(inputfile)
 	log.Println("-----action >> Replace content about deploy.yml----")
 	// deployyaml.Deployment.UpdateBaseStructBranch(deployyaml.Deployment.BASE[0].Git, trimQuotes(new_branch))
@@ -25,7 +28,7 @@ func NewRelease(git_url string, old_branch string, new_branch string, git_repo_p
 		log.Fatalf("error: %v", err)
 	}
 	log.Println("-----action >> Write output file----")
-	WriteWithIoutil(inputfile, string(outputcontent))
+	IO.WriteWithIoutil(inputfile, string(outputcontent))
 	log.Println("-----action >> CommitRepo----")
 	CommitRepo(g, "deploy.yml")
 	log.Println("-----action >> PushGit----")

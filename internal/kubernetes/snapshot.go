@@ -1,4 +1,4 @@
-package gdeyamloperator
+package kubernetes
 
 import (
 	"flag"
@@ -11,17 +11,20 @@ import (
 	yaml "gopkg.in/yaml.v3"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	//appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+
+	IO "github.com/siangyeh8818/gdeyamlOperator/internal/myIo"
+	ShellCommand "github.com/siangyeh8818/gdeyamlOperator/internal/shellcommand"
+	CustomStruct "github.com/siangyeh8818/gdeyamlOperator/internal/structs"
+	myTool "github.com/siangyeh8818/gdeyamlOperator/internal/utility"
 )
 
 type K8sClient kubernetes.Clientset
 
 func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, branch string) {
 
-	test := K8sYaml{}
+	test := CustomStruct.K8sYaml{}
 	var kubeconfig *string
 	var n int
 	if home := homeDir(); home != "" {
@@ -73,12 +76,12 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 				fmt.Println("deployment name : " + deploy_array[i])
 				imagename := GetDeploymentImage(clientSet, namespace_array[n], deploy_array[i])
 				fmt.Println("Get deployment image name : " + imagename)
-				modulestage, modulename, moduletag := ImagenameSplitReturnTag(imagename)
+				modulestage, modulename, moduletag := myTool.ImagenameSplitReturnTag(imagename)
 
 				switch pattern_array[n] {
 				case "k8s":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						//yamlmodule_list.PushBack(base_folder)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
@@ -93,7 +96,7 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 					}
 				case "openfaas":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						//yamlmodule_list.PushFront(base_folder)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
@@ -107,7 +110,7 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 					}
 				case "monitor":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
@@ -121,7 +124,7 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 					}
 				case "redis":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddRedisStruct(base_folder, modulename, moduletag, modulestage)
@@ -143,12 +146,12 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 				fmt.Println("statefulset name : " + statefulset_array[i])
 				imagename := GetStatefulSetsImage(clientSet, namespace_array[n], statefulset_array[i])
 				fmt.Println("Get deployment image name : " + imagename)
-				modulestage, modulename, moduletag := ImagenameSplitReturnTag(imagename)
+				modulestage, modulename, moduletag := myTool.ImagenameSplitReturnTag(imagename)
 
 				switch pattern_array[n] {
 				case "k8s":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
@@ -161,7 +164,7 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 					}
 				case "openfaas":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
@@ -174,7 +177,7 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 					}
 				case "monitor":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddMonitorStruct(base_folder, modulename, moduletag, modulestage)
@@ -188,7 +191,7 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 
 				case "redis":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddRedisStruct(base_folder, modulename, moduletag, modulestage)
@@ -210,12 +213,12 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 				fmt.Println("daemonset name : " + daemonset_array[i])
 				imagename := GetDaemonsetImage(clientSet, namespace_array[n], daemonset_array[i])
 				fmt.Println("Get daemonset image name : " + imagename)
-				modulestage, modulename, moduletag := ImagenameSplitReturnTag(imagename)
+				modulestage, modulename, moduletag := myTool.ImagenameSplitReturnTag(imagename)
 
 				switch pattern_array[n] {
 				case "k8s":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
@@ -228,7 +231,7 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 					}
 				case "openfaas":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
@@ -241,7 +244,7 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 					}
 				case "monitor":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddMonitorStruct(base_folder, modulename, moduletag, modulestage)
@@ -254,7 +257,7 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 					}
 				case "redis":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddRedisStruct(base_folder, modulename, moduletag, modulestage)
@@ -279,12 +282,12 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 				fmt.Println("cronjob name : " + cronjob_array[i])
 				imagename := GetCronjobImage(clientSet, namespace_array[n], cronjob_array[i])
 				fmt.Println("Get cronjob image name : " + imagename)
-				modulestage, modulename, moduletag := ImagenameSplitReturnTag(imagename)
+				modulestage, modulename, moduletag := myTool.ImagenameSplitReturnTag(imagename)
 
 				switch pattern_array[n] {
 				case "k8s":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddK8sStruct(base_folder, modulename, moduletag, modulestage)
@@ -297,7 +300,7 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 					}
 				case "openfaas":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddOpenfaasStruct(base_folder, modulename, moduletag, modulestage)
@@ -310,7 +313,7 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 					}
 				case "monitor":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddMonitorStruct(base_folder, modulename, moduletag, modulestage)
@@ -323,7 +326,7 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 					}
 				case "redis":
 					if len(kustomyamlfolder) > 0 {
-						base_folder := grepFolderName(modulename, kustomyamlfolder, ss)
+						base_folder := ShellCommand.GrepFolderName(modulename, kustomyamlfolder, ss)
 						if len(base_folder) > 0 {
 							ss[base_folder] = 1
 							(&test.Deployment).AddRedisStruct(base_folder, modulename, moduletag, modulestage)
@@ -344,13 +347,13 @@ func Snapshot(pattern string, outputfilename string, kustomyamlfolder string, br
 		log.Fatalf("error: %v", err)
 	}
 
-	WriteWithIoutil(outputfilename, string(d))
+	IO.WriteWithIoutil(outputfilename, string(d))
 }
 
 func IdentifyOpenfaas(i_namesapce string, i_deployment string) bool {
 	var i_token bool
 	i_cmd := "kubectl get deploy -l faas_function -n " + i_namesapce + " | grep " + i_deployment
-	i_cmd_result := RunCommand(i_cmd)
+	i_cmd_result := ShellCommand.RunCommand(i_cmd)
 
 	if strings.Contains(i_cmd_result, i_deployment) {
 		i_token = true
@@ -546,7 +549,7 @@ func ListCronjob(clientSet *kubernetes.Clientset, namespace string) []string {
 		for i, e := range cronjobs.Items {
 			log.Printf("Cronjob #%d\n", i)
 			log.Printf("%s", e.Name)
-			if IdentifyCrongob(e.Name) {
+			if myTool.IdentifyCrongob(e.Name) {
 				result = append(result, e.Name)
 			} else {
 				log.Printf("%s is not nedd to snapshot", e.Name)

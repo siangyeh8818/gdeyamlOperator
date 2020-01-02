@@ -1,9 +1,7 @@
-package gdeyamloperator
+package git
 
 import (
 	"testing"
-
-	. "github.com/siangyeh8818/gdeyamlOperator/internal"
 )
 
 func TestGitClone(t *testing.T) {

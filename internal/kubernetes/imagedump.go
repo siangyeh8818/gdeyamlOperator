@@ -1,13 +1,15 @@
-package gdeyamloperator
+package kubernetes
 
 import (
 	"flag"
 	"fmt"
 	"path/filepath"
 
-	//appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
+
+	myDocker "github.com/siangyeh8818/gdeyamlOperator/internal/docker"
+	myTool "github.com/siangyeh8818/gdeyamlOperator/internal/utility"
 )
 
 //type K8sClient kubernetes.Clientset
@@ -46,9 +48,9 @@ func DumpImage(push_pattern string, snapshot_pattern string, pushimage bool) {
 				fmt.Println("deployment name : " + deploy_array[i])
 				imagename := GetDeploymentImage(clientSet, namespace_array[n], deploy_array[i])
 				fmt.Println("Get deployment image name : " + imagename)
-				_, modulename, moduletag := ImagenameSplitReturnTag(imagename)
+				_, modulename, moduletag := myTool.ImagenameSplitReturnTag(imagename)
 				if pushimage == true {
-					PushTagimage(imagename, push_pattern, modulename, moduletag)
+					myDocker.PushTagimage(imagename, push_pattern, modulename, moduletag)
 				}
 			}
 		}
@@ -59,9 +61,9 @@ func DumpImage(push_pattern string, snapshot_pattern string, pushimage bool) {
 				fmt.Println("statefulset name : " + statefulset_array[i])
 				imagename := GetStatefulSetsImage(clientSet, namespace_array[n], statefulset_array[i])
 				fmt.Println("Get deployment image name : " + imagename)
-				_, modulename, moduletag := ImagenameSplitReturnTag(imagename)
+				_, modulename, moduletag := myTool.ImagenameSplitReturnTag(imagename)
 				if pushimage == true {
-					PushTagimage(imagename, push_pattern, modulename, moduletag)
+					myDocker.PushTagimage(imagename, push_pattern, modulename, moduletag)
 				}
 			}
 		}
@@ -72,9 +74,9 @@ func DumpImage(push_pattern string, snapshot_pattern string, pushimage bool) {
 				fmt.Println("daemonset name : " + daemonset_array[i])
 				imagename := GetDaemonsetImage(clientSet, namespace_array[n], daemonset_array[i])
 				fmt.Println("Get daemonset image name : " + imagename)
-				_, modulename, moduletag := ImagenameSplitReturnTag(imagename)
+				_, modulename, moduletag := myTool.ImagenameSplitReturnTag(imagename)
 				if pushimage == true {
-					PushTagimage(imagename, push_pattern, modulename, moduletag)
+					myDocker.PushTagimage(imagename, push_pattern, modulename, moduletag)
 				}
 			}
 		}

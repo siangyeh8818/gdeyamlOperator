@@ -1,4 +1,4 @@
-package gdeyamloperator
+package kustomize
 
 import (
 	"errors"
@@ -86,6 +86,7 @@ func GetNameSpaceMapping(kus_argument *KustomizeArgument) map[string]string {
 		ret["openfaas"] = nsopenfaas
 		ret["monitor"] = kus_argument.Namespace
 		ret["redis"] = kus_argument.Namespace
+		ret["faas-netes"] = kus_argument.Namespace
 		return ret
 	}
 	m := make(map[interface{}]interface{})

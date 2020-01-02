@@ -1,4 +1,4 @@
-package gdeyamloperator
+package git
 
 import (
 	"fmt"
@@ -23,7 +23,7 @@ type GIT struct {
 	CommitFIle  string
 }
 
-func (g *GIT) UpdateGit(url string, branch string, tag string, path string, user string, token string , commitfile string) {
+func (g *GIT) UpdateGit(url string, branch string, tag string, path string, user string, token string, commitfile string) {
 	g.Url = url
 	g.Branch = branch
 	g.Tag = tag

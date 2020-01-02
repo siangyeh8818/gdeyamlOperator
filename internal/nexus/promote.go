@@ -1,4 +1,4 @@
-package gdeyamloperator
+package nexus
 
 import (
 	"fmt"
@@ -7,6 +7,9 @@ import (
 	"net/http"
 	"os"
 	"strings"
+
+	myJson "github.com/siangyeh8818/gdeyamlOperator/internal/json"
+	ShellCommand "github.com/siangyeh8818/gdeyamlOperator/internal/shellcommand"
 )
 
 func Promoteimage(nexusurl string, repository string, nexus_user string, nexus_password string, imagename string, imagetag string) {
@@ -36,7 +39,7 @@ func Promoteimage(nexusurl string, repository string, nexus_user string, nexus_p
 
 func Cpcomponetname(nexusurl string, nexus_user string, nexus_password string, dest string) {
 
-	var output OutputContent
+	var output myJson.OutputContent
 
 	GET_NesusAPI(nexusurl, nexus_user, nexus_password, "", "name,assets.downloadUrl", &output)
 
@@ -50,7 +53,7 @@ func Cpcomponetname(nexusurl string, nexus_user string, nexus_password string, d
 	cmd := "curl -u " + nexus_user + ":" + nexus_password + " -X POST \"https://package.pentium.network/service/rest/v1/components?repository=" + dest + "\" -H \"accept: application/json\"" + " -H \"Content-Type: multipart/form-data\"" +
 		" -F " + "\"raw.directory=" + temp_path + "\"" + " -F " + "\"raw.asset1=@" + temp_filename + ";type=application/zip\"" + " -F " + "\"raw.asset1.filename=" + temp_filename + "\""
 	log.Println(cmd)
-	exec_shell(cmd)
+	ShellCommand.ExecShell(cmd)
 }
 
 func downloadComponetFile(fileFullPath string, downloadurl string) {

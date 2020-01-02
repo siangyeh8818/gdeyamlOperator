@@ -9,9 +9,20 @@ import (
 	"strings"
 	"time"
 
-	gdeyamloperator "github.com/siangyeh8818/gdeyamlOperator/internal"
 	clusterop "github.com/siangyeh8818/gdeyamlOperator/internal/clusterop"
 	"gopkg.in/yaml.v2"
+
+	myDocker "github.com/siangyeh8818/gdeyamlOperator/internal/docker"
+	mygit "github.com/siangyeh8818/gdeyamlOperator/internal/git"
+	myJenkins "github.com/siangyeh8818/gdeyamlOperator/internal/jenkins"
+	myJson "github.com/siangyeh8818/gdeyamlOperator/internal/json"
+	myK8s "github.com/siangyeh8818/gdeyamlOperator/internal/kubernetes"
+	myKustomize "github.com/siangyeh8818/gdeyamlOperator/internal/kustomize"
+	IO "github.com/siangyeh8818/gdeyamlOperator/internal/myIo"
+	myNexus "github.com/siangyeh8818/gdeyamlOperator/internal/nexus"
+	ShellCommand "github.com/siangyeh8818/gdeyamlOperator/internal/shellcommand"
+	CustomStruct "github.com/siangyeh8818/gdeyamlOperator/internal/structs"
+	myTool "github.com/siangyeh8818/gdeyamlOperator/internal/utility"
 )
 
 var completeimagename string
@@ -70,16 +81,16 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.11.10")
+		fmt.Println("version : 1.12.0")
 		os.Exit(0)
 	}
-	newgit := gdeyamloperator.GIT{}
+	newgit := mygit.GIT{}
 	(&newgit).UpdateGit(git_url, git_branch, git_tag, git_repo_path, git_user, git_token, GitCommitFile)
 
-	kustomize_argument := gdeyamloperator.KustomizeArgument{}
+	kustomize_argument := myKustomize.KustomizeArgument{}
 	(&kustomize_argument).UpdateKustomizeArgument(outputdir, comparedata, namespace, relPath, Baseloc, Baseloc, kmodules, UrlPattern, environment_file)
 
-	replace_struct := gdeyamloperator.REPLACEYAML{}
+	replace_struct := myKustomize.REPLACEYAML{}
 	(&replace_struct).UpdateREPLACEYAML(replace_type, replace_pattern, replace_image, replace_value, ReplaceYamlType)
 
 	fmt.Println("--------------Main Action -----------------")
@@ -139,13 +150,13 @@ func main() {
 	fmt.Printf("flag -v: %t\n", version)
 
 	if loginuser != "" && loginpassword != "" {
-		gdeyamloperator.LoginDockerHub(inputstage, loginuser, loginpassword)
+		myDocker.LoginDockerHub(inputstage, loginuser, loginpassword)
 	}
 
 	switch action {
 	case "gettag":
-		if inputfile != "" && gdeyamloperator.Exists(inputfile) {
-			inyaml := gdeyamloperator.K8sYaml{}
+		if inputfile != "" && IO.Exists(inputfile) {
+			inyaml := CustomStruct.K8sYaml{}
 			inyaml.GetConf(inputfile)
 			//fmt.Printf("input_YAML:\n%v\n\n", inyaml)
 			//fmt.Println(ComposeImageName(inyaml.Deployment.K8S[0].Stage, inyaml.Deployment.K8S[0].Image, inyaml.Deployment.K8S[0].Tag))
@@ -154,9 +165,9 @@ func main() {
 					fmt.Printf("old_tag:\n%v\n\n", inyaml.Deployment.K8S[i].Tag)
 					var tmp_cpmplete_imagename string
 					if inputstage != "" {
-						tmp_cpmplete_imagename = gdeyamloperator.PatternParse(pull_pattern, inputstage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+						tmp_cpmplete_imagename = myDocker.PatternParse(pull_pattern, inputstage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
 					} else if inputstage == "" {
-						tmp_cpmplete_imagename = gdeyamloperator.PatternParse(pull_pattern, inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+						tmp_cpmplete_imagename = myDocker.PatternParse(pull_pattern, inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
 					}
 
 					//tmp_cpmplete_imagename := ComposeImageName(query_mode, new_hub, inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
@@ -164,21 +175,21 @@ func main() {
 					if pushimage == true {
 						cmd_1 := "docker pull " + tmp_cpmplete_imagename
 						fmt.Println(cmd_1)
-						gdeyamloperator.RunCommand(cmd_1)
-						push_cpmplete_imagename := gdeyamloperator.PatternParse(push_pattern, inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+						ShellCommand.RunCommand(cmd_1)
+						push_cpmplete_imagename := myDocker.PatternParse(push_pattern, inyaml.Deployment.K8S[i].Stage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
 						//push_cpmplete_imagename := ComposeImageName(push_mode, new_push_hub, inputstage, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
 						cmd_2 := "docker tag " + tmp_cpmplete_imagename + " " + push_cpmplete_imagename
 						fmt.Println(cmd_2)
-						gdeyamloperator.RunCommand(cmd_2)
+						ShellCommand.RunCommand(cmd_2)
 						cmd_3 := "docker push " + push_cpmplete_imagename
 						fmt.Println(cmd_3)
-						gdeyamloperator.RunCommand(cmd_3)
+						ShellCommand.RunCommand(cmd_3)
 						cmd_4 := "docker rmi " + tmp_cpmplete_imagename
 						fmt.Println(cmd_4)
-						gdeyamloperator.RunCommand(cmd_4)
+						ShellCommand.RunCommand(cmd_4)
 						cmd_5 := "docker rmi " + push_cpmplete_imagename
 						fmt.Println(cmd_5)
-						gdeyamloperator.RunCommand(cmd_5)
+						ShellCommand.RunCommand(cmd_5)
 					}
 					new_tag_latest := GetTag(tmp_cpmplete_imagename, latest_mode)
 					new_tag_latest = strings.Trim(new_tag_latest, "\"")
@@ -196,29 +207,29 @@ func main() {
 					var tmp_cpmplete_imagename string
 
 					if inputstage != "" {
-						tmp_cpmplete_imagename = gdeyamloperator.PatternParse(pull_pattern, inputstage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+						tmp_cpmplete_imagename = myDocker.PatternParse(pull_pattern, inputstage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
 					} else if inputstage == "" {
-						tmp_cpmplete_imagename = gdeyamloperator.PatternParse(pull_pattern, inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+						tmp_cpmplete_imagename = myDocker.PatternParse(pull_pattern, inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
 					}
 					//tmp_cpmplete_imagename := ComposeImageName(query_mode, new_hub, inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
 					fmt.Printf("complete image name : %s\n", tmp_cpmplete_imagename)
 					if pushimage == true {
 						cmd_1 := "docker pull " + tmp_cpmplete_imagename
 						fmt.Println(cmd_1)
-						gdeyamloperator.RunCommand(cmd_1)
-						push_cpmplete_imagename := gdeyamloperator.PatternParse(push_pattern, inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+						ShellCommand.RunCommand(cmd_1)
+						push_cpmplete_imagename := myDocker.PatternParse(push_pattern, inyaml.Deployment.Openfaas[i].Stage, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
 						cmd_2 := "docker tag " + tmp_cpmplete_imagename + " " + push_cpmplete_imagename
 						fmt.Println(cmd_2)
-						gdeyamloperator.RunCommand(cmd_2)
+						ShellCommand.RunCommand(cmd_2)
 						cmd_3 := "docker push " + push_cpmplete_imagename
 						fmt.Println(cmd_3)
-						gdeyamloperator.RunCommand(cmd_3)
+						ShellCommand.RunCommand(cmd_3)
 						cmd_4 := "docker rmi " + tmp_cpmplete_imagename
 						fmt.Println(cmd_4)
-						gdeyamloperator.RunCommand(cmd_4)
+						ShellCommand.RunCommand(cmd_4)
 						cmd_5 := "docker rmi " + push_cpmplete_imagename
 						fmt.Println(cmd_5)
-						gdeyamloperator.RunCommand(cmd_5)
+						ShellCommand.RunCommand(cmd_5)
 
 					}
 					new_tag_latest := GetTag(tmp_cpmplete_imagename, latest_mode)
@@ -236,79 +247,79 @@ func main() {
 			}
 			//	fmt.Printf("--- t dump:\n%s\n\n", string(d))
 
-			gdeyamloperator.WriteWithIoutil(ouputfile, string(d))
+			IO.WriteWithIoutil(ouputfile, string(d))
 
 		} else {
 			new_tag_latest := GetTag(completeimagename, latest_mode)
 			fmt.Println(new_tag_latest)
 			new_tag_latest = strings.Trim(new_tag_latest, "\"")
-			gdeyamloperator.WriteWithIoutil("getImageLatestTag_result.txt", new_tag_latest)
+			IO.WriteWithIoutil("getImageLatestTag_result.txt", new_tag_latest)
 		}
 
 	case "snapshot":
-		gdeyamloperator.Snapshot(snapshot_pattern, ouputfile, kustom_base, git_branch)
+		myK8s.Snapshot(snapshot_pattern, ouputfile, kustom_base, git_branch)
 	case "nexus_api":
-		var output gdeyamloperator.OutputContent
+		var output myJson.OutputContent
 		switch nexus_api_method {
 		case "GET":
-			gdeyamloperator.GET_NesusAPI(promote_url, loginuser, loginpassword, ouputfile, nexus_output_pattern, &output)
+			myNexus.GET_NesusAPI(promote_url, loginuser, loginpassword, ouputfile, nexus_output_pattern, &output)
 		case "Get":
-			gdeyamloperator.GET_NesusAPI(promote_url, loginuser, loginpassword, ouputfile, nexus_output_pattern, &output)
+			myNexus.GET_NesusAPI(promote_url, loginuser, loginpassword, ouputfile, nexus_output_pattern, &output)
 		case "get":
-			gdeyamloperator.GET_NesusAPI(promote_url, loginuser, loginpassword, ouputfile, nexus_output_pattern, &output)
+			myNexus.GET_NesusAPI(promote_url, loginuser, loginpassword, ouputfile, nexus_output_pattern, &output)
 		case "POST":
-			gdeyamloperator.POST_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
+			myNexus.POST_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "Post":
-			gdeyamloperator.POST_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
+			myNexus.POST_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "post":
-			gdeyamloperator.POST_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
+			myNexus.POST_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "PUT":
-			gdeyamloperator.PUT_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
+			myNexus.PUT_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "Put":
-			gdeyamloperator.PUT_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
+			myNexus.PUT_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "put":
-			gdeyamloperator.PUT_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
+			myNexus.PUT_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "DELETE":
-			gdeyamloperator.DELETE_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
+			myNexus.DELETE_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "Delete":
-			gdeyamloperator.DELETE_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
+			myNexus.DELETE_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		case "delete":
-			gdeyamloperator.DELETE_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
+			myNexus.DELETE_NesusAPI(promote_url, loginuser, loginpassword, nexus_req_body)
 		}
 
 	case "promote":
 		switch promote_type {
 		case "move":
-			if inputfile != "" && gdeyamloperator.Exists(inputfile) {
-				inyaml := gdeyamloperator.K8sYaml{}
+			if inputfile != "" && IO.Exists(inputfile) {
+				inyaml := CustomStruct.K8sYaml{}
 				inyaml.GetConf(inputfile)
 				for i := 0; i < len(inyaml.Deployment.K8S); i++ {
 					if inyaml.Deployment.K8S[i].Image != "" && inyaml.Deployment.K8S[i].Tag != "" {
-						gdeyamloperator.Promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
+						myNexus.Promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.K8S[i].Image, inyaml.Deployment.K8S[i].Tag)
 					}
 				}
 				for i := 0; i < len(inyaml.Deployment.Openfaas); i++ {
 					if inyaml.Deployment.Openfaas[i].Image != "" && inyaml.Deployment.Openfaas[i].Tag != "" {
-						gdeyamloperator.Promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
+						myNexus.Promoteimage(promote_url, promote_source, loginuser, loginpassword, inyaml.Deployment.Openfaas[i].Image, inyaml.Deployment.Openfaas[i].Tag)
 					}
 				}
 			} else {
 				fmt.Println("Yoy have to setting -inputfile <filename>")
 			}
 		case "cp":
-			gdeyamloperator.Cpcomponetname(promote_url, loginuser, loginpassword, promote_destination)
+			myNexus.Cpcomponetname(promote_url, loginuser, loginpassword, promote_destination)
 		}
 
 	case "gitclone":
-		deployyamlgit := gdeyamloperator.GIT{}
-		configurationgit := gdeyamloperator.GIT{}
-		baseyamlgit := gdeyamloperator.GIT{}
+		deployyamlgit := mygit.GIT{}
+		configurationgit := mygit.GIT{}
+		baseyamlgit := mygit.GIT{}
 		if git_url != "" && environment_file == "" {
 			if git_branch != "" && git_tag == "" {
 				//GitClone(git_url, git_branch, git_repo_path, git_user, git_token)
-				gdeyamloperator.GitClone(&newgit)
+				mygit.GitClone(&newgit)
 			} else if git_branch == "" && git_tag != "" {
-				gdeyamloperator.GitClone(&newgit)
+				mygit.GitClone(&newgit)
 			} else if git_branch != "" && git_tag != "" {
 				fmt.Println("Only one flag that you have to setting (git-branch or git-tag)")
 				fmt.Println("While you setting git-branch , you can't set git-tag")
@@ -316,7 +327,7 @@ func main() {
 			}
 
 		} else if git_url == "" && environment_file != "" {
-			envir_yaml := gdeyamloperator.Environmentyaml{}
+			envir_yaml := CustomStruct.Environmentyaml{}
 			envir_yaml.GetConf(environment_file)
 			log.Println("Used environment file to collect information of git")
 
@@ -326,7 +337,7 @@ func main() {
 				(&configurationgit).UpdateGitPath("configuration")
 				(&configurationgit).UpdateGitAccessUser(git_user)
 				(&configurationgit).UpdateGitAccessToken(git_token)
-				gdeyamloperator.GitClone(&configurationgit)
+				mygit.GitClone(&configurationgit)
 				//CloneYaml(envir_yaml.Configuration[0].Git, envir_yaml.Configuration[0].Branch, "configuration", git_user, git_token)
 			}
 			if len(envir_yaml.Deploymentfile) > 0 {
@@ -335,13 +346,13 @@ func main() {
 				(&deployyamlgit).UpdateGitPath("deploymentfile")
 				(&deployyamlgit).UpdateGitAccessUser(git_user)
 				(&deployyamlgit).UpdateGitAccessToken(git_token)
-				gdeyamloperator.GitClone(&deployyamlgit)
+				mygit.GitClone(&deployyamlgit)
 				//CloneYaml(envir_yaml.Deploymentfile[0].Git, envir_yaml.Deploymentfile[0].Branch, "deploymentfile", git_user, git_token)
 			}
 
 		} else if git_url == "" && environment_file == "" && inputfile != "" {
-			if inputfile != "" && gdeyamloperator.Exists(inputfile) {
-				inyaml := gdeyamloperator.K8sYaml{}
+			if inputfile != "" && IO.Exists(inputfile) {
+				inyaml := CustomStruct.K8sYaml{}
 				inyaml.GetConf(inputfile)
 				if len(inyaml.Deployment.BASE) > 0 {
 					(&baseyamlgit).UpdateGitUrl(inyaml.Deployment.BASE[0].Git)
@@ -349,7 +360,7 @@ func main() {
 					(&baseyamlgit).UpdateGitPath("base")
 					(&baseyamlgit).UpdateGitAccessUser(git_user)
 					(&baseyamlgit).UpdateGitAccessToken(git_token)
-					gdeyamloperator.GitClone(&baseyamlgit)
+					mygit.GitClone(&baseyamlgit)
 					//CloneYaml(inyaml.Deployment.BASE[0].Git, inyaml.Deployment.BASE[0].Branch, "base", git_user, git_token)
 				}
 
@@ -363,24 +374,24 @@ func main() {
 	case "git":
 		switch git_action {
 		case "clone":
-			gdeyamloperator.CloneRepo(git_url, git_branch, git_repo_path, git_user, git_token)
+			mygit.CloneRepo(git_url, git_branch, git_repo_path, git_user, git_token)
 		case "branch":
-			gdeyamloperator.CreateBranch(git_url, git_branch, git_repo_path)
+			mygit.CreateBranch(git_url, git_branch, git_repo_path)
 		case "checkout":
-			gdeyamloperator.CheckoutBranch(git_url, git_branch, git_repo_path)
+			mygit.CheckoutBranch(git_url, git_branch, git_repo_path)
 		case "push":
-			gdeyamloperator.PushGit(git_repo_path, git_user, git_token, git_new_branch, git_url)
+			mygit.PushGit(git_repo_path, git_user, git_token, git_new_branch, git_url)
 		case "clonepush_new-branch":
-			gdeyamloperator.ClonePushNewBranch(git_url, git_branch, git_new_branch, git_repo_path, git_user, git_token)
+			mygit.ClonePushNewBranch(git_url, git_branch, git_new_branch, git_repo_path, git_user, git_token)
 		}
 	case "replace":
 		switch replace_type {
 		case "local":
-			if environment_file != "" && gdeyamloperator.Exists(environment_file) {
-				if inputfile != "" && gdeyamloperator.Exists(inputfile) {
+			if environment_file != "" && IO.Exists(environment_file) {
+				if inputfile != "" && IO.Exists(inputfile) {
 					if ouputfile != "" {
 						fmt.Println("success to enter func Replacedeploymentfile")
-						gdeyamloperator.Replacedeploymentfile(environment_file, inputfile, ouputfile)
+						myKustomize.Replacedeploymentfile(environment_file, inputfile, ouputfile)
 					} else if ouputfile == "" {
 						fmt.Println("you have to  setting  flag (ouputfile)")
 						os.Exit(0)
@@ -403,14 +414,14 @@ func main() {
 				os.Exit(0)
 			}
 			log.Println("-----action >> git CloneRepo----")
-			gdeyamloperator.GitClone(&newgit)
+			mygit.GitClone(&newgit)
 			log.Println("-----action >> Update Image-Tag to deploy.yml----")
-			gdeyamloperator.ReplacedeByPattern(&replace_struct, inputfile, ouputfile)
+			myKustomize.ReplacedeByPattern(&replace_struct, inputfile, ouputfile)
 			//Replacedeploymentfile_Image_Tag(&replace_struct, inputfile, ouputfile)
 			log.Println("-----action >> git CommitRepo----")
-			gdeyamloperator.CommitRepo(&newgit, inputfile)
+			mygit.CommitRepo(&newgit, inputfile)
 			log.Println("-----action >> git PushRepo----")
-			gdeyamloperator.PushGit(git_repo_path, git_user, git_token, git_branch, git_url)
+			mygit.PushGit(git_repo_path, git_user, git_token, git_branch, git_url)
 			log.Println("-----action finishing----")
 		case "git-patch":
 			if git_url == "" {
@@ -422,31 +433,31 @@ func main() {
 				os.Exit(0)
 			}
 			log.Println("-----action >> git CloneRepo----")
-			gdeyamloperator.GitClone(&newgit)
+			mygit.GitClone(&newgit)
 			log.Println("-----action >> Update Image Info to deploy.yml----")
-			gdeyamloperator.PatchDeployFile(&replace_struct, inputfile, ouputfile, &kustomize_argument)
+			myKustomize.PatchDeployFile(&replace_struct, inputfile, ouputfile, &kustomize_argument)
 			log.Println("-----action >> git CommitRepo----")
-			gdeyamloperator.CommitRepo(&newgit, inputfile)
+			mygit.CommitRepo(&newgit, inputfile)
 			log.Println("-----action >> git PushRepo----")
-			gdeyamloperator.PushGit(git_repo_path, git_user, git_token, git_branch, git_url)
+			mygit.PushGit(git_repo_path, git_user, git_token, git_branch, git_url)
 			log.Println("-----action finishing----")
 
 		}
 
 	case "new-release":
-		gdeyamloperator.NewRelease(git_url, git_branch, git_new_branch, git_repo_path, git_user, git_token, ouputfile, &newgit)
+		mygit.NewRelease(git_url, git_branch, git_new_branch, git_repo_path, git_user, git_token, ouputfile, &newgit)
 	case "imagedump":
-		gdeyamloperator.LoginDockerHubNew(docker_login, loginuser, loginpassword)
-		gdeyamloperator.DumpImage(push_pattern, snapshot_pattern, pushimage)
+		myDocker.LoginDockerHubNew(docker_login, loginuser, loginpassword)
+		myK8s.DumpImage(push_pattern, snapshot_pattern, pushimage)
 	case "kustomize":
-		gdeyamloperator.OutputOverlays(&kustomize_argument, inputfile)
+		myKustomize.OutputOverlays(&kustomize_argument, inputfile)
 		//OutputOverlays(environment_file, inputfile, namespace, kmodules, relPath, k8sBaseloc)
 	case "argu-dump":
-		gdeyamloperator.DumpArguments(inputfile, environment_file, ouputfile)
+		IO.DumpArguments(inputfile, environment_file, ouputfile)
 	case "jenkins":
-		gdeyamloperator.INit_Jenkins()
+		myJenkins.INit_Jenkins()
 	case "group-file":
-		gdeyamloperator.GroupNexusOutput(inputfile, ouputfile, &newgit)
+		mygit.GroupNexusOutput(inputfile, ouputfile, &newgit)
 	case "cluster-op":
 		switch optype {
 		case "add":
@@ -514,7 +525,7 @@ func Init() {
 }
 
 func GetTag(name string, latestmode string) string {
-	raw_image_hub, raw_image_name := gdeyamloperator.ImagenameSplit(name)
+	raw_image_hub, raw_image_name := myTool.ImagenameSplit(name)
 
 	var tag_result string
 	var time_latest = "2000-01-01T00:00:00.508640172Z"
@@ -527,7 +538,7 @@ func GetTag(name string, latestmode string) string {
 	//	fmt.Println("------------------")
 	//tag_result, _ = exec_shell("curl -X GET https://dockerhub.pentium.network/v2/grafana/tags/list| jq -r .tags")
 
-	tag_result = gdeyamloperator.RunCommand(querylistcmd)
+	tag_result = ShellCommand.RunCommand(querylistcmd)
 	tag_result = strings.Replace(tag_result, "[", "", 1)
 	tag_result = strings.Replace(tag_result, "]", "", 1)
 	tag_result = DeleteExtraSpace(tag_result)
@@ -599,7 +610,7 @@ func DeleteExtraSpace(s string) string {
 
 func QueryLatestTag(tag string, imgname string, hub string) string {
 
-	curltagresult := gdeyamloperator.RunCommand("curl -X GET https://" + hub + "/v2/" + imgname + "/manifests/" + tag + " | jq -r '.history[].v1Compatibility' | jq '.created' | sort | sed 's/\"//g'|tail -n1 ")
+	curltagresult := ShellCommand.RunCommand("curl -X GET https://" + hub + "/v2/" + imgname + "/manifests/" + tag + " | jq -r '.history[].v1Compatibility' | jq '.created' | sort | sed 's/\"//g'|tail -n1 ")
 
 	return curltagresult
 }
