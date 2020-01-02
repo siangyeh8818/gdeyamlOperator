@@ -122,6 +122,8 @@ func deleteResource(cs *kubernetes.Clientset, deletion CustomStruct.PruneTarget)
 		deleteClusterRoleBinding(cs, deletion.Name)
 	case "sa", "serviceaccount":
 		deleteServiceAccount(cs, deletion.Namespace, deletion.Name)
+	case "hpa", "horizontalpodautoscaler":
+		deleteHorizontalPodAutoscaler(cs, deletion.Namespace, deletion.Name)
 	default:
 		fmt.Println("Notthing to delete")
 		break
@@ -339,6 +341,15 @@ func deleteServiceAccount(clientSet *kubernetes.Clientset, namespace string, nam
 		fmt.Printf("Delete ServiceAccounts Error: %v\n", err.Error())
 	} else {
 		fmt.Printf("Successfully deleted serviceaccount %v at %v namespace\n", name, namespace)
+	}
+}
+
+func deleteHorizontalPodAutoscaler(clientSet *kubernetes.Clientset, namespace string, name string) {
+	client := clientSet.AutoscalingV1().HorizontalPodAutoscalers(namespace)
+	if err := client.Delete(name, &metav1.DeleteOptions{}); err != nil {
+		fmt.Printf("Delete HorizontalPodAutoscaler Error: %v\n", err.Error())
+	} else {
+		fmt.Printf("Successfully deleted hpa %v at %v namespace\n", name, namespace)
 	}
 }
 
