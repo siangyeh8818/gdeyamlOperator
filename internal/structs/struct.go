@@ -77,7 +77,7 @@ type Environmentyaml struct {
 	Namespaces []struct {
 		K8S      string `yaml:"k8s"`
 		Openfaas string `yaml:"openfaas"`
-		FaasNets string `yaml:"faas-nets"`
+		FaasNets string `yaml:"faas-netes"`
 		Monitor  string `yaml:"monitor"`
 		Redis    string `yaml:"redis"`
 	} `yaml:"namespaces"`
