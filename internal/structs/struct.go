@@ -1,14 +1,22 @@
-package gdeyamloperator
+package structs
+
+import (
+	"fmt"
+	"io/ioutil"
+
+	"gopkg.in/yaml.v2"
+)
 
 type Deployment struct {
-	BASE      []BASE     `yaml:"base"`
-	SCRIPTS   SCRIPTS    `yaml:"scripts"`
-	BLCKS     BLCKS      `yaml:"blcks"`
-	PLAYBOOKS PLAYBOOKS  `yaml:"playbooks"`
-	K8S       []K8S      `yaml:"k8s"`
-	Openfaas  []Openfaas `yaml:"openfaas"`
-	Monitor   []Monitor  `yaml:"monitor" `
-	Redis     []Redis    `yaml:"redis"`
+	BASE      []BASE      `yaml:"base"`
+	SCRIPTS   SCRIPTS     `yaml:"scripts"`
+	BLCKS     BLCKS       `yaml:"blcks"`
+	PLAYBOOKS PLAYBOOKS   `yaml:"playbooks"`
+	K8S       []K8S       `yaml:"k8s"`
+	Openfaas  []Openfaas  `yaml:"openfaas"`
+	Monitor   []Monitor   `yaml:"monitor" `
+	Redis     []Redis     `yaml:"redis"`
+	FaasNetes []FaasNetes `yaml:"faas-netes"`
 }
 type BASE struct {
 	Git    string `yaml:"git"`
@@ -54,6 +62,13 @@ type Openfaas struct {
 	Stage  string `yaml:"stage"`
 }
 
+type FaasNetes struct {
+	Module string `yaml:"module"`
+	Image  string `yaml:"image"`
+	Tag    string `yaml:"tag"`
+	Stage  string `yaml:"stage"`
+}
+
 type K8sYaml struct {
 	Deployment Deployment `yaml:"deployment"`
 }
@@ -62,6 +77,7 @@ type Environmentyaml struct {
 	Namespaces []struct {
 		K8S      string `yaml:"k8s"`
 		Openfaas string `yaml:"openfaas"`
+		FaasNets string `yaml:"faas-nets"`
 		Monitor  string `yaml:"monitor"`
 		Redis    string `yaml:"redis"`
 	} `yaml:"namespaces"`
@@ -313,4 +329,39 @@ func (envir_config *Configuration) UpdateBranch(gitbranch string) {
 
 	envir_config.Branch = gitbranch
 
+}
+
+//getConf
+func (c *K8sYaml) GetConf(f string) *K8sYaml {
+	//应该是 绝对地址
+	yamlFile, err := ioutil.ReadFile(f)
+	if err != nil {
+		fmt.Println(err.Error())
+		panic(err)
+	}
+
+	err = yaml.Unmarshal(yamlFile, c)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		panic(err)
+	}
+	return c
+}
+
+func (c *Environmentyaml) GetConf(f string) *Environmentyaml {
+
+	yamlFile, err := ioutil.ReadFile(f)
+	if err != nil {
+		fmt.Println(err.Error())
+		panic(err)
+	}
+
+	err = yaml.Unmarshal(yamlFile, c)
+
+	if err != nil {
+		fmt.Println(err.Error())
+		panic(err)
+	}
+	return c
 }

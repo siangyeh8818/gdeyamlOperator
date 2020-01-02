@@ -1,4 +1,4 @@
-package gdeyamloperator
+package jenkins
 
 import (
 	"fmt"

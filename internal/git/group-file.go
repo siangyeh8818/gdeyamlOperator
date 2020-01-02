@@ -1,4 +1,4 @@
-package gdeyamloperator
+package git
 
 import (
 	//"io/ioutil"
@@ -9,8 +9,11 @@ import (
 	"strconv"
 	"strings"
 
-	valid "github.com/siangyeh8818/gdeyamlOperator/internal/validation"
 	yaml "gopkg.in/yaml.v3"
+
+	IO "github.com/siangyeh8818/gdeyamlOperator/internal/myIo"
+	CustomStruct "github.com/siangyeh8818/gdeyamlOperator/internal/structs"
+	valid "github.com/siangyeh8818/gdeyamlOperator/internal/validation"
 )
 
 // GroupNexusOutput TODO: explanation here
@@ -41,7 +44,7 @@ func GroupNexusOutput(input string, output string, git *GIT) {
 	fmt.Println("------Map end-----")
 
 	resultContent := putContentToFile(versionMap, fileContent)
-	WriteWithIoutil(output, resultContent)
+	IO.WriteWithIoutil(output, resultContent)
 
 	putContentToGityaml(versionMap, fileContent, git)
 
@@ -162,7 +165,7 @@ func putContentToGityaml(Map1 map[string]string, fileContent []string, git *GIT)
 	}
 
 	log.Println("-----action >> add urls to deploy.yml----")
-	deployYaml := K8sYaml{}
+	deployYaml := CustomStruct.K8sYaml{}
 	deployYaml.GetConf(git.Path + "/" + git.CommitFIle)
 
 	var urlArray []string
@@ -180,7 +183,7 @@ func putContentToGityaml(Map1 map[string]string, fileContent []string, git *GIT)
 	if err != nil {
 		log.Fatalf("error: %v", err)
 	}
-	WriteWithIoutil(git.Path+"/"+git.CommitFIle, string(outputcontent))
+	IO.WriteWithIoutil(git.Path+"/"+git.CommitFIle, string(outputcontent))
 	log.Println("-----action >> CommitRepo----")
 	CommitRepo(git, git.CommitFIle)
 	log.Println("-----action >> PushGit----")

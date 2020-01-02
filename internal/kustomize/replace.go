@@ -1,4 +1,4 @@
-package gdeyamloperator
+package kustomize
 
 import (
 	"fmt"
@@ -7,6 +7,10 @@ import (
 	"strings"
 
 	yaml "gopkg.in/yaml.v3"
+
+	IO "github.com/siangyeh8818/gdeyamlOperator/internal/myIo"
+	ShellCommand "github.com/siangyeh8818/gdeyamlOperator/internal/shellcommand"
+	CustomStruct "github.com/siangyeh8818/gdeyamlOperator/internal/structs"
 )
 
 type REPLACEYAML struct {
@@ -26,12 +30,11 @@ func (rep *REPLACEYAML) UpdateREPLACEYAML(types string, pattern string, image st
 }
 
 func Replacedeploymentfile(environment string, deployfile string, outputfile string) {
-	envir_yaml := Environmentyaml{}
+	envir_yaml := CustomStruct.Environmentyaml{}
+	//envir_yaml.GetConf(environment)
 	envir_yaml.GetConf(environment)
-
-	inyaml := K8sYaml{}
+	inyaml := CustomStruct.K8sYaml{}
 	inyaml.GetConf(deployfile)
-
 	Replace_total := len(envir_yaml.Deploymentfile[0].Replace.K8S) + len(envir_yaml.Deploymentfile[0].Replace.Openfaas) + len(envir_yaml.Deploymentfile[0].Replace.Monitor) + len(envir_yaml.Deploymentfile[0].Replace.Redis)
 	fmt.Printf("Replace_total : %d", Replace_total)
 	if Replace_total > 0 {
@@ -154,11 +157,11 @@ func Replacedeploymentfile(environment string, deployfile string, outputfile str
 	}
 	//	fmt.Printf("--- t dump:\n%s\n\n", string(yamlcontent))
 
-	WriteWithIoutil(outputfile, string(yamlcontent))
+	IO.WriteWithIoutil(outputfile, string(yamlcontent))
 }
 
 //func SearchReplace(envir_yaml *Environmentyaml, inyaml *K8sYaml, imagesname string, rangestr string) int {
-func SearchReplace(inyaml *K8sYaml, imagesname string, rangestr string) int {
+func SearchReplace(inyaml *CustomStruct.K8sYaml, imagesname string, rangestr string) int {
 	var resultindex int
 	changotoken := false
 	switch rangestr {
@@ -198,7 +201,7 @@ func SearchReplace(inyaml *K8sYaml, imagesname string, rangestr string) int {
 	return resultindex
 }
 
-func SearchYamlModuleIndex(inyaml *K8sYaml, modulename string, rangestr string) int {
+func SearchYamlModuleIndex(inyaml *CustomStruct.K8sYaml, modulename string, rangestr string) int {
 	var resultindex int
 	changotoken := false
 	switch rangestr {
@@ -239,7 +242,7 @@ func SearchYamlModuleIndex(inyaml *K8sYaml, modulename string, rangestr string) 
 
 func Replacedeploymentfile_Image_Tag(rep *REPLACEYAML, inputfile string, outputfile string) {
 
-	deployyaml := K8sYaml{}
+	deployyaml := CustomStruct.K8sYaml{}
 	deployyaml.GetConf(inputfile)
 
 	current_index1 := SearchReplace(&deployyaml, rep.Image, "k8s")
@@ -264,7 +267,7 @@ func Replacedeploymentfile_Image_Tag(rep *REPLACEYAML, inputfile string, outputf
 		log.Fatalf("error: %v", err)
 	}
 
-	WriteWithIoutil(outputfile, string(yamlcontent))
+	IO.WriteWithIoutil(outputfile, string(yamlcontent))
 }
 
 func ReplacedeByPattern(rep *REPLACEYAML, inputfile string, outputfile string) {
@@ -279,7 +282,7 @@ func ReplacedeByPattern(rep *REPLACEYAML, inputfile string, outputfile string) {
 
 func UpdateEnvironmentFile(rep *REPLACEYAML, inputfile string, outputfile string) {
 
-	environmentfile := Environmentyaml{}
+	environmentfile := CustomStruct.Environmentyaml{}
 	fmt.Println("284")
 	fmt.Println(inputfile)
 	environmentfile.GetConf(inputfile)
@@ -306,13 +309,13 @@ func UpdateEnvironmentFile(rep *REPLACEYAML, inputfile string, outputfile string
 		log.Fatalf("error: %v", err)
 	}
 
-	WriteWithIoutil(outputfile, string(yamlcontent))
+	IO.WriteWithIoutil(outputfile, string(yamlcontent))
 
 }
 
 func UpdateDeployFile(rep *REPLACEYAML, inputfile string, outputfile string) {
 
-	deployyaml := K8sYaml{}
+	deployyaml := CustomStruct.K8sYaml{}
 	deployyaml.GetConf(inputfile)
 
 	pattern := strings.Split(rep.Pattern, ":")
@@ -401,18 +404,18 @@ func UpdateDeployFile(rep *REPLACEYAML, inputfile string, outputfile string) {
 		log.Fatalf("error: %v", err)
 	}
 
-	WriteWithIoutil(outputfile, string(yamlcontent))
+	IO.WriteWithIoutil(outputfile, string(yamlcontent))
 }
 
 func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string, kust *KustomizeArgument) {
 
-	deployyaml := K8sYaml{}
+	deployyaml := CustomStruct.K8sYaml{}
 	deployyaml.GetConf(inputfile)
 	var ss = make(map[string]int)
 
-	base_folder := grepFolderName(rep.Image, kust.K8sBaseloc, ss)
+	base_folder := ShellCommand.GrepFolderName(rep.Image, kust.K8sBaseloc, ss)
 	completePath := kust.K8sBaseloc + "/" + base_folder
-	tempNamespace := getBaseModuleNamespace(completePath, "namespace")
+	tempNamespace := ShellCommand.GetBaseModuleNamespace(completePath, "namespace")
 	namespace := strings.TrimSpace(tempNamespace)
 
 	if (strings.Count(namespace, "") - 1) == 0 {
@@ -481,5 +484,5 @@ func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string, kust
 		log.Fatalf("error: %v", err)
 	}
 
-	WriteWithIoutil(outputfile, string(yamlcontent))
+	IO.WriteWithIoutil(outputfile, string(yamlcontent))
 }

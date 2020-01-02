@@ -1,4 +1,4 @@
-package gdeyamloperator
+package git
 
 import (
 	"fmt"

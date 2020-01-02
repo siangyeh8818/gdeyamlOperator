@@ -1,4 +1,4 @@
-package gdeyamloperator
+package json
 
 import (
 	"encoding/json"
@@ -41,7 +41,7 @@ func (s *OutputContent) Addcontent(tempcontent string) {
 	s.Content = append(s.Content, tempcontent)
 }
 
-func continueTokenParse(jsondata string) string {
+func ContinueTokenParse(jsondata string) string {
 	var data []byte = []byte(jsondata)
 	/*
 		scripts_name, err := jsonparser.GetString(data, "items", "[0]", "assets", "[0]", "path")
@@ -179,10 +179,10 @@ func JsonParse2(jsondata string, out_pattern string, output *OutputContent) {
 			}
 			if len(nexusresponse.Items)-1 == i {
 				temp_insert_content = temp_insert_content
-			}else {
+			} else {
 				temp_insert_content = temp_insert_content + "\n"
 			}
-			
+
 			insert_content = insert_content + temp_insert_content
 		}
 	}

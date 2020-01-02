@@ -1,18 +1,18 @@
-package gdeyamloperator
+package shellcommand
 
 import (
 	"bytes"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
 	"strings"
-	"io/ioutil"
 	//	"k8s.io/apimachinery/pkg/api/errors"
 )
 
-func exec_shell(s_command string) (string, string) {
+func ExecShell(s_command string) (string, string) {
 	var stdoutBuf, stderrBuf bytes.Buffer
 	cmd := exec.Command("/bin/bash", "-c", s_command)
 	stdoutIn, _ := cmd.StdoutPipe()
@@ -56,7 +56,7 @@ func RunCommand(commandStr string) string {
 func KubectlGetDeployment(namespace string) []string {
 
 	cmd := "kubectl get deploy -n " + namespace + "| awk '{print $1}'"
-	result, _ := exec_shell(cmd)
+	result, _ := ExecShell(cmd)
 	//fmt.Println(result)
 	totaldeploy := strings.Split(result, "\n")
 	return totaldeploy
@@ -64,7 +64,7 @@ func KubectlGetDeployment(namespace string) []string {
 
 func KubectlGetStefulset(namespace string) []string {
 	cmd := "kubectl get statefulset -n " + namespace + "| awk '{print $1}'"
-	result, _ := exec_shell(cmd)
+	result, _ := ExecShell(cmd)
 	//fmt.Println(result)
 	totalststefulset := strings.Split(result, "\n")
 	return totalststefulset
@@ -72,7 +72,7 @@ func KubectlGetStefulset(namespace string) []string {
 
 func KubectlGetDaemonset(namespace string) []string {
 	cmd := "kubectl get daemonset -n " + namespace + "| awk '{print $1}'"
-	result, _ := exec_shell(cmd)
+	result, _ := ExecShell(cmd)
 	//fmt.Println(result)
 	totaldaemonset := strings.Split(result, "\n")
 	return totaldaemonset
@@ -80,18 +80,18 @@ func KubectlGetDaemonset(namespace string) []string {
 
 func KubectlGetCronJob(namespace string) []string {
 	cmd := "kubectl get cronJob -n " + namespace + "| awk '{print $1}'"
-	result, _ := exec_shell(cmd)
+	result, _ := ExecShell(cmd)
 	//fmt.Println(result)
 	totaldaemonset := strings.Split(result, "\n")
 	return totaldaemonset
 }
 
-func grepFolderName(module string, base_path string, ModuleMap map[string]int) string {
+func GrepFolderName(module string, base_path string, ModuleMap map[string]int) string {
 	var token int
 	var current_module_pattern string
 	current_module_pattern = "/" + module + ":"
 	cmd := "grep -Rn " + current_module_pattern + " " + base_path + " | grep image | awk '{print $1}'"
-	result, err := exec_shell(cmd)
+	result, err := ExecShell(cmd)
 	log.Println(result)
 	if err != "" {
 		log.Println("Find image base-folder failed")
@@ -118,9 +118,9 @@ func grepFolderName(module string, base_path string, ModuleMap map[string]int) s
 	return result_slice[token]
 }
 
-func getBaseModuleNamespace(path string, doc string)string{
+func GetBaseModuleNamespace(path string, doc string) string {
 
-    f := path + "/"+doc
+	f := path + "/" + doc
 	namespaceFileContent, err := ioutil.ReadFile(f)
 	if err != nil {
 		fmt.Println(err.Error())

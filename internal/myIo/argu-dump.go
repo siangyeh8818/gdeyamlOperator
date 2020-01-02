@@ -1,14 +1,16 @@
-package gdeyamloperator
+package myIo
 
 import (
 	"log"
+
+	CustomStruct "github.com/siangyeh8818/gdeyamlOperator/internal/structs"
 )
 
 func DumpArguments(inputfile string, environment_file string, ouputfile string) {
 
 	var write_content string
 	if inputfile != "" && Exists(inputfile) {
-		deploy_yaml := K8sYaml{}
+		deploy_yaml := CustomStruct.K8sYaml{}
 		deploy_yaml.GetConf(inputfile)
 		log.Println(deploy_yaml.Deployment)
 		blcks_Branch := "BLCKS_BRANCH=" + deploy_yaml.Deployment.BLCKS.Branch + "\n"
@@ -27,7 +29,7 @@ func DumpArguments(inputfile string, environment_file string, ouputfile string) 
 		write_content = write_content + kubestomize_base_Branch
 	}
 	if environment_file != "" && Exists(inputfile) {
-		envir_yaml := Environmentyaml{}
+		envir_yaml := CustomStruct.Environmentyaml{}
 		envir_yaml.GetConf(environment_file)
 		deploy_Branch := "DEPLOY_BRANCH=" + envir_yaml.Deploymentfile[0].Branch + "\n"
 		write_content = write_content + deploy_Branch

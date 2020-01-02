@@ -1,9 +1,7 @@
-package gdeyamloperator
+package myIo
 
 import (
 	"testing"
-
-	. "github.com/siangyeh8818/gdeyamlOperator/internal"
 )
 
 func TestDumpArguments(t *testing.T) {
