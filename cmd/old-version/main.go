@@ -81,7 +81,7 @@ func main() {
 	flag.Parse()
 
 	if version {
-		fmt.Println("version : 1.12.0")
+		fmt.Println("version : 1.12.1")
 		os.Exit(0)
 	}
 	newgit := mygit.GIT{}
@@ -469,6 +469,9 @@ func main() {
 		case "delete":
 			clusterop.DeleteResources(&newgit)
 			break
+		case "deploy-scripts":
+			myK8s.CeateScriptsJob(inputfile, environment_file)
+
 		}
 	}
 

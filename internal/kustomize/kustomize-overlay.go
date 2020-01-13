@@ -57,6 +57,9 @@ func OutputOverlays(kus_argument *KustomizeArgument, deployfile string) {
 	//attrsns := GetNameSpaceMapping(envfile, namespace, kmodules)
 	attrsns := GetNameSpaceMapping(kus_argument)
 	//loop key
+	fmt.Println("------base folder start-----------")
+	fmt.Println(kus_argument.OfBaseloc)
+	fmt.Println("------base folder end-----------")
 	for attr := range attrsns {
 		fmt.Println("------attr (for)-----------")
 		fmt.Println(attr)

@@ -84,12 +84,10 @@ func DeleteResources(git *mygit.GIT) {
 	// Debug
 	// createJob(clientSet, "workflow-stable", "demo-job")
 	// time.Sleep(2 * time.Second)
-
 	// Delete
 	for i := 0; i < len(pruneYaml.Targets); i++ {
 		deleteResource(clientSet, pruneYaml.Targets[i])
 	}
-
 }
 
 func deleteResource(cs *kubernetes.Clientset, deletion CustomStruct.PruneTarget) {
