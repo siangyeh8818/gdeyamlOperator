@@ -3,14 +3,10 @@ package config
 import (
 	//. "github.com/siangyeh8818/gdeyamlOperator/internal"
 	myDocker "github.com/siangyeh8818/gdeyamlOperator/internal/docker"
+	mygit "github.com/siangyeh8818/gdeyamlOperator/internal/git"
 	kustomize "github.com/siangyeh8818/gdeyamlOperator/internal/kustomize"
 	myNexus "github.com/siangyeh8818/gdeyamlOperator/internal/nexus"
 )
-
-type ACTION interface {
-	InitConfig()
-	RunAction() bool
-}
 
 type BINARYCONFIG struct {
 	Action string
@@ -24,7 +20,7 @@ type BINARYCONFIG struct {
 		GitCommitFile string                        //GIT{}
 		GitTag string                               //GIT{}
 	*/
-	GIT          GIT
+	GIT          mygit.GIT
 	GitAction    string
 	GitNewBranch string
 	//-----docker flag ----------
@@ -58,24 +54,24 @@ type BINARYCONFIG struct {
 		ReplaceYamlType string                     //REPLACEYAML{}
 		ReplaceValue string                        //REPLACEYAML{}
 	*/
-	REPLACEYAML REPLACEYAML
+	REPLACEYAML kustomize.REPLACEYAML
 	//--------- kustomize flag ------------
 	/*
-		KustomBasePath string                      //KustomizeArgument{}
 		KustomizeOitputDir string                  //KustomizeArgument{}
+		KustomizeCompare string                    //KustomizeArgument{}
 		KustomizeRelPath string                    //KustomizeArgument{}
+		KustomBasePath string                      //KustomizeArgument{}
 		KustomizeUrlPattern string                 //KustomizeArgument{}
 		KustomizeModule string                     //KustomizeArgument{}
 		KustomizeOpenfaasModule string             //KustomizeArgument{}
-		KustomizeCompare string                    //KustomizeArgument{}
 		KustomizeBaseFolder string                 //KustomizeArgument{}
-
 		EnvironmentFile string                     //KustomizeArgument{}
 	*/
 	KustomizeArgument kustomize.KustomizeArgument
 	//----------kubernetes flag -------------
-	Namespace       string
-	SnapshotPattern string
+	Namespace        string
+	SnapshotPattern  string
+	K8sClusterAction string
 	//-------------- Account flag -----------
 	User     string
 	Password string
