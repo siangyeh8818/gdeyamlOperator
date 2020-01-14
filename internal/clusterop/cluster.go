@@ -53,6 +53,14 @@ func DeleteResources(git *mygit.GIT) {
 	}
 	fmt.Printf("envYaml: %v\n", envYaml)
 
+	if (CustomStruct.Prune{}) == envYaml.Prune {
+		// if we don't have a prune section
+		fmt.Printf("Prune section is empty !!!!!!")
+		return
+	} else if envYaml.Prune.Git == "" || envYaml.Prune.Branch == "" {
+		fmt.Printf("Prune.Git/Prune.Branch is empty !!!!!!")
+		return
+	}
 	// clone prune file
 	newGit := &mygit.GIT{
 		Branch:      envYaml.Prune.Branch,
