@@ -4,6 +4,7 @@ go 1.12
 
 require (
 	cloud.google.com/go v0.46.3 // indirect
+	github.com/CloudyKit/fastprinter v0.0.0-20200109182630-33d98a066a53 // indirect
 	github.com/NYTimes/gziphandler v1.1.1 // indirect
 	github.com/bndr/gojenkins v0.2.0
 	github.com/buger/jsonparser v0.0.0-20181115193947-bf1c66bbce23
@@ -23,6 +24,7 @@ require (
 	github.com/googleapis/gnostic v0.3.1 // indirect
 	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/imdario/mergo v0.3.7 // indirect
+	github.com/kataras/iris/v12 v12.1.4
 	github.com/mailru/easyjson v0.7.0 // indirect
 	github.com/munnerz/goautoneg v0.0.0-20190414153302-2ae31c8b6b30 // indirect
 	github.com/onsi/ginkgo v1.10.1 // indirect
@@ -30,14 +32,13 @@ require (
 	github.com/robbert229/jwt v2.0.0+incompatible // indirect
 	github.com/rogpeppe/go-charset v0.0.0-20190617161244-0dc95cdf6f31 // indirect
 	github.com/rogpeppe/go-internal v1.3.2 // indirect
+	github.com/shurcooL/sanitized_anchor_name v1.0.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/stretchr/testify v1.4.0 // indirect
 	go.opencensus.io v0.22.1 // indirect
-	golang.org/x/crypto v0.0.0-20190911031432-227b76d455e7 // indirect
 	golang.org/x/exp v0.0.0-20190919035709-81c71964d733 // indirect
 	golang.org/x/image v0.0.0-20190910094157-69e4b8554b2a // indirect
 	golang.org/x/mobile v0.0.0-20190910184405-b558ed863381 // indirect
-	golang.org/x/net v0.0.0-20190918130420-a8b05e9114ab // indirect
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e // indirect
 	golang.org/x/sys v0.0.0-20190919044723-0c1ff786ef13 // indirect
 	golang.org/x/tools v0.0.0-20190920023704-c426260dee6e // indirect
