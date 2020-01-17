@@ -217,8 +217,11 @@ func createJob(cs *kubernetes.Clientset, ns string, name string) {
 }
 
 func deleteJob(clientSet *kubernetes.Clientset, namespace string, name string) {
+	Policyconst := metav1.DeletePropagationForeground
 	client := clientSet.BatchV1().Jobs(namespace)
-	if err := client.Delete(name, &metav1.DeleteOptions{}); err != nil {
+	if err := client.Delete(name, &metav1.DeleteOptions{
+		PropagationPolicy: &Policyconst,
+	}); err != nil {
 		fmt.Printf("Delete Job Error: %v\n", err)
 	} else {
 		fmt.Printf("Successfully deleted job %v at %v namespace\n", name, namespace)
