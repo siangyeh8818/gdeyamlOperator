@@ -29,7 +29,8 @@ func main() {
 	myConfig.Parse()
 
 	if config.Version {
-		fmt.Println("version : 1.12.3")
+		fmt.Println("version : 1.12.4")
+
 		os.Exit(0)
 	}
 
