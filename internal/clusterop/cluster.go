@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"reflect"
 	"strings"
 
 	yaml "gopkg.in/yaml.v3"
@@ -52,7 +53,6 @@ func DeleteResources(git *mygit.GIT) {
 		log.Printf("Unmarshal error: %v\n", err)
 	}
 	fmt.Printf("envYaml: %v\n", envYaml)
-
 	if (CustomStruct.Prune{}) == envYaml.Prune {
 		// if we don't have a prune section
 		fmt.Printf("Prune section is empty !!!!!!")
@@ -94,46 +94,75 @@ func DeleteResources(git *mygit.GIT) {
 	// time.Sleep(2 * time.Second)
 	// Delete
 	for i := 0; i < len(pruneYaml.Targets); i++ {
-		deleteResource(clientSet, pruneYaml.Targets[i])
+		deleteResource(clientSet, pruneYaml.Targets[i], envYaml)
 	}
 }
 
-func deleteResource(cs *kubernetes.Clientset, deletion CustomStruct.PruneTarget) {
+//在查找字段時使用Value.FieldByNameFunc和strings.ToLower忽略大小寫
+func caseInsenstiveFieldByName(v reflect.Value, name string) reflect.Value {
+	name = strings.ToLower(name)
+	return v.FieldByNameFunc(func(n string) bool { return strings.ToLower(n) == name })
+}
+
+func deleteResource(cs *kubernetes.Clientset, deletion CustomStruct.PruneTarget, environment *CustomStruct.Environmentyaml) {
+	var tempnamespace string
+
+	switch strings.ToLower(deletion.Namespace.Type) {
+	case "indirect":
+		tempnamespace = deletion.Namespace.MappingNs
+	case "environment":
+
+		//t := reflect.TypeOf(environment)
+		appData := reflect.ValueOf(environment)
+		mapns := caseInsenstiveFieldByName(reflect.Indirect(appData), deletion.Namespace.MappingNs)
+		fmt.Println(mapns.String())
+
+		//if _, ok := t.FieldByName(deletion.Namespace.MappingNs); ok{
+		//fmt.Printf("environment exists %s this property")
+		//} else {
+		//	fmt.Printf("environment doesn't defined %s this property")
+		//}
+		tempnamespace = deletion.Namespace.MappingNs
+	}
+
+	fmt.Printf("tempnamespace : %s \n", tempnamespace)
+
 	switch strings.ToLower(deletion.Kind) {
 	case "namespace", "ns":
 		deleteNamespace(cs, deletion.Name)
 	case "job":
-		deleteJob(cs, deletion.Namespace, deletion.Name)
+		deleteJob(cs, tempnamespace, deletion.Name)
 	case "cronjob":
-		deleteCronjob(cs, deletion.Namespace, deletion.Name)
+		deleteCronjob(cs, tempnamespace, deletion.Name)
 	case "deploy", "deployment":
-		deleteDeployment(cs, deletion.Namespace, deletion.Name)
+		deleteDeployment(cs, tempnamespace, deletion.Name)
 	case "svc", "service":
-		deleteService(cs, deletion.Namespace, deletion.Name)
+		deleteService(cs, tempnamespace, deletion.Name)
 	case "secret":
-		deleteSecret(cs, deletion.Namespace, deletion.Name)
+		deleteSecret(cs, tempnamespace, deletion.Name)
 	case "cm", "configmap":
-		deleteConfigMap(cs, deletion.Namespace, deletion.Name)
+		deleteConfigMap(cs, tempnamespace, deletion.Name)
 	case "statefulset":
-		deleteStatefulSet(cs, deletion.Namespace, deletion.Name)
+		deleteStatefulSet(cs, tempnamespace, deletion.Name)
 	case "ds", "daemonset":
-		deleteDaemonSet(cs, deletion.Namespace, deletion.Name)
+		deleteDaemonSet(cs, tempnamespace, deletion.Name)
 	case "ingress", "ing":
-		deleteIngress(cs, deletion.Namespace, deletion.Name)
+		deleteIngress(cs, tempnamespace, deletion.Name)
 	case "pod", "po":
-		deletePod(cs, deletion.Namespace, deletion.Name)
+		deletePod(cs, tempnamespace, deletion.Name)
 	case "clusterrole":
 		deleteClusterRole(cs, deletion.Name)
 	case "clusterrolebinding":
 		deleteClusterRoleBinding(cs, deletion.Name)
 	case "sa", "serviceaccount":
-		deleteServiceAccount(cs, deletion.Namespace, deletion.Name)
+		deleteServiceAccount(cs, tempnamespace, deletion.Name)
 	case "hpa", "horizontalpodautoscaler":
-		deleteHorizontalPodAutoscaler(cs, deletion.Namespace, deletion.Name)
+		deleteHorizontalPodAutoscaler(cs, tempnamespace, deletion.Name)
 	default:
 		fmt.Println("Notthing to delete")
 		break
 	}
+
 }
 
 func homeDir() string {

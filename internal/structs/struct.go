@@ -126,9 +126,13 @@ type NSGroup struct{}
 
 // PruneTarget defines the unit object of removing
 type PruneTarget struct {
-	Namespace string `yaml:"namespace"`
-	Kind      string `yaml:"kind"`
-	Name      string `yaml:"name"`
+	Namespace NamespaceType `yaml:"namespace"`
+	Kind      string        `yaml:"kind"`
+	Name      string        `yaml:"name"`
+}
+type NamespaceType struct {
+	Type      string `yaml:"type"`
+	MappingNs string `yaml:"mapping"`
 }
 
 type Monitor struct {
