@@ -74,17 +74,25 @@ type K8sYaml struct {
 }
 
 type Environmentyaml struct {
-	Namespaces []struct {
-		K8S      string `yaml:"k8s"`
-		Openfaas string `yaml:"openfaas"`
-		FaasNets string `yaml:"faas-netes"`
-		Monitor  string `yaml:"monitor"`
-		Redis    string `yaml:"redis"`
-	} `yaml:"namespaces"`
+	Namespaces     []Namespaces     `yaml:"namespaces"`
 	Configuration  []Configuration  `yaml:"configuration"`
 	Deploymentfile []Deploymentfile `yaml:"deploymentfile"`
 	Prune          Prune            `yaml:"prune"`
 }
+
+type Namespaces struct {
+	K8S      string `yaml:"k8s"`
+	Openfaas string `yaml:"openfaas"`
+	FaasNets string `yaml:"faas-netes"`
+	Monitor  string `yaml:"monitor"`
+	Redis    string `yaml:"redis"`
+}
+
+/*
+type NewPrune struct {
+	Environmentyaml *
+}
+*/
 
 type Configuration struct {
 	Git    string `yaml:"git"`

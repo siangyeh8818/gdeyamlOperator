@@ -108,21 +108,55 @@ func deleteResource(cs *kubernetes.Clientset, deletion CustomStruct.PruneTarget,
 	var tempnamespace string
 
 	switch strings.ToLower(deletion.Namespace.Type) {
-	case "indirect":
+	case "local":
 		tempnamespace = deletion.Namespace.MappingNs
 	case "environment":
 
-		//t := reflect.TypeOf(environment)
-		appData := reflect.ValueOf(environment)
-		mapns := caseInsenstiveFieldByName(reflect.Indirect(appData), deletion.Namespace.MappingNs)
-		fmt.Println(mapns.String())
+		reflectStruct := reflect.TypeOf(environment)
+		fmt.Println("-----reflect-------")
+		fmt.Println(reflectStruct.Kind())
+		if reflectStruct.Kind() == reflect.Struct {
+			fmt.Println("返回是個結構(Struct)")
+			fmt.Println("reflectStruct.NumField() : %d", reflectStruct.NumField())
+			for i := 0; i < reflectStruct.NumField(); i++ {
+				fmt.Println(reflectStruct.Field(i))
+			}
+		} else if reflectStruct.Kind() == reflect.Ptr {
+			fmt.Println("返回是個指針(Ptr) , 使用Elem()獲取其指向的元素")
+			reflectStruct = reflectStruct.Elem()
+			fmt.Printf("再次測試kind : %s \n", reflectStruct.Kind().String())
+			fmt.Printf("該struct的Field個數 : %d \n", reflectStruct.NumField())
+			for i := 0; i < reflectStruct.NumField(); i++ {
+				fmt.Println(reflectStruct.Field(i))
+				fmt.Println(reflectStruct.Field(i).Name)
+				fmt.Println(reflectStruct.Field(i).Type)
+				if reflectStruct.Field(i).Name == "Namespaces" {
+					fmt.Println("取得環境檔中Namespaces的struct")
+					NsStruct := reflect.TypeOf(environment.Namespaces[0])
+					//fmt.Println(NsStruct.Kind())
+					fmt.Println("NsStruct.NumField() : %d", NsStruct.NumField())
+					for k := 0; k < NsStruct.NumField(); k++ {
+						fmt.Println(NsStruct.Field(k))
+						if strings.ToLower(NsStruct.Field(k).Name) == deletion.Namespace.MappingNs {
+							//fmt.Println("-------------")
+							NsValue := reflect.ValueOf(environment.Namespaces[0])
+							fmt.Println(NsValue.Field(k))
+							tempnamespace = NsValue.Field(k).String()
 
+						}
+					}
+				}
+			}
+		}
+		//fmt.Println(reflect.TypeOf(reflectStruct).Field(0).Name)
+		//fmt.Println(val.Type().Field(0).Name)
 		//if _, ok := t.FieldByName(deletion.Namespace.MappingNs); ok{
 		//fmt.Printf("environment exists %s this property")
 		//} else {
 		//	fmt.Printf("environment doesn't defined %s this property")
 		//}
-		tempnamespace = deletion.Namespace.MappingNs
+		//test := strings.ToUpper(deletion.Namespace.MappingNs)
+		//tempnamespace = environment.Namespaces[0]
 	}
 
 	fmt.Printf("tempnamespace : %s \n", tempnamespace)
