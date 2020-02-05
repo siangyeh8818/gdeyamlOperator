@@ -81,11 +81,17 @@ type Environmentyaml struct {
 }
 
 type Namespaces struct {
+	Domain   Domain `yaml:"domain"`
 	K8S      string `yaml:"k8s"`
 	Openfaas string `yaml:"openfaas"`
 	FaasNets string `yaml:"faas-netes"`
 	Monitor  string `yaml:"monitor"`
 	Redis    string `yaml:"redis"`
+}
+
+type Domain struct {
+	DomainPortalV2 string `yaml:"portal-v2"`
+	DomainPortalV3 string `yaml:"portal-v3"`
 }
 
 /*

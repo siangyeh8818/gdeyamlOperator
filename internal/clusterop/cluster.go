@@ -72,7 +72,7 @@ func DeleteResources(git *mygit.GIT) {
 
 	pruneFile, err := ioutil.ReadFile("clone/pn.prune/prune.yml")
 	if err != nil {
-		fmt.Printf("read environment file error: %v\n", err)
+		fmt.Printf("read clone/pn.prune/prune.yml error: %v\n", err)
 	}
 
 	fmt.Printf("%v\n", string(pruneFile))
@@ -127,20 +127,21 @@ func deleteResource(cs *kubernetes.Clientset, deletion CustomStruct.PruneTarget,
 			fmt.Printf("再次測試kind : %s \n", reflectStruct.Kind().String())
 			fmt.Printf("該struct的Field個數 : %d \n", reflectStruct.NumField())
 			for i := 0; i < reflectStruct.NumField(); i++ {
-				fmt.Println(reflectStruct.Field(i))
-				fmt.Println(reflectStruct.Field(i).Name)
-				fmt.Println(reflectStruct.Field(i).Type)
+				//fmt.Println(reflectStruct.Field(i))
+				fmt.Printf("reflectStruct 欄位名稱 : %s\n", reflectStruct.Field(i).Name)
+				//fmt.Println(reflectStruct.Field(i).Type)
 				if reflectStruct.Field(i).Name == "Namespaces" {
 					fmt.Println("取得環境檔中Namespaces的struct")
 					NsStruct := reflect.TypeOf(environment.Namespaces[0])
 					//fmt.Println(NsStruct.Kind())
 					fmt.Println("NsStruct.NumField() : %d", NsStruct.NumField())
 					for k := 0; k < NsStruct.NumField(); k++ {
-						fmt.Println(NsStruct.Field(k))
+						//fmt.Println(NsStruct.Field(k))
 						if strings.ToLower(NsStruct.Field(k).Name) == deletion.Namespace.MappingNs {
-							//fmt.Println("-------------")
+							fmt.Printf("prune.yml中的MappingNs 符合返回的struct內的欄位名稱 , 欄位: %s \n", strings.ToLower(NsStruct.Field(k).Name))
 							NsValue := reflect.ValueOf(environment.Namespaces[0])
-							fmt.Println(NsValue.Field(k))
+							fmt.Printf("取得上述欄位名稱在environment.yml中的值 , 值為: %s  \n", NsValue.Field(k))
+							//fmt.Println(NsValue.Field(k))
 							tempnamespace = NsValue.Field(k).String()
 
 						}
@@ -148,15 +149,6 @@ func deleteResource(cs *kubernetes.Clientset, deletion CustomStruct.PruneTarget,
 				}
 			}
 		}
-		//fmt.Println(reflect.TypeOf(reflectStruct).Field(0).Name)
-		//fmt.Println(val.Type().Field(0).Name)
-		//if _, ok := t.FieldByName(deletion.Namespace.MappingNs); ok{
-		//fmt.Printf("environment exists %s this property")
-		//} else {
-		//	fmt.Printf("environment doesn't defined %s this property")
-		//}
-		//test := strings.ToUpper(deletion.Namespace.MappingNs)
-		//tempnamespace = environment.Namespaces[0]
 	}
 
 	fmt.Printf("tempnamespace : %s \n", tempnamespace)
