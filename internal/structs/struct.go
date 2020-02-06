@@ -90,6 +90,10 @@ type Namespaces struct {
 }
 
 type Domain struct {
+	RootDomain string `yaml:"root-domain"`
+	Host       Host   `yaml:"host"`
+}
+type Host struct {
 	DomainPortalV2 string `yaml:"portal-v2"`
 	DomainPortalV3 string `yaml:"portal-v3"`
 }

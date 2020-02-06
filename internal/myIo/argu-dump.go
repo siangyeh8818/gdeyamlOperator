@@ -31,9 +31,11 @@ func DumpArguments(inputfile string, environment_file string, ouputfile string) 
 	if environment_file != "" && Exists(inputfile) {
 		envir_yaml := CustomStruct.Environmentyaml{}
 		envir_yaml.GetConf(environment_file)
-		Portalv2Domain := "DomainPortalV2=" + envir_yaml.Domain.DomainPortalV2 + "\n"
+		RootDomain := "RootDomain=" + envir_yaml.Domain.RootDomain + "\n"
+		write_content = write_content + RootDomain
+		Portalv2Domain := "DomainPortalV2=" + envir_yaml.Domain.Host.DomainPortalV2 + "\n"
 		write_content = write_content + Portalv2Domain
-		Portalv3Domain := "DomainPortalV3=" + envir_yaml.Domain.DomainPortalV3 + "\n"
+		Portalv3Domain := "DomainPortalV3=" + envir_yaml.Domain.Host.DomainPortalV3 + "\n"
 		write_content = write_content + Portalv3Domain
 		deploy_Branch := "DEPLOY_BRANCH=" + envir_yaml.Deploymentfile[0].Branch + "\n"
 		write_content = write_content + deploy_Branch
