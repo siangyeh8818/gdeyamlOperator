@@ -74,6 +74,7 @@ type K8sYaml struct {
 }
 
 type Environmentyaml struct {
+	Domain         Domain           `yaml:"domain"`
 	Namespaces     []Namespaces     `yaml:"namespaces"`
 	Configuration  []Configuration  `yaml:"configuration"`
 	Deploymentfile []Deploymentfile `yaml:"deploymentfile"`
@@ -86,6 +87,15 @@ type Namespaces struct {
 	FaasNets string `yaml:"faas-netes"`
 	Monitor  string `yaml:"monitor"`
 	Redis    string `yaml:"redis"`
+}
+
+type Domain struct {
+	RootDomain string `yaml:"root-domain"`
+	Host       Host   `yaml:"host"`
+}
+type Host struct {
+	DomainPortalV2 string `yaml:"portal-v2"`
+	DomainPortalV3 string `yaml:"portal-v3"`
 }
 
 /*
