@@ -16,7 +16,7 @@ type Deployment struct {
 	Openfaas  []Openfaas  `yaml:"openfaas"`
 	Monitor   []Monitor   `yaml:"monitor" `
 	Redis     []Redis     `yaml:"redis"`
-	FaasNetes []FaasNetes `yaml:"faas-netes"`
+	FaasNetes []FaasNetes `yaml:"faasnetes"`
 }
 type BASE struct {
 	Git    string `yaml:"git"`
@@ -82,11 +82,11 @@ type Environmentyaml struct {
 }
 
 type Namespaces struct {
-	K8S      string `yaml:"k8s"`
-	Openfaas string `yaml:"openfaas"`
-	FaasNets string `yaml:"faas-netes"`
-	Monitor  string `yaml:"monitor"`
-	Redis    string `yaml:"redis"`
+	K8S       string `yaml:"k8s"`
+	Openfaas  string `yaml:"openfaas"`
+	FaasNetes string `yaml:"faasnetes"`
+	Monitor   string `yaml:"monitor"`
+	Redis     string `yaml:"redis"`
 }
 
 type Domain struct {

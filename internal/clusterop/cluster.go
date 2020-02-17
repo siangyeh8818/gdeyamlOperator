@@ -19,6 +19,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 
 	mygit "github.com/siangyeh8818/gdeyamlOperator/internal/git"
+	IO "github.com/siangyeh8818/gdeyamlOperator/internal/myIo"
 	CustomStruct "github.com/siangyeh8818/gdeyamlOperator/internal/structs"
 )
 
@@ -208,7 +209,14 @@ func getKubeConfig() (*rest.Config, error) {
 	} else {
 		if home := homeDir(); home != "" {
 			fmt.Printf("if homeDir: %v\n", home)
-			kubeConfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
+
+			if IO.Exists(filepath.Join(home, ".kube", "config")) {
+				kubeConfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
+				fmt.Println("K8s Config is exist")
+			} else {
+				kubeConfig = flag.String("kubeconfig", " ", "absolute path to the kubeconfig file")
+			}
+
 		} else {
 			fmt.Printf("else homeDir: %v\n", home)
 			kubeConfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
