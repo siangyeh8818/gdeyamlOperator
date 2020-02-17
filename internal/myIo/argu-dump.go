@@ -46,7 +46,7 @@ func DumpArguments(inputfile string, environment_file string, ouputfile string) 
 		openfaas_fn_namesapce := "OPENFAAS_FN_NAMESPACES=" + envir_yaml.Namespaces[0].Openfaas + "\n"
 		write_content = write_content + openfaas_fn_namesapce
 
-		openfaas_namesapce := "FAAS_NETES_NAMESPACES=" + envir_yaml.Namespaces[0].FaasNets + "\n"
+		openfaas_namesapce := "FAAS_NETES_NAMESPACES=" + envir_yaml.Namespaces[0].FaasNetes + "\n"
 		write_content = write_content + openfaas_namesapce
 
 		monitor_namesapce := "MONITOR_NAMESPACES=" + envir_yaml.Namespaces[0].Monitor + "\n"
