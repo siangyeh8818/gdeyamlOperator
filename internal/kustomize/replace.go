@@ -425,8 +425,6 @@ func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string, kust
 	}
 	fmt.Printf("namespace: %s , base_folder: %s\n", namespace, base_folder)
 	if len(base_folder) > 0 {
-		fmt.Println("426")
-		//switch rep.Pattern {
 		switch namespace {
 		case "k8s":
 			current_index1 := SearchYamlModuleIndex(&deployyaml, base_folder, "k8s")
@@ -439,7 +437,6 @@ func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string, kust
 				(&deployyaml.Deployment.K8S[current_index1]).UpdateK8sTag(rep.NewValue)
 			}
 		case "openfaas":
-			fmt.Println("440")
 			current_index1 := SearchYamlModuleIndex(&deployyaml, base_folder, "openfaas")
 			if current_index1 == -1 {
 				ss[base_folder] = 1
@@ -466,14 +463,26 @@ func PatchDeployFile(rep *REPLACEYAML, inputfile string, outputfile string, kust
 				(&deployyaml.Deployment.Redis[current_index1]).UpdateRedisImage(rep.Image)
 				(&deployyaml.Deployment.Redis[current_index1]).UpdateRedisTag(rep.NewValue)
 			}
-		case "blcks/ansibleDeployTool":
-			(&deployyaml.Deployment.PLAYBOOKS.TOOL).UpdateToolImage(rep.Image)
-			(&deployyaml.Deployment.PLAYBOOKS.TOOL).UpdateToolTag(rep.NewValue)
-			(&deployyaml.Deployment.BLCKS.TOOL).UpdateToolImage(rep.Image)
-			(&deployyaml.Deployment.BLCKS.TOOL).UpdateToolTag(rep.NewValue)
+		case "faasnetes":
+			current_index1 := SearchYamlModuleIndex(&deployyaml, base_folder, "faasnetes")
+			if current_index1 == -1 {
+				ss[base_folder] = 1
+				(&deployyaml.Deployment).AddFaasnetesStruct(base_folder, rep.Image, rep.NewValue, "")
+			} else {
+				(&deployyaml.Deployment.FaasNetes[current_index1]).UpdateFaasnetesImage(rep.Image)
+				(&deployyaml.Deployment.FaasNetes[current_index1]).UpdateFaasnetesTag(rep.NewValue)
+			}
 		case "scriptsTool":
 			(&deployyaml.Deployment.SCRIPTS.TOOL).UpdateToolImage(rep.Image)
 			(&deployyaml.Deployment.SCRIPTS.TOOL).UpdateToolTag(rep.NewValue)
+			/*
+				case "blcks/ansibleDeployTool":
+					(&deployyaml.Deployment.PLAYBOOKS.TOOL).UpdateToolImage(rep.Image)
+					(&deployyaml.Deployment.PLAYBOOKS.TOOL).UpdateToolTag(rep.NewValue)
+					(&deployyaml.Deployment.BLCKS.TOOL).UpdateToolImage(rep.Image)
+					(&deployyaml.Deployment.BLCKS.TOOL).UpdateToolTag(rep.NewValue)
+			*/
+
 		}
 	} else {
 		fmt.Println("folder name can't be space")

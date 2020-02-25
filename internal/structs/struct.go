@@ -233,6 +233,17 @@ func (s *Deployment) AddRedisStruct(module string, image string, tag string, sta
 	}
 	s.Redis = append(s.Redis, a)
 }
+
+func (s *Deployment) AddFaasnetesStruct(module string, image string, tag string, stage string) {
+	var a FaasNetes = FaasNetes{
+		Module: module,
+		Image:  image,
+		Tag:    tag,
+		Stage:  stage,
+	}
+	s.FaasNetes = append(s.FaasNetes, a)
+}
+
 func (s *Deployment) RemoveK8sStruct(index int) {
 	s.K8S = append(s.K8S[:index], s.K8S[index+1:]...)
 }
@@ -326,6 +337,21 @@ func (s *Redis) UpdateRedisTag(newtag string) {
 func (s *Redis) UpdateRedisStage(newstage string) {
 
 	s.Stage = newstage
+}
+
+func (s *FaasNetes) UpdateFaasnetesModule(newmodule string) {
+
+	s.Module = newmodule
+}
+
+func (s *FaasNetes) UpdateFaasnetesImage(newimage string) {
+
+	s.Image = newimage
+}
+
+func (s *FaasNetes) UpdateFaasnetesTag(newtag string) {
+
+	s.Tag = newtag
 }
 
 func (s *TOOL) UpdateToolTag(newtag string) {
