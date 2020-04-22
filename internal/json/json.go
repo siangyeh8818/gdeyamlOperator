@@ -2,6 +2,7 @@ package json
 
 import (
 	"encoding/json"
+	"fmt"
 	"log"
 	"strings"
 
@@ -72,6 +73,8 @@ func JsonParse2(jsondata string, out_pattern string, output *OutputContent) {
 	var insert_content string
 
 	if len(nexusresponse.Items) > 0 {
+		fmt.Println("------item 長度-----")
+		fmt.Println(len(nexusresponse.Items))
 		for i := 0; i < len(nexusresponse.Items); i++ {
 			temp_insert_content := ""
 
@@ -185,11 +188,11 @@ func JsonParse2(jsondata string, out_pattern string, output *OutputContent) {
 
 			insert_content = insert_content + temp_insert_content
 		}
+
+		log.Println("-------insert_content")
+		log.Println(insert_content)
+		output.Addcontent(insert_content)
 	}
-
-	log.Println(insert_content)
-	output.Addcontent(insert_content)
-
 }
 
 /*
