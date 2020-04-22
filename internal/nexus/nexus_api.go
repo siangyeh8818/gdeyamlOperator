@@ -12,8 +12,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	IO "github.com/siangyeh8818/gdeyamlOperator/internal/myIo"
 	myJson "github.com/siangyeh8818/gdeyamlOperator/internal/json"
+	IO "github.com/siangyeh8818/gdeyamlOperator/internal/myIo"
 )
 
 type Nexus struct {
@@ -81,7 +81,7 @@ func GET_NesusAPI(nexusurl string, nexus_user string, nexus_password string, out
 	log.Println(string(responseData))
 	log.Println("---------end of responseData-----------")
 	log.Println(resp.Status)
-	log.Println(resp)
+	//log.Println(resp)
 
 	//if out_pattern != "" {
 	log.Println("---------srart of jaonparse------------")
@@ -91,15 +91,22 @@ func GET_NesusAPI(nexusurl string, nexus_user string, nexus_password string, out
 	token = myJson.ContinueTokenParse(string(responseData))
 	if token == "null" || token == "" {
 		log.Printf("output.content 數量 : %d\n", len(output.Content))
+		//lastLine := output.Content[:len(output.Content)-1]
+
 		var temp_out string
 		for i := 0; i < len(output.Content); i++ {
 			temp_out = temp_out + output.Content[i] + "\n"
 			//log.Println(temp_out)
 		}
+		strings.TrimSuffix(temp_out, "\n")
+		fmt.Println("-------")
+
 		IO.WriteWithIoutil(outfile, string(temp_out))
 	} else {
 		origin_request := strings.Split(nexusurl, "?")
 		new_request_url := origin_request[0] + "?" + "continuationToken=" + token + "&" + origin_request[1]
+		fmt.Println("-------token-------")
+		fmt.Println(token)
 		GET_NesusAPI(new_request_url, nexus_user, nexus_password, outfile, out_pattern, output)
 	}
 
